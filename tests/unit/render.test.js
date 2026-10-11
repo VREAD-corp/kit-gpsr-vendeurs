@@ -59,7 +59,9 @@ test('docx is a valid OOXML package with escaped XML', () => {
   const xml = dec.decode(parts['word/document.xml']);
   assert.match(xml, /Fiche &lt;test&gt; &amp; &quot;co&quot;/);
   assert.match(xml, /<w:tbl>/);
-  assert.match(xml, /lien \(https:\/\/eur-lex\.europa\.eu\/\)/);
+  assert.match(xml, /<w:hyperlink r:id="rIdL1"[^>]*><w:r>.*?lien<\/w:t><\/w:r><\/w:hyperlink>/);
+  const rels = dec.decode(parts['word/_rels/document.xml.rels']);
+  assert.match(rels, /Id="rIdL1"[^>]*Target="https:\/\/eur-lex\.europa\.eu\/" TargetMode="External"/);
   // every opened paragraph is closed
   assert.equal((xml.match(/<w:p>/g) || []).length + (xml.match(/<w:p\/>/g) || []).length, (xml.match(/<w:p>|<w:p\/>/g) || []).length);
   assert.equal((xml.match(/<w:p>/g) || []).length, (xml.match(/<\/w:p>/g) || []).length);

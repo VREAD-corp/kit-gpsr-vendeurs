@@ -123,14 +123,26 @@ const x = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;
 // Strip characters that are invalid in XML 1.0.
 const clean = (s) => String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, '');
 
+// Hyperlinks are collected per document; each gets an external relationship id (rId1 = styles).
+let LINKS = null;
+function linkId(href) {
+  if (!LINKS) return null;
+  let i = LINKS.indexOf(href);
+  if (i < 0) i = LINKS.push(href) - 1;
+  return `rIdL${i + 1}`;
+}
+
 function wRuns(inline, base = {}) {
   return runs(inline)
     .map((r) => {
-      const text = r.href && !r.text.includes(r.href) ? `${r.text} (${r.href})` : r.text;
-      const rpr = [(r.b || base.b) && '<w:b/>', (r.i || base.i) && '<w:i/>', base.mono && '<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/>']
+      const isLink = r.href && /^https?:\/\//.test(r.href);
+      const id = isLink ? linkId(r.href) : null;
+      const text = isLink && !id && !r.text.includes(r.href) ? `${r.text} (${r.href})` : r.text;
+      const rpr = [(r.b || base.b) && '<w:b/>', (r.i || base.i) && '<w:i/>', base.mono && '<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/>', id && '<w:color w:val="0B5A6E"/><w:u w:val="single"/>']
         .filter(Boolean)
         .join('');
-      return `<w:r>${rpr ? `<w:rPr>${rpr}</w:rPr>` : ''}<w:t xml:space="preserve">${x(clean(text))}</w:t></w:r>`;
+      const run = `<w:r>${rpr ? `<w:rPr>${rpr}</w:rPr>` : ''}<w:t xml:space="preserve">${x(clean(text))}</w:t></w:r>`;
+      return id ? `<w:hyperlink r:id="${id}" w:history="1">${run}</w:hyperlink>` : run;
     })
     .join('');
 }
@@ -189,7 +201,16 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 /** @returns {Uint8Array} a valid .docx package */
 export function toDocx(doc, { lang = 'fr', date } = {}) {
-  const body = docxBody(doc);
+  LINKS = [];
+  let body;
+  let links;
+  try {
+    body = docxBody(doc);
+  } finally {
+    links = LINKS;
+    LINKS = null;
+  }
+  const linkRels = links.map((h, i) => `<Relationship Id="rIdL${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${x(h)}" TargetMode="External"/>`).join('');
   const document = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
   const files = [
@@ -211,7 +232,7 @@ export function toDocx(doc, { lang = 'fr', date } = {}) {
     {
       name: 'word/_rels/document.xml.rels',
       data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${linkRels}</Relationships>`,
     },
     { name: 'word/styles.xml', data: lang === 'fr' ? STYLES : STYLES.replace('w:val="fr-FR"', 'w:val="en-GB"') },
     { name: 'word/document.xml', data: document },
