@@ -1,0 +1,22 @@
+{
+  "name": "kit-gpsr-vendeurs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Free, client-side GPSR (Regulation (EU) 2023/988) and French EPR information kit for small marketplace sellers.",
+  "type": "module",
+  "license": "MIT",
+  "author": "READ FRANCE SAS",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "templates": "node scripts/build-templates.mjs",
+    "test": "node --test \"tests/unit/*.test.js\"",
+    "e2e": "npm run build && playwright test",
+    "serve": "node scripts/serve.mjs dist 4791"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}
