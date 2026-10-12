@@ -14,6 +14,9 @@ export const COMPANY = {
   siret: '988 741 773 00010',
   address: '11 rue Rouvet, 75019 Paris, France',
   president: 'Tanguy Warsmann',
+  // Share capital: societe.com / RNE (SASU created on 07/05/2025), set on 2026-10-12.
+  capital: '1 000 €',
+  capitalEn: '€1,000',
   registry: 'https://annuaire-entreprises.data.gouv.fr/entreprise/988741773',
 };
 
@@ -27,7 +30,7 @@ export function legalPage(lang) {
       description: 'Mentions légales du Kit GPSR Vendeurs, un produit de READ FRANCE SAS : éditeur, directeur de la publication, hébergeur, licences.',
       body: `<h1>Mentions légales</h1>
 <h2>Éditeur</h2>
-<p>${COMPANY.name}, ${COMPANY.form}.<br>Siège social : ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (SIRET du siège ${COMPANY.siret}) — <a href="${COMPANY.registry}">fiche publique de l’entreprise</a>.<br>Capital social et numéro de TVA intracommunautaire : non affichés ici tant qu’ils ne sont pas confirmés par la direction.</p>
+<p>${COMPANY.name}, ${COMPANY.form}.<br>Siège social : ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (SIRET du siège ${COMPANY.siret}) — <a href="${COMPANY.registry}">fiche publique de l’entreprise</a>.<br>Capital social : ${COMPANY.capital}.<br>TVA non applicable, art. 293 B du CGI (franchise en base).</p>
 <p>Directeur de la publication : ${COMPANY.president}, président.</p>
 <p>Contact : en attendant l’ouverture d’une adresse dédiée, via les <a href="${SITE.issues}">issues GitHub du projet</a> (publiques : n’y mettez aucune donnée personnelle).</p>
 <h2>Hébergeur</h2>
@@ -47,7 +50,7 @@ export function legalPage(lang) {
     description: 'Legal notice of the GPSR Seller Kit, a product of READ FRANCE SAS: publisher, publication director, host, licences.',
     body: `<h1>Legal notice</h1>
 <h2>Publisher</h2>
-<p>${COMPANY.name}, a French simplified joint-stock company (SAS).<br>Registered office: ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (head-office SIRET ${COMPANY.siret}) — <a href="${COMPANY.registry}">public company record</a>.<br>Share capital and EU VAT number: not shown until confirmed by management.</p>
+<p>${COMPANY.name}, a French simplified joint-stock company (SAS).<br>Registered office: ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (head-office SIRET ${COMPANY.siret}) — <a href="${COMPANY.registry}">public company record</a>.<br>Share capital: ${COMPANY.capitalEn}.<br>VAT: not applicable, art. 293 B of the French General Tax Code (VAT franchise).</p>
 <p>Publication director: ${COMPANY.president}, president.</p>
 <p>Contact: until a dedicated mailbox exists, through the project’s <a href="${SITE.issues}">GitHub issues</a> (public: do not post personal data).</p>
 <h2>Host</h2>
@@ -125,10 +128,12 @@ const PACK_CONTENTS = {
 export function packPage(lang, sales) {
   const items = PACK_CONTENTS[lang].map((i) => `<li>${i}</li>`).join('');
   const open = sales?.SALES_OPEN === true;
-  const pr = prices(sales ?? { VAT: 'standard20', amount: 2900 });
+  const pr = prices(sales ?? { VAT: 'franchise293B', amount: 2900 });
+  const fr = pr.std ? '29 € TTC' : '29 € net';
+  const en = pr.std ? '€29 incl. VAT' : '€29, VAT not applicable';
   if (lang === 'fr')
     return {
-      title: open ? 'Pack documentation GPSR (29 € TTC) — pour les entreprises' : 'Pack documentation GPSR (29 € TTC) — bientôt disponible',
+      title: open ? `Pack documentation GPSR (${fr}) — pour les entreprises` : `Pack documentation GPSR (${fr}) — bientôt disponible`,
       description: open
         ? 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Vente aux entreprises (SIREN), fichier et facture par e-mail.'
         : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
@@ -138,7 +143,7 @@ export function packPage(lang, sales) {
 ${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${pr.vat} de TVA à 20 %, ` : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>
 <p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}">Commander</a></p>
 <p class="hint">Vente aux entreprises immatriculées en France (SIREN). Paiement par carte bancaire avec Stripe ; fichier ZIP et facture acquittée envoyés par e-mail. <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
-<p class="price">29 € TTC <small>(prix prévu, paiement unique)</small></p>`}
+<p class="price">${fr} <small>(prix prévu, ${pr.std ? '' : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>`}
 <h2>Contenu du pack</h2>
 <ul>${items}</ul>
 <h2>Ce que le pack n’est pas</h2>
@@ -152,17 +157,17 @@ ${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${
 <p>Conditions de vente : <a href="${url('terms', 'fr')}">CGV professionnels</a> (vente réservée aux entreprises).</p>`,
     };
   return {
-    title: open ? 'GPSR documentation pack (€29 incl. VAT) — for businesses' : 'GPSR documentation pack (€29 incl. VAT) — coming soon',
+    title: open ? `GPSR documentation pack (${en}) — for businesses` : `GPSR documentation pack (${en}) — coming soon`,
     description: open
       ? 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Sold to French businesses (SIREN); file and invoice by e-mail.'
       : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
     body: `${open ? '<p><span class="pill">Businesses only</span></p>' : '<p><span class="pill badge-soon">Coming soon</span></p>'}
 <h1>GPSR documentation pack</h1>
 <p class="lead">To go further than the free generator: extended templates per product category and the procedures to keep ready.</p>
-${open ? `<p class="price">€29 incl. VAT <small>(one-off payment)</small></p>
+${open ? `<p class="price">${en} <small>(${pr.std ? '' : 'art. 293 B CGI, '}one-off payment)</small></p>
 <p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}" lang="fr">Order (page in French)</a></p>
 <p class="hint">Sold only to businesses registered in France (SIREN number required), under the French <a href="${url('terms', 'fr')}" lang="fr">B2B terms of sale</a>. Card payment with Stripe; ZIP file and paid invoice sent by e-mail.</p>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
-<p class="price">€29 incl. VAT <small>(planned price, one-off payment)</small></p>`}
+<p class="price">${en} <small>(planned price, ${pr.std ? '' : 'art. 293 B CGI, '}one-off payment)</small></p>`}
 <h2>What’s in the pack</h2>
 <ul>${items}</ul>
 <h2>What the pack is not</h2>
@@ -182,7 +187,7 @@ export function termsPage(lang, sales) {
   if (lang === 'fr')
     return {
       title: 'Conditions générales de vente aux professionnels — Kit GPSR Vendeurs',
-      description: 'CGV B2B du Pack documentation GPSR (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix HT et TTC, paiement Stripe, livraison par e-mail, licence, facturation.',
+      description: 'CGV B2B du Pack documentation GPSR (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.',
       noindex: !sales.SALES_OPEN,
       body: cgvProBody({
         config: sales,
@@ -208,7 +213,7 @@ export function termsPage(lang, sales) {
 <p class="hint">Version of 12 October 2026. Only the <a href="${url('terms', 'fr')}" lang="fr">French B2B terms (CGV professionnels)</a> are binding; this summary is for information.</p>
 ${sales.SALES_OPEN ? '' : '<div class="callout"><p><strong>Not on sale yet.</strong> No order or payment is possible today.</p></div>'}
 <ul>
-<li><strong>Seller:</strong> ${COMPANY.name}, ${COMPANY.address}, SIREN ${COMPANY.siren}, RCS Paris.</li>
+<li><strong>Seller:</strong> ${COMPANY.name}, share capital ${COMPANY.capitalEn}, ${COMPANY.address}, SIREN ${COMPANY.siren}, RCS Paris.</li>
 <li><strong>Buyers:</strong> businesses registered in France (SIREN), ordering for their professional activity. No consumer sales.</li>
 <li><strong>Product:</strong> the “GPSR documentation pack”, a digital ZIP file sent by e-mail with the paid invoice.</li>
 <li><strong>Price:</strong> ${pr.std ? `€29.00 incl. 20% French VAT (€24.17 excl. VAT)` : '€29.00, VAT not applicable (art. 293 B CGI)'}; card payment through Stripe.</li>
