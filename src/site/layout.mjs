@@ -65,7 +65,7 @@ export function layout(p) {
   const other = lang === 'fr' ? 'en' : 'fr';
   const brand = BRAND[lang];
   const canonical = p.path ? SITE.origin + SITE.base + p.path : abs(key, lang);
-  const csp = p.csp ?? "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'";
+  const csp = p.csp ?? "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src https://script.google.com; form-action 'none'; base-uri 'self'; object-src 'none'";
   const nav = NAV[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
@@ -90,6 +90,7 @@ ${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <link rel="alternate" hreflang="x-default" href="${abs(key, 'fr')}">`}
 <link rel="icon" href="${SITE.base}/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${SITE.base}/assets/app.css">
+<script src="${SITE.base}/mesure.js" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(brand)}">
 <meta property="og:title" content="${esc(p.title)}">

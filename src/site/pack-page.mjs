@@ -193,7 +193,7 @@ ${offer}
 ${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('fr')}
-${sourcesSection('fr', srcHtml, `<p>Toutes les obligations et leurs textes : <a href="${url('obligations', 'fr')}">Obligations &amp; sources</a>. Conditions de vente : <a href="${cgv}">CGV professionnels</a>. Modèles vierges gratuits : <a href="${SITE.releases}">pack de modèles gratuit (ZIP)</a>.</p>`)}
+${sourcesSection('fr', srcHtml, `<p>Toutes les obligations et leurs textes : <a href="${url('obligations', 'fr')}">Obligations &amp; sources</a>. Conditions de vente : <a href="${cgv}">CGV professionnels</a>. Modèles vierges gratuits : <a href="${SITE.releases}" data-mesure="free_download">pack de modèles gratuit (ZIP)</a>.</p>`)}
 ${open ? stickyCta(`Pack GPSR · ${amount}`, order, 'Commander') : ''}`,
     };
   }
@@ -263,6 +263,6 @@ ${offer}
 ${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('en')}
-${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Free blank templates: <a href="${SITE.releases}">free template pack (ZIP)</a>.</p>`)}`,
+${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Free blank templates: <a href="${SITE.releases}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,
   };
 }

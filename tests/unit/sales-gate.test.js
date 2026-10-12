@@ -21,8 +21,10 @@ const PRODUCT = 'kit-gpsr-pack';
 const PRICE_RE = /29,00\s€ net de taxe \(TVA non applicable, art\. 293 B du CGI\)/;
 const SOON_RE = /Pas encore en vente/;
 const DISCLAIMER_RE = /n’agit pas et ne propose pas d’agir comme « personne responsable »/;
-const BUY_MARKERS = [/js\.stripe\.com/, /commander\.html/, /commande\.html/, /checkout-config/, /octave-pay/, /pk_(live|test)_/, /script\.google\.com/];
+const BUY_MARKERS = [/js\.stripe\.com/, /commander\.html/, /commande\.html/, /checkout-config/, /octave-pay/, /pk_(live|test)_/, /script\.google\.com\/macros/];
 const GENERATOR_FORM = /id="gpsr-form"/; // the free generator's own (offline) form is allowed
+// The shared anonymous audience snippet (served on every page, sales open or not) names the checkout form and endpoint; it is not buy UI.
+const MESURE = 'mesure.js';
 
 const PUBLISHED = 'dist';
 const repoConfig = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
@@ -40,7 +42,7 @@ const read = (dir, f) => readFileSync(join(dir, SITE_PREFIX, f), 'utf8');
 
 function assertClosed(dir) {
   for (const f of ['commander.html', 'commande.html', 'assets/checkout/pay.js', 'assets/checkout/order.js', 'assets/checkout/checkout-config.js']) assert.ok(!existsSync(join(dir, SITE_PREFIX, f)), `${f} must not exist while SALES_OPEN=false`);
-  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x))) {
+  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && x !== MESURE)) {
     const body = readFileSync(join(dir, f), 'utf8');
     for (const re of BUY_MARKERS) assert.doesNotMatch(body, re, `${f} contains buy UI marker ${re}`);
     if (!GENERATOR_FORM.test(body)) assert.doesNotMatch(body, /<form/i, `${f} contains a form`);

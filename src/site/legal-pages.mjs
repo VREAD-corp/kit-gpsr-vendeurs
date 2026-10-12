@@ -76,14 +76,15 @@ export function privacyPage(lang, sales) {
       title: 'Confidentialité — Kit GPSR Vendeurs',
       description: 'Aucune donnée personnelle collectée : le générateur fonctionne entièrement dans votre navigateur, sans cookies ni traceurs.',
       body: `<h1>Confidentialité</h1>
-<p><strong>En bref : nous ne collectons aucune donnée.</strong> Le générateur fonctionne entièrement dans votre navigateur.</p>
+<p><strong>En bref : nous ne collectons aucune donnée personnelle.</strong> Le générateur fonctionne entièrement dans votre navigateur.</p>
 <ul>
-<li>Les réponses au questionnaire ne sont <strong>jamais envoyées</strong> à un serveur : il n’y a ni formulaire envoyé, ni base de données, ni compte. La page interdit techniquement toute connexion sortante (politique de sécurité du contenu <code>connect-src 'none'</code>).</li>
+<li>Les réponses au questionnaire ne sont <strong>jamais envoyées</strong> à un serveur : il n’y a ni formulaire envoyé, ni base de données, ni compte. La page n’autorise techniquement qu’une seule connexion sortante, vers la mesure d’audience anonyme décrite ci-dessous, qui ne transmet jamais vos réponses (politique de sécurité du contenu <code>connect-src</code> limitée à <code>script.google.com</code>).</li>
 <li>Rien n’est enregistré dans votre navigateur (pas de cookies, pas de stockage local). Pour reprendre plus tard, utilisez « Enregistrer mes réponses » : un fichier est créé sur votre appareil, et vous seul·e le détenez.</li>
-<li>Aucun cookie, aucun outil de mesure d’audience, aucun traceur tiers : aucun bandeau de consentement n’est donc nécessaire.</li>
+<li>Aucun cookie, aucun traceur tiers, et une mesure d’audience anonyme exemptée de consentement (ci-dessous) : aucun bandeau de consentement n’est donc nécessaire.</li>
 <li>Hébergement : GitHub Pages (GitHub, Inc.). Comme tout hébergeur web, GitHub peut traiter des données techniques de connexion (adresse IP, par exemple) pour assurer la sécurité du service, selon sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>. READ FRANCE SAS n’a pas accès à ces journaux.</li>
-<li>Mesure : nous comptons seulement le nombre de téléchargements du pack de modèles gratuit, tel que GitHub l’affiche publiquement pour chaque fichier de « release » (un total, sans aucune donnée sur les personnes).</li>
+<li>Téléchargements : nous comptons aussi le nombre de téléchargements du pack de modèles gratuit, tel que GitHub l’affiche publiquement pour chaque fichier de « release » (un total, sans aucune donnée sur les personnes).</li>
 </ul>
+<p><strong>Mesure d’audience.</strong> Nous comptons la fréquentation de ce site de façon anonyme : pages vues, clics vers la page de commande et étapes de la commande, totalisés par jour, avec le domaine du site d’origine et les paramètres de campagne (utm) éventuels. Cette mesure ne dépose aucun cookie, n’utilise aucun identifiant et n’enregistre ni adresse IP ni donnée personnelle ; seuls ces totaux journaliers sont conservés, dans un tableur de READ FRANCE hébergé par Google. Elle respecte le réglage « Do Not Track » de votre navigateur. Strictement limitée à la mesure d’audience, anonyme et non recoupée avec d’autres données, elle remplit les critères d’exemption de consentement de la CNIL.</p>
 ${open ? `<h2>Exception : la commande du pack documentation</h2>
 <p>La page <a href="${SITE.base}${ORDER_PATH}">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l’entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées et droits : article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<p>Ventes : le pack documentation n’est pas encore en vente. Les traitements prévus pour les commandes sont décrits à l’article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>`}
 <p>Responsable : READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. Questions : <a href="mailto:${SITE.contact}">${SITE.contact}</a>. Vous pouvez aussi saisir la <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.</p>`,
@@ -92,14 +93,15 @@ ${open ? `<h2>Exception : la commande du pack documentation</h2>
     title: 'Privacy — GPSR Seller Kit',
     description: 'No personal data collected: the generator runs entirely in your browser, with no cookies or trackers.',
     body: `<h1>Privacy</h1>
-<p><strong>In short: we collect no data.</strong> The generator runs entirely in your browser.</p>
+<p><strong>In short: we collect no personal data.</strong> The generator runs entirely in your browser.</p>
 <ul>
-<li>Your answers are <strong>never sent</strong> to a server: there is no form submission, no database and no account. The page technically blocks every outgoing connection (Content Security Policy <code>connect-src 'none'</code>).</li>
+<li>Your answers are <strong>never sent</strong> to a server: there is no form submission, no database and no account. The page technically allows only one outgoing connection, to the anonymous audience measurement described below, which never transmits your answers (Content Security Policy <code>connect-src</code> limited to <code>script.google.com</code>).</li>
 <li>Nothing is stored in your browser (no cookies, no local storage). To continue later, use “Save my answers”: a file is created on your device and only you hold it.</li>
-<li>No cookies, no audience measurement, no third-party trackers, so no consent banner is needed.</li>
+<li>No cookies, no third-party trackers, and only a consent-exempt anonymous audience measurement (below), so no consent banner is needed.</li>
 <li>Hosting: GitHub Pages (GitHub, Inc.). Like any web host, GitHub may process technical connection data (such as IP addresses) to secure the service, under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. READ FRANCE SAS has no access to those logs.</li>
-<li>Measurement: we only count downloads of the free template pack, as GitHub shows publicly for each release file (a total, with no data about people).</li>
+<li>Downloads: we also count downloads of the free template pack, as GitHub shows publicly for each release file (a total, with no data about people).</li>
 </ul>
+<p><strong>Audience measurement.</strong> We count visits to this site anonymously: page views, clicks to the order page and checkout steps, totalled per day, with the referring site’s domain and any campaign (utm) parameters. This measurement sets no cookie, uses no identifier and records neither IP addresses nor personal data; only these daily totals are kept, in a READ FRANCE spreadsheet hosted by Google. It respects your browser’s “Do Not Track” setting. Strictly limited to audience measurement, anonymous and not combined with other data, it meets the CNIL’s criteria for exemption from consent.</p>
 ${open ? `<p>Exception: the <a href="${SITE.base}${ORDER_PATH}" lang="fr">order page</a> of the documentation pack (French businesses only) collects the e-mail address, company name, SIREN and billing address needed to fulfil the order and issue the invoice; card payment is handled by Stripe, which loads its payment module (and anti-fraud cookies) on that page only. See article 13 of the <a href="${url('terms', 'fr')}" lang="fr">B2B terms</a>.</p>\n` : ''}<p>Controller: READ FRANCE SAS, 11 rue Rouvet, 75019 Paris, France. Questions: <a href="mailto:${SITE.contact}">${SITE.contact}</a>. You may also contact your data-protection authority (in France, the <a href="https://www.cnil.fr/en">CNIL</a>).</p>`,
   };
 }

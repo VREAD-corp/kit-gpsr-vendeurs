@@ -82,6 +82,7 @@ await cp(join(root, 'src', 'app.js'), join(out, 'assets', 'app.js'));
 await cp(join(root, 'src', 'lib'), join(out, 'assets', 'lib'), { recursive: true });
 await cp(join(root, 'src', 'site', 'app.css'), join(out, 'assets', 'app.css'));
 await cp(join(root, 'src', 'site', 'favicon.svg'), join(out, 'assets', 'favicon.svg'));
+await cp(join(root, 'src', 'site', 'mesure.js'), join(out, 'mesure.js')); // anonymous audience measurement (shared snippet, byte-identical)
 await cp(join(root, 'src', 'site', 'img'), join(out, 'assets', 'img'), { recursive: true }); // sales-page previews (WebP, rendered from the pack)
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 

@@ -95,7 +95,7 @@ ${factsBlock(lang, ref)}
 </section>
 <section class="section" aria-labelledby="questionnaire">
 <div class="tool-head"><h2 id="questionnaire">${fr ? 'Générez vos 4 documents gratuitement' : 'Generate your 4 documents for free'}</h2>
-<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${SITE.releases}">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
+<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${SITE.releases}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
 <ol class="steps"><li>${fr ? 'Répondez : fabricant, produit, risques, plateformes (environ 10 minutes)' : 'Answer: manufacturer, product, hazards, platforms (about 10 minutes)'}</li><li>${fr ? 'Vérifiez les 4 documents' : 'Check the 4 documents'}</li><li>${fr ? 'Exportez en PDF, DOCX ou Markdown' : 'Export as PDF, DOCX or Markdown'}</li></ol>
 <noscript><div class="callout"><p>${fr ? 'Le générateur a besoin de JavaScript (exécuté uniquement dans votre navigateur). Sans JavaScript, utilisez le pack de modèles gratuit.' : 'The generator needs JavaScript (run only in your browser). Without JavaScript, use the free template pack.'}</p></div></noscript>
 <div class="btn-row no-print">
@@ -115,11 +115,11 @@ ${factsBlock(lang, ref)}
 <section id="results" hidden aria-labelledby="results-title">
 <h2 id="results-title" tabindex="-1">${fr ? 'Vos documents' : 'Your documents'}</h2>
 <div class="btn-row no-print">
-<button type="button" class="btn" id="btn-print">${fr ? 'Imprimer / PDF' : 'Print / PDF'}</button>
-<button type="button" class="btn secondary" id="btn-docx">DOCX</button>
-<button type="button" class="btn secondary" id="btn-md">Markdown</button>
-<button type="button" class="btn secondary" id="btn-zip">${fr ? 'Les 4 documents (ZIP)' : 'All 4 documents (ZIP)'}</button>
-<button type="button" class="btn secondary" id="btn-print-all">${fr ? 'Tout imprimer' : 'Print all'}</button>
+<button type="button" class="btn" id="btn-print" data-mesure="free_download">${fr ? 'Imprimer / PDF' : 'Print / PDF'}</button>
+<button type="button" class="btn secondary" id="btn-docx" data-mesure="free_download">DOCX</button>
+<button type="button" class="btn secondary" id="btn-md" data-mesure="free_download">Markdown</button>
+<button type="button" class="btn secondary" id="btn-zip" data-mesure="free_download">${fr ? 'Les 4 documents (ZIP)' : 'All 4 documents (ZIP)'}</button>
+<button type="button" class="btn secondary" id="btn-print-all" data-mesure="free_download">${fr ? 'Tout imprimer' : 'Print all'}</button>
 </div>
 ${upsell}
 <div class="tabs no-print" role="tablist" id="tabs" aria-label="${fr ? 'Documents générés' : 'Generated documents'}"></div>
