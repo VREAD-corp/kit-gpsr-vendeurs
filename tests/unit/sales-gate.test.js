@@ -101,12 +101,21 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
   assert.match(html, /<!--[\s\S]*PAS UN CONSEIL JURIDIQUE[\s\S]*relire[\s\S]*-->/);
   const text = html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const re of [
-    /version du 12 octobre 2026/,
+    /version du 13 octobre 2026/,
     /READ FRANCE SAS, société par actions simplifiée \(SAS\) au capital de 1 000\s€/, /11 rue Rouvet, 75019 Paris/, /SIREN 988 741 773/, /RCS Paris/, /TVA non applicable, art\. 293 B du CGI/, /Tanguy Warsmann/,
     /Champ d’application et acceptation/, /professionnel/, /accepte expressément/,
     /fichier numérique/, /livré par courrier électronique/,
     PRICE_RE,
-    /par carte bancaire, au comptant, via le prestataire de paiement Stripe/,
+    /Avant de payer par carte ou de demander un devis, l’Acheteur accepte expressément/,
+    /payable comptant et d’avance, en une fois, au choix de l’Acheteur/, /par carte bancaire/, /par virement bancaire SEPA en euros, après demande de devis/,
+    /Stripe Payments Europe, Limited et Stripe Technology Europe, Limited, sociétés de droit irlandais/,
+    /numéro de compte bancaire virtuel attribué par Stripe, dont le bénéficiaire est le Vendeur, propre à l’Acheteur et identique pour tous ses devis/,
+    /valable trente \(30\) jours à compter de son émission/, /Un paiement partiel ne forme pas le contrat/, /Affectation des paiements/,
+    /effectué par le moyen de paiement utilisé/, /la « confirmation du paiement » désigne/,
+    /dans l’heure qui suit la réception d’un virement/,
+    /article L441-9 du code de commerce/, /pendant la durée de validité du devis en cas de paiement par virement \(article 5\)/, /Escompte pour paiement anticipé : néant/,
+    /quatre derniers chiffres de l’IBAN/, /mesures précontractuelles/, /devis non suivis de commande, 1 an après leur expiration/,
+    /lors de sa commande ou de sa demande de devis, rappelée sur le devis/,
     /Livraison et délai/, /au plus tard dans les 24 heures/,
     /droit de rétractation[^.]*ne s’applique pas/,
     /licence non exclusive, non cessible et non transférable/, /pour ses besoins internes/,
@@ -121,6 +130,12 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
   assert.match(html, /<footer/);
   assert.match(html, /href="\/kit-gpsr-vendeurs\/cgv-pro\.html"/);
   assert.match(read(build({ ...repoConfig, SALES_OPEN: false }), 'en/terms.html'), /French version|French B2B terms/);
+  for (const n of [5, 6, 12, 13, 15]) assert.match(html, new RegExp(`<h2>${n}\\. `), `article ${n}`);
+  assert.match(html, /<h2>5\. Commande et paiement<\/h2>[\s\S]*<h2>6\. Livraison et délai<\/h2>[\s\S]*<h2>10\. Conformité[\s\S]*<h2>12\. Facturation[\s\S]*<h2>13\. Données personnelles<\/h2>[\s\S]*<h2>15\. Dispositions diverses<\/h2>/);
+  assert.doesNotMatch(text, /compte de paiement dédié|Stripe Payments Europe, Ltd|à réception du devis|droit de rétractation[^.]*consommateur[^.]*devis/);
+  const en = read(build({ ...repoConfig, SALES_OPEN: true, endpoint: 'https://script.google.com/macros/s/AKfycbTESTTESTTESTTESTTEST/exec', publishableKey: 'pk_live_abc' }), 'en/terms.html');
+  assert.match(en, /card payment through Stripe, or bank transfer on quote \(the quote, sent by e-mail, is valid for 30 days/);
+  assert.match(en, /Version of 13 October 2026/);
 });
 
 test('mentions légales: share capital 1 000 € (no « à compléter »), VAT status matches the VAT mode', () => {
@@ -169,7 +184,7 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(conf, /"product":"kit-gpsr-pack"/);
   assert.match(conf, /"orderPage":"\/kit-gpsr-vendeurs\/commande\.html"/);
   assert.match(conf, /cgv-pro\.html/);
-  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-12"`));
+  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-13"`));
   for (const f of ['pay.js', 'order.js']) assert.equal(read(openDir, `assets/checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
   assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
@@ -196,7 +211,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: FAKE_STRIPE }));
   await page.route('https://octave-test.invalid/**', async (r) => {
     const req = r.request();
-    if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, name: 'Pack documentation GPSR', amount: OPEN_CFG.amount, currency: 'eur', label: 'catalogue: prix serveur', termsVersion: 'cgv-pro-2026-10-12' }) });
+    if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, name: 'Pack documentation GPSR', amount: OPEN_CFG.amount, currency: 'eur', label: 'catalogue: prix serveur', termsVersion: 'cgv-pro-2026-10-13' }) });
     posts.push(JSON.parse(req.postData()));
     return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: false, error: 'stub', message: 'stub: arrêt avant paiement' }) });
   });
@@ -226,7 +241,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.click('#pay-button');
   await page.waitForSelector('#pay-error:not([hidden])');
   assert.equal(posts.length, 1);
-  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
+  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-13', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);

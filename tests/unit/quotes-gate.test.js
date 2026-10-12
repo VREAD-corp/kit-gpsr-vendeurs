@@ -79,7 +79,7 @@ test('quotesEnabled=true (test build): block once right after #octave-pay, devis
   for (const name of ['email', 'company', 'siren', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'buyerRef', 'website', 'terms']) assert.match(box, new RegExp(`name="${name}"`), name);
   assert.match(box, /<div class="hp" aria-hidden="true">/);
   assert.match(box, /class="terms-link" href="\/kit-gpsr-vendeurs\/cgv-pro\.html"/); // same CGV link as the card form
-  assert.match(box, /\(version du 12 octobre 2026\)/);
+  assert.match(box, /\(version du 13 octobre 2026\)/);
   assert.doesNotMatch(box, /\{\{|\}\}/);
   assert.deepEqual(dupes(ids(cmd)), []);
   assert.match(readFileSync(join(out, 'assets/checkout/checkout-config.js'), 'utf8'), /"quotesEnabled":true/);
@@ -132,7 +132,7 @@ test('browser (quotesEnabled=true, stubbed endpoint): box shown, posts action "q
     const posts = [];
     await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.Stripe=function(){return{elements:function(){return{create:function(){return{on:function(){},mount:function(){}}}}}}}' }));
     await page.route('https://octave-test.invalid/**', async (r) => {
-      if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, amount: OPEN_CFG.amount, currency: 'eur', termsVersion: 'cgv-pro-2026-10-12' }) });
+      if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, amount: OPEN_CFG.amount, currency: 'eur', termsVersion: 'cgv-pro-2026-10-13' }) });
       const body = JSON.parse(r.request().postData());
       posts.push(body);
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify(body.action === 'quote' ? { ok: true, quote: 'D-2026-0001', email_masked: 'a***@entreprise.example' } : { ok: false, message: 'stub' }) });
@@ -153,7 +153,7 @@ test('browser (quotesEnabled=true, stubbed endpoint): box shown, posts action "q
     await page.waitForSelector('#devis-ok:not([hidden])');
     const quotes = posts.filter((p) => p.action === 'quote');
     assert.equal(quotes.length, 1);
-    assert.deepEqual({ ...quotes[0], attempt: 'x' }, { action: 'quote', product: 'kit-gpsr-pack', email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', buyerRef: 'BC-42', website: '', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
+    assert.deepEqual({ ...quotes[0], attempt: 'x' }, { action: 'quote', product: 'kit-gpsr-pack', email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', buyerRef: 'BC-42', website: '', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-13', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
     assert.match(await page.textContent('#devis-ok'), /D-2026-0001/);
     assert.deepEqual(errors, []);
   } finally {

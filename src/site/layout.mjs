@@ -14,10 +14,11 @@ export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 
 // Sitemap <lastmod> per page and language when it differs from SITE.updated
 // (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO;
-// 2026-10-13: copy rewrite, titles, breadcrumbs and Article schema of the generator, pack and obligations pages).
+// 2026-10-13: copy rewrite, titles, breadcrumbs and Article schema of the generator, pack and obligations pages;
+// B2B terms and privacy: payment by bank transfer on quote).
 const D1012 = { fr: '2026-10-12', en: '2026-10-12' };
 const D1013 = { fr: '2026-10-13', en: '2026-10-13' };
-const LASTMOD = { tool: D1013, obligations: D1013, pack: D1013, legal: D1012, privacy: D1012, terms: D1012 };
+const LASTMOD = { tool: D1013, obligations: D1013, pack: D1013, legal: D1012, privacy: D1013, terms: D1013 };
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /**
