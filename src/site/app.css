@@ -136,3 +136,23 @@ table.plain th, table.plain td { border: 1px solid var(--line); padding: 6px 8px
 }
 .card > h2:first-child, .card > h3:first-child { margin-top: 0; }
 .price small { font-size: 1rem; font-weight: 400; color: var(--muted); }
+
+/* Commander (only emitted when SALES_OPEN=true) */
+.checkout { max-width: 680px; }
+.checkout .card { margin: 16px 0; }
+.checkout-form label.field { display: block; margin: .8em 0; }
+.checkout-form label.field span { display: block; font-weight: 600; margin-bottom: .25em; }
+.checkout-form input[type=email], .checkout-form input[type=text] { width: 100%; font: inherit; padding: .6em; min-height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
+.field-group { border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px 8px; margin: 1em 0; min-width: 0; }
+.field-group legend { font-weight: 700; padding: 0 .3em; }
+label.check { display: flex; gap: .6em; align-items: flex-start; margin: 1em 0; }
+label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
+#payment-element { margin: 1em 0; min-height: 120px; }
+.pay-button { font: inherit; font-weight: 700; background: var(--brand); color: var(--brand-ink); border: 0; border-radius: 8px; padding: .85em 1.2em; cursor: pointer; width: 100%; min-height: 48px; }
+.pay-button[disabled] { opacity: .6; cursor: progress; }
+.small { font-size: .9rem; }
+.muted { color: var(--muted); }
+.status { font-weight: 700; }
+.status.ok { color: var(--ok); }
+.status.err { color: #b3261e; }
+@media (prefers-color-scheme: dark) { .status.err { color: #f28b82; } }

@@ -1,5 +1,10 @@
-// Mentions légales, privacy notice, draft terms (CGV) and the paid-pack page.
+// Mentions légales, privacy notice, B2B terms (CGV professionnels) and the paid-pack page.
+// `sales` = validated sales.config.json (scripts/checkout-pages.mjs): SALES_OPEN gates every buy element.
 import { SITE, url } from './layout.mjs';
+import { cgvProBody, prices } from '../../scripts/checkout-pages.mjs';
+
+export const ORDER_PATH = '/commander.html';
+export const ORDER_DONE_PATH = '/commande.html';
 
 // Public registry data: recherche-entreprises.api.gouv.fr (SIREN 988 741 773), consulted 2026-10-11.
 export const COMPANY = {
@@ -59,7 +64,8 @@ export function legalPage(lang) {
   };
 }
 
-export function privacyPage(lang) {
+export function privacyPage(lang, sales) {
+  const open = sales?.SALES_OPEN === true;
   if (lang === 'fr')
     return {
       title: 'Confidentialité — Kit GPSR Vendeurs',
@@ -73,6 +79,8 @@ export function privacyPage(lang) {
 <li>Hébergement : GitHub Pages (GitHub, Inc.). Comme tout hébergeur web, GitHub peut traiter des données techniques de connexion (adresse IP, par exemple) pour assurer la sécurité du service, selon sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>. READ FRANCE SAS n’a pas accès à ces journaux.</li>
 <li>Mesure : nous comptons seulement le nombre de téléchargements du pack de modèles gratuit, tel que GitHub l’affiche publiquement pour chaque fichier de « release » (un total, sans aucune donnée sur les personnes).</li>
 </ul>
+${open ? `<h2>Exception : la commande du pack documentation</h2>
+<p>La page <a href="${SITE.base}${ORDER_PATH}">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l’entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées et droits : article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<p>Ventes : le pack documentation n’est pas encore en vente. Les traitements prévus pour les commandes sont décrits à l’article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>`}
 <p>Responsable : READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. Questions : <a href="${SITE.issues}">issues GitHub</a>. Vous pouvez aussi saisir la <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.</p>`,
     };
   return {
@@ -87,7 +95,7 @@ export function privacyPage(lang) {
 <li>Hosting: GitHub Pages (GitHub, Inc.). Like any web host, GitHub may process technical connection data (such as IP addresses) to secure the service, under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. READ FRANCE SAS has no access to those logs.</li>
 <li>Measurement: we only count downloads of the free template pack, as GitHub shows publicly for each release file (a total, with no data about people).</li>
 </ul>
-<p>Controller: READ FRANCE SAS, 11 rue Rouvet, 75019 Paris, France. Questions: <a href="${SITE.issues}">GitHub issues</a>. You may also contact your data-protection authority (in France, the <a href="https://www.cnil.fr/en">CNIL</a>).</p>`,
+${open ? `<p>Exception: the <a href="${SITE.base}${ORDER_PATH}" lang="fr">order page</a> of the documentation pack (French businesses only) collects the e-mail address, company name, SIREN and billing address needed to fulfil the order and issue the invoice; card payment is handled by Stripe, which loads its payment module (and anti-fraud cookies) on that page only. See article 13 of the <a href="${url('terms', 'fr')}" lang="fr">B2B terms</a>.</p>\n` : ''}<p>Controller: READ FRANCE SAS, 11 rue Rouvet, 75019 Paris, France. Questions: <a href="${SITE.issues}">GitHub issues</a>. You may also contact your data-protection authority (in France, the <a href="https://www.cnil.fr/en">CNIL</a>).</p>`,
   };
 }
 
@@ -114,17 +122,23 @@ const PACK_CONTENTS = {
   ],
 };
 
-export function packPage(lang) {
+export function packPage(lang, sales) {
   const items = PACK_CONTENTS[lang].map((i) => `<li>${i}</li>`).join('');
+  const open = sales?.SALES_OPEN === true;
+  const pr = prices(sales ?? { VAT: 'standard20', amount: 2900 });
   if (lang === 'fr')
     return {
-      title: 'Pack documentation GPSR (29 € TTC) — bientôt disponible',
-      description: 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
-      body: `<p><span class="pill badge-soon">Bientôt disponible</span></p>
+      title: open ? 'Pack documentation GPSR (29 € TTC) — pour les entreprises' : 'Pack documentation GPSR (29 € TTC) — bientôt disponible',
+      description: open
+        ? 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Vente aux entreprises (SIREN), fichier et facture par e-mail.'
+        : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
+      body: `${open ? '<p><span class="pill">Réservé aux professionnels</span></p>' : '<p><span class="pill badge-soon">Bientôt disponible</span></p>'}
 <h1>Pack documentation GPSR</h1>
 <p class="lead">Pour aller plus loin que le générateur gratuit : des modèles étendus par catégorie de produit et les procédures à tenir prêtes.</p>
-<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
-<p class="price">29 € TTC <small>(prix prévu, paiement unique)</small></p>
+${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${pr.vat} de TVA à 20 %, ` : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>
+<p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}">Commander</a></p>
+<p class="hint">Vente aux entreprises immatriculées en France (SIREN). Paiement par carte bancaire avec Stripe ; fichier ZIP et facture acquittée envoyés par e-mail. <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
+<p class="price">29 € TTC <small>(prix prévu, paiement unique)</small></p>`}
 <h2>Contenu du pack</h2>
 <ul>${items}</ul>
 <h2>Ce que le pack n’est pas</h2>
@@ -135,16 +149,20 @@ export function packPage(lang) {
 </ul>
 <h2>En attendant</h2>
 <p>Le <a href="${url('tool', 'fr')}">générateur gratuit</a> et le <a href="${SITE.releases}">pack de modèles gratuit</a> (fichier ZIP sur GitHub) couvrent déjà la fiche de sécurité, l’étiquette, l’analyse de risques et les checklists.</p>
-<p>Conditions de vente prévues : <a href="${url('terms', 'fr')}">projet de CGV</a> (en cours de validation).</p>`,
+<p>Conditions de vente : <a href="${url('terms', 'fr')}">CGV professionnels</a> (vente réservée aux entreprises).</p>`,
     };
   return {
-    title: 'GPSR documentation pack (€29 incl. VAT) — coming soon',
-    description: 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
-    body: `<p><span class="pill badge-soon">Coming soon</span></p>
+    title: open ? 'GPSR documentation pack (€29 incl. VAT) — for businesses' : 'GPSR documentation pack (€29 incl. VAT) — coming soon',
+    description: open
+      ? 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Sold to French businesses (SIREN); file and invoice by e-mail.'
+      : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
+    body: `${open ? '<p><span class="pill">Businesses only</span></p>' : '<p><span class="pill badge-soon">Coming soon</span></p>'}
 <h1>GPSR documentation pack</h1>
 <p class="lead">To go further than the free generator: extended templates per product category and the procedures to keep ready.</p>
-<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
-<p class="price">€29 incl. VAT <small>(planned price, one-off payment)</small></p>
+${open ? `<p class="price">€29 incl. VAT <small>(one-off payment)</small></p>
+<p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}" lang="fr">Order (page in French)</a></p>
+<p class="hint">Sold only to businesses registered in France (SIREN number required), under the French <a href="${url('terms', 'fr')}" lang="fr">B2B terms of sale</a>. Card payment with Stripe; ZIP file and paid invoice sent by e-mail.</p>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
+<p class="price">€29 incl. VAT <small>(planned price, one-off payment)</small></p>`}
 <h2>What’s in the pack</h2>
 <ul>${items}</ul>
 <h2>What the pack is not</h2>
@@ -155,37 +173,61 @@ export function packPage(lang) {
 </ul>
 <h2>Meanwhile</h2>
 <p>The <a href="${url('tool', 'en')}">free generator</a> and the <a href="${SITE.releases}">free template pack</a> (ZIP file on GitHub) already cover the safety sheet, label, risk analysis and checklists.</p>
-<p>Planned terms of sale: <a href="${url('terms', 'en')}">draft terms</a> (pending validation).</p>`,
+<p>Terms of sale: <a href="${url('terms', 'en')}">B2B terms</a> (businesses only).</p>`,
   };
 }
 
-export function termsPage(lang) {
-  const fr = `<h1>Conditions générales de vente — projet</h1>
-<div class="callout"><p><strong>Projet non applicable.</strong> Ces conditions sont un projet en attente de validation par la direction de READ FRANCE SAS. Aucune vente n’est ouverte à ce jour.</p></div>
-<h2>1. Vendeur</h2>
-<p>${COMPANY.name}, ${COMPANY.form}, ${COMPANY.address}, SIREN ${COMPANY.siren}. Contact : <a href="${SITE.issues}">issues GitHub</a> (adresse e-mail à venir).</p>
-<h2>2. Produit</h2>
-<p>« Pack documentation GPSR » : contenu numérique téléchargeable (fichiers DOCX, Markdown et CSV, en français et en anglais), décrit sur la <a href="${url('pack', 'fr')}">page du pack</a>. Il s’agit de modèles et d’informations, pas d’un conseil juridique ni d’une prestation de « personne responsable ».</p>
-<h2>3. Prix et paiement</h2>
-<p>29 € TTC (TVA française 20 % incluse), paiement unique par carte via Stripe (page de paiement hébergée par Stripe). Le prix applicable est celui affiché au moment de la commande.</p>
-<h2>4. Commande et livraison</h2>
-<p>La commande est validée par le bouton « Commander avec obligation de paiement ». Après paiement, un lien de téléchargement est fourni immédiatement sur la page de commande et par e-mail ; il est valable 72 heures et peut être renouvelé depuis la page de commande.</p>
-<h2>5. Droit de rétractation</h2>
-<p>Conformément à l’article L221-28 13° du Code de la consommation, le droit de rétractation ne peut être exercé pour la fourniture d’un contenu numérique non fourni sur un support matériel dont l’exécution a commencé après accord préalable exprès du consommateur et renoncement exprès à son droit de rétractation. Au moment de la commande, vous êtes invité·e à donner cet accord et à renoncer à ce droit au moyen d’une case à cocher distincte ; la confirmation vous est adressée sur un support durable.</p>
-<h2>6. Garantie légale de conformité</h2>
-<p>Le contenu numérique bénéficie de la garantie légale de conformité (articles L224-25-12 et suivants du Code de la consommation). En cas de défaut (fichier illisible, contenu manquant), contactez-nous : nous fournirons une version conforme ou, à défaut, vous rembourserons.</p>
-<h2>7. Responsabilité</h2>
-<p>Le pack fournit des modèles et des informations générales mises à jour à la date indiquée. Il appartient à l’acheteur d’adapter les documents à ses produits et de vérifier les textes applicables ; READ FRANCE SAS n’assume pas les obligations de l’acheteur en tant que fabricant, importateur ou distributeur.</p>
-<h2>8. Données personnelles</h2>
-<p>Les données nécessaires à la commande (e-mail, données de paiement traitées par Stripe) sont utilisées pour exécuter la commande et respecter les obligations comptables. Voir la <a href="${url('privacy', 'fr')}">page confidentialité</a> (elle sera complétée avant l’ouverture des ventes).</p>
-<h2>9. Médiation et litiges</h2>
-<p>Médiateur de la consommation : à désigner avant l’ouverture des ventes. Droit français applicable.</p>`;
-  const en = `<h1>Terms of sale — draft</h1>
-<div class="callout"><p><strong>Draft, not in force.</strong> These terms are pending validation by READ FRANCE SAS management. No sale is open today. The French version will prevail.</p></div>
-<p>Summary of the planned terms: the “GPSR documentation pack” is downloadable digital content (DOCX, Markdown, CSV; French and English) sold by ${COMPANY.name} (${COMPANY.address}, SIREN ${COMPANY.siren}) for €29 including 20% French VAT, paid once by card through a Stripe-hosted checkout page. A download link is provided immediately after payment (valid 72 hours, renewable from the order page).</p>
-<p>Under Article L221-28 13° of the French Consumer Code, the 14-day withdrawal right does not apply once you have expressly agreed to immediate delivery and expressly waived that right (separate checkbox at checkout; confirmation on a durable medium). The legal guarantee of conformity for digital content (Art. L224-25-12 et seq.) applies.</p>
-<p>The pack contains templates and general information; it is not legal advice and READ FRANCE SAS does not act as a responsible person, importer or authorised representative. Consumer mediator: to be appointed before sales open. French law applies. <a href="${url('terms', 'fr')}">Read the full French draft</a>.</p>`;
-  return lang === 'fr'
-    ? { title: 'CGV (projet) — Kit GPSR Vendeurs', description: 'Projet de conditions générales de vente du Pack documentation GPSR, en attente de validation. Aucune vente ouverte.', body: fr, noindex: true }
-    : { title: 'Terms of sale (draft) — GPSR Seller Kit', description: 'Draft terms of sale for the GPSR documentation pack, pending validation. No sale open.', body: en, noindex: true };
+export function termsPage(lang, sales) {
+  const pr = prices(sales);
+  if (lang === 'fr')
+    return {
+      title: 'Conditions générales de vente aux professionnels — Kit GPSR Vendeurs',
+      description: 'CGV B2B du Pack documentation GPSR (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix HT et TTC, paiement Stripe, livraison par e-mail, licence, facturation.',
+      noindex: !sales.SALES_OPEN,
+      body: cgvProBody({
+        config: sales,
+        productName: 'Pack documentation GPSR',
+        contact: `en répondant à l’e-mail de livraison de la commande, ou par les <a href="${SITE.issues}">issues GitHub du projet</a> (publiques : n’y mettez aucune donnée personnelle)`,
+        legalUrl: url('legal', 'fr'),
+        privacyUrl: url('privacy', 'fr'),
+        productDescription: `« Pack documentation GPSR » : modèles et procédures relatifs au règlement (UE) 2023/988 sur la sécurité générale des produits et à la responsabilité élargie du producteur en France, en français et en anglais (fichiers DOCX, Markdown et CSV), tels que décrits sur la <a href="${url('pack', 'fr')}">page du pack</a> à la date de la commande.`,
+        licenceScope: 'l’Acheteur peut copier les fichiers, modifier les modèles et les utiliser pour les produits qu’il fabrique, importe ou distribue lui-même, dans tous ses établissements.',
+        updates: 'Les mises à jour éventuelles du pack ne sont pas comprises dans le prix, sauf mention contraire sur la page du pack.',
+        disclaimer: [
+          'Le pack est un <strong>outil d’information et de mise en forme de documents</strong>. Il ne constitue pas un conseil juridique, ne vaut pas attestation de conformité et ne remplace ni les textes officiels ni l’avis d’un professionnel. L’Acheteur reste seul responsable de la sécurité de ses produits, du contenu et de l’exactitude des documents qu’il établit, et du respect des obligations qui lui incombent en tant que fabricant, importateur ou distributeur.',
+          'READ FRANCE SAS <strong>n’agit pas et ne propose pas d’agir comme « personne responsable »</strong> au sens de l’article 16 du règlement (UE) 2023/988 et de l’article 4 du règlement (UE) 2019/1020, ni comme mandataire, représentant autorisé, importateur ou mandataire au titre de la responsabilité élargie du producteur (REP). L’achat du pack ne lui confère aucun de ces rôles.',
+          'Le pack ne couvre pas les règles propres aux jouets, cosmétiques, équipements électriques ou matériaux au contact des denrées alimentaires. Le contenu est à jour à sa date de version ; il appartient à l’Acheteur de vérifier les textes applicables.',
+        ],
+      }),
+    };
+  return {
+    title: 'Terms of sale for businesses (summary) — GPSR Seller Kit',
+    description: 'Summary in English of the French B2B terms of sale of the GPSR documentation pack (version of 12 October 2026). The French version prevails.',
+    noindex: !sales.SALES_OPEN,
+    body: `<h1>Terms of sale for businesses — summary</h1>
+<p class="hint">Version of 12 October 2026. Only the <a href="${url('terms', 'fr')}" lang="fr">French B2B terms (CGV professionnels)</a> are binding; this summary is for information.</p>
+${sales.SALES_OPEN ? '' : '<div class="callout"><p><strong>Not on sale yet.</strong> No order or payment is possible today.</p></div>'}
+<ul>
+<li><strong>Seller:</strong> ${COMPANY.name}, ${COMPANY.address}, SIREN ${COMPANY.siren}, RCS Paris.</li>
+<li><strong>Buyers:</strong> businesses registered in France (SIREN), ordering for their professional activity. No consumer sales.</li>
+<li><strong>Product:</strong> the “GPSR documentation pack”, a digital ZIP file sent by e-mail with the paid invoice.</li>
+<li><strong>Price:</strong> ${pr.std ? `€29.00 incl. 20% French VAT (€24.17 excl. VAT)` : '€29.00, VAT not applicable (art. 293 B CGI)'}; card payment through Stripe.</li>
+<li><strong>No withdrawal right</strong> (business-to-business sale); a defective file is replaced or refunded.</li>
+<li><strong>Licence:</strong> non-exclusive, non-transferable, internal use only; no resale or redistribution.</li>
+<li><strong>Not legal advice;</strong> READ FRANCE SAS never acts as EU responsible person, authorised representative, importer or EPR agent.</li>
+<li><strong>Liability</strong> limited to the price paid. Statutory late-payment penalties (3 × the French legal interest rate) and the €40 recovery fee apply.</li>
+<li><strong>French law;</strong> exclusive jurisdiction of the Paris courts.</li>
+</ul>`,
+  };
+}
+
+/** Old consumer draft (11 October 2026), superseded: B2B sales only. */
+export function legacyTermsPage() {
+  return {
+    title: 'Conditions générales de vente — Kit GPSR Vendeurs',
+    description: 'Le Pack documentation GPSR est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.',
+    noindex: true,
+    body: `<h1>Conditions générales de vente</h1>
+<p>Le Pack documentation GPSR est vendu <strong>uniquement aux professionnels</strong>. Les conditions applicables sont les <a href="${url('terms', 'fr')}">conditions générales de vente aux professionnels</a>. L’ancien projet de conditions grand public du 11 octobre 2026 est abandonné.</p>`,
+  };
 }

@@ -18,7 +18,7 @@ export const PAGES = {
   pack: { fr: '/pack.html', en: '/en/pack.html' },
   legal: { fr: '/mentions-legales.html', en: '/en/legal-notice.html' },
   privacy: { fr: '/confidentialite.html', en: '/en/privacy.html' },
-  terms: { fr: '/cgv.html', en: '/en/terms.html' },
+  terms: { fr: '/cgv-pro.html', en: '/en/terms.html' },
 };
 
 const NAV = {
@@ -26,8 +26,8 @@ const NAV = {
   en: [['tool', 'Generator'], ['obligations', 'Obligations & sources'], ['pack', 'Documentation pack']],
 };
 const FOOT = {
-  fr: [['legal', 'Mentions légales'], ['privacy', 'Confidentialité'], ['terms', 'CGV (projet)']],
-  en: [['legal', 'Legal notice'], ['privacy', 'Privacy'], ['terms', 'Terms (draft)']],
+  fr: [['legal', 'Mentions légales'], ['privacy', 'Confidentialité'], ['terms', 'CGV professionnels']],
+  en: [['legal', 'Legal notice'], ['privacy', 'Privacy'], ['terms', 'Terms of sale (B2B)']],
 };
 
 export const url = (key, lang) => SITE.base + PAGES[key][lang];
@@ -37,13 +37,15 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="#0f5c6e"/><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /**
- * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean}} p
+ * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean, csp?:string, path?:string, head?:string, tail?:string}} p
+ * `path` (FR-only pages such as the buy pages): canonical path without language alternates.
  */
 export function layout(p) {
   const { lang, key } = p;
   const other = lang === 'fr' ? 'en' : 'fr';
   const brand = BRAND[lang];
-  const canonical = abs(key, lang);
+  const canonical = p.path ? SITE.origin + SITE.base + p.path : abs(key, lang);
+  const csp = p.csp ?? "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'";
   const nav = NAV[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
@@ -57,15 +59,15 @@ export function layout(p) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="${csp}">
 <meta name="referrer" content="no-referrer">
 <title>${esc(p.title)}</title>
 <meta name="description" content="${esc(p.description)}">
 ${p.noindex ? '<meta name="robots" content="noindex">' : ''}
 <link rel="canonical" href="${canonical}">
-<link rel="alternate" hreflang="${lang}" href="${canonical}">
+${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <link rel="alternate" hreflang="${other}" href="${abs(key, other)}">
-<link rel="alternate" hreflang="x-default" href="${abs(key, 'fr')}">
+<link rel="alternate" hreflang="x-default" href="${abs(key, 'fr')}">`}
 <link rel="icon" href="${SITE.base}/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${SITE.base}/assets/app.css">
 <meta property="og:type" content="website">
@@ -77,7 +79,7 @@ ${p.noindex ? '<meta name="robots" content="noindex">' : ''}
 <meta property="og:locale" content="${lang === 'fr' ? 'fr_FR' : 'en_GB'}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f5c6e">
-${jsonld}
+${jsonld}${p.head ?? ''}
 </head>
 <body>
 <a class="skip" href="#main">${t.skip}</a>
@@ -93,7 +95,7 @@ ${p.body}
 <p>${t.info}</p>
 <p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
 </div></footer>
-${scripts}
+${scripts}${p.tail ?? ''}
 </body>
 </html>
 `;

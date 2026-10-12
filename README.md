@@ -73,3 +73,13 @@ Report errors in [issues](https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues
 - Texts and templates: CC BY 4.0.
 
 See [LICENSE](LICENSE).
+
+## Sales (B2B): the `SALES_OPEN` switch
+
+`sales.config.json` controls the paid pack. With `"SALES_OPEN": false` (the current value), the build emits **no** buy UI: no order page, no Stripe.js and no sitemap entry, and the pack page keeps "Pas encore en vente". `tests/unit/sales-gate.test.js` checks this.
+
+The French B2B terms are in `cgv-pro.html` (version of 12 October 2026, to be reviewed by a lawyer); `en/terms.html` is an English summary.
+
+Sales are opened only by `octave-checkout/gas/scripts/go-live.sh`. It sets `SALES_OPEN: true` together with the Apps Script `/exec` URL and a `pk_live_` key.
+
+`src/checkout/pay.js` and `src/checkout/order.js` are exact copies of `octave-checkout/gas/web/`, and `scripts/checkout-pages.mjs` is shared with kit-qualiopi-v10. These two copied files are not covered by the privacy guard, which applies only to the free generator.

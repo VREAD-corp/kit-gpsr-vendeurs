@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { unzip } from '../../src/lib/zip.js';
 
-const PAGES = ['', 'en/', 'obligations.html', 'en/obligations.html', 'pack.html', 'en/pack.html', 'mentions-legales.html', 'en/legal-notice.html', 'confidentialite.html', 'en/privacy.html', 'cgv.html', 'en/terms.html'];
+const PAGES = ['', 'en/', 'obligations.html', 'en/obligations.html', 'pack.html', 'en/pack.html', 'mentions-legales.html', 'en/legal-notice.html', 'confidentialite.html', 'en/privacy.html', 'cgv-pro.html', 'cgv.html', 'en/terms.html'];
 
 function watch(page) {
   const errors = [];
@@ -48,10 +49,22 @@ test('all internal links resolve (200)', async ({ page, request }) => {
   }
 });
 
+// Sales gate: the pack page follows sales.config.json (SALES_OPEN).
+const SALES_OPEN = JSON.parse(readFileSync(new URL('../../sales.config.json', import.meta.url), 'utf8')).SALES_OPEN === true;
+
+test('pack page, sales OPEN: Commander link to the B2B order page', async ({ page }) => {
+  test.skip(!SALES_OPEN, 'sales closed');
+  await page.goto('pack.html');
+  await expect(page.locator('a[href$="/commander.html"]')).toHaveCount(1);
+  await expect(page.locator('body')).not.toContainText('Pas encore en vente');
+});
+
 test('pack page is honest: coming soon, no payment link', async ({ page }) => {
+  test.skip(SALES_OPEN, 'sales open');
   await page.goto('pack.html');
   await expect(page.locator('body')).toContainText('Pas encore en vente');
   await expect(page.locator('a[href*="stripe"], a[href*="checkout"], form')).toHaveCount(0);
+  await expect(page.locator('a[href*="commander"], a[href*="commande"], script[src*="stripe"]')).toHaveCount(0);
   await page.goto('en/pack.html');
   await expect(page.locator('body')).toContainText('Not on sale yet');
 });
