@@ -13,9 +13,11 @@ export const SITE = {
 export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 
 // Sitemap <lastmod> per page and language when it differs from SITE.updated
-// (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO).
+// (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO;
+// 2026-10-13: copy rewrite, titles, breadcrumbs and Article schema of the generator, pack and obligations pages).
 const D1012 = { fr: '2026-10-12', en: '2026-10-12' };
-const LASTMOD = { tool: D1012, obligations: D1012, pack: D1012, legal: D1012, privacy: D1012, terms: D1012 };
+const D1013 = { fr: '2026-10-13', en: '2026-10-13' };
+const LASTMOD = { tool: D1013, obligations: D1013, pack: D1013, legal: D1012, privacy: D1012, terms: D1012 };
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /** schema.org Organization of the publisher (same @id on every page that references it). */
@@ -52,6 +54,31 @@ const FOOT = {
 
 export const url = (key, lang) => SITE.base + PAGES[key][lang];
 export const abs = (key, lang) => SITE.origin + url(key, lang);
+/** French long date: '2026-10-11' -> '11 octobre 2026' (English: '11 October 2026'). */
+export function longDate(iso, lang) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const months = lang === 'fr'
+    ? ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${d === 1 && lang === 'fr' ? '1er' : d} ${months[m - 1]} ${y}`;
+}
+
+/** Visible breadcrumb (generator > page) and its schema.org BreadcrumbList. */
+export function breadcrumb(lang, key, label) {
+  const home = lang === 'fr' ? 'Générateur GPSR' : 'GPSR generator';
+  return {
+    html: `<nav class="crumbs" aria-label="${lang === 'fr' ? 'Fil d’Ariane' : 'Breadcrumb'}"><a href="${url('tool', lang)}">${home}</a> <span aria-hidden="true">›</span> <span>${label}</span></nav>`,
+    jsonld: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: home, item: abs('tool', lang) },
+        { '@type': 'ListItem', position: 2, name: label, item: abs(key, lang) },
+      ],
+    },
+  };
+}
+
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="#0f5c6e"/><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -114,7 +141,7 @@ ${p.body}
 <footer class="site"><div class="wrap">
 <nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
-<p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
+<p>${brand}, ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
 </div></footer>
 ${scripts}${p.tail ?? ''}
 </body>

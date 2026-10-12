@@ -3,7 +3,7 @@
 // DOCX + Markdown, 2 CSV registers per language). Refund, updates, delivery and invoice answers quote the
 // B2B terms (cgv-pro.html, art. 4, 6, 7, 8, 10, 12): nothing is promised beyond them.
 // `sales` = validated sales.config.json: SALES_OPEN gates every buy element.
-import { ORG_JSONLD, SITE, url } from './layout.mjs';
+import { ORG_JSONLD, SITE, breadcrumb, url } from './layout.mjs';
 import { DEFAULT_SALES, ORDER_PATH, VAT_NOTE, packPriceLabel, packProductJsonld } from './legal-pages.mjs';
 import { prices } from '../../scripts/checkout-pages.mjs';
 import { PREVIEWS, aboutBlock, docStack, factsBlock, gallery, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
@@ -62,7 +62,7 @@ const COMPARE = {
 export function compareTable(lang, priceLabel) {
   const fr = lang === 'fr';
   const yes = `<span aria-hidden="true">✓</span><span class="sr-only">${fr ? 'inclus' : 'included'}</span>`;
-  const no = `<span aria-hidden="true">—</span><span class="sr-only">${fr ? 'non inclus' : 'not included'}</span>`;
+  const no = `<span aria-hidden="true">–</span><span class="sr-only">${fr ? 'non inclus' : 'not included'}</span>`;
   return `<div class="compare-wrap"><table class="compare">
 <caption class="sr-only">${fr ? 'Comparaison du générateur gratuit et du pack' : 'Free generator compared with the pack'}</caption>
 <thead><tr><th scope="col">${fr ? 'Document' : 'Document'}</th><th scope="col">${fr ? 'Générateur gratuit' : 'Free generator'}</th><th scope="col" class="pk">${fr ? 'Gratuit + pack' : 'Free + pack'}</th></tr></thead>
@@ -102,25 +102,27 @@ export function packPage(lang, sales) {
   const amount = label.replace(/\s*(net|TTC|incl\. VAT)$/, ''); // « 29 € » / « €29 »
   const order = `${SITE.base}${ORDER_PATH}`;
   const cgv = url('terms', 'fr');
-  const jsonld = open ? [ORG_JSONLD, packProductJsonld(lang, sales)] : [ORG_JSONLD];
-  const { ref, html: srcHtml } = sourceList(lang, ['gpsr', 'amazon', 'etsy']);
+  const crumb = breadcrumb(lang, 'pack', fr ? 'Pack de modèles GPSR' : 'GPSR template pack');
+  const jsonld = open ? [ORG_JSONLD, packProductJsonld(lang, sales), crumb.jsonld] : [ORG_JSONLD, crumb.jsonld];
+  const { ref, html: srcHtml } = sourceList(lang, ['gpsr', 'recall', 'rappelconso']);
   const prev = PREVIEWS[lang];
-  const stack = docStack(prev.map((p) => p[0]), prev.map((p) => (fr ? 'Aperçu : ' : 'Preview: ') + p[1]), fr ? 'Aperçus réels du pack' : 'Real pack pages');
+  const stack = docStack(prev.map((p) => p[0]), prev.map((p) => p[1] + (fr ? ', page 1 (extrait du pack)' : ', page 1 (from the pack)')), fr ? 'Pages réelles du pack' : 'Real pack pages');
   const faq = FAQ[lang]({ cgv });
   const docList = `<ul class="doc-list">${DOCS[lang].map(([t, d]) => `<li><strong>${t}</strong><br><small>${d}</small></li>`).join('')}</ul>`;
   const vat = pr.std ? '' : VAT_NOTE[lang];
 
   if (fr) {
-    const cta = open ? `<a class="btn btn-lg" href="${order}">Obtenir le pack complet – ${amount}</a>` : '';
-    const hero = `<section class="hero">
+    const cta = open ? `<a class="btn btn-lg" href="${order}">Commander le pack, ${label}</a>` : '';
+    const hero = `${crumb.html}
+<section class="hero">
 <div>
 <p class="eyebrow">${open ? 'Règlement (UE) 2023/988 · applicable depuis le 13 décembre 2024' : 'Bientôt disponible'}</p>
-<h1>Le registre des réclamations et des rappels est obligatoire. Le vôtre est prêt à remplir.</h1>
-<p class="sub">Depuis le 13 décembre 2024, tout fabricant doit tenir ce registre (art. 9 §12)&nbsp;${ref('gpsr')}. Le pack vous le donne avec la procédure de rappel, 5 modèles par catégorie remplis et le questionnaire fournisseur, en français et en anglais.</p>
-${open ? `<div class="cta-row">${cta}<a class="text-link" href="${url('tool', 'fr')}">ou essayer d’abord le générateur gratuit →</a></div>
+<h1>Pack de modèles GPSR : registre des réclamations, procédure de rappel, modèles par catégorie</h1>
+<p class="sub">Depuis le 13 décembre 2024, tout fabricant tient un registre des réclamations et des rappels (art. 9 §12)&nbsp;${ref('gpsr')}. Le vôtre est prêt à remplir, avec la procédure de rappel, 5 modèles par catégorie avec un exemple rempli et le questionnaire fournisseur. Chaque document existe en français et en anglais.</p>
+${open ? `<div class="cta-row">${cta}<a class="text-link" href="${url('tool', 'fr')}">ou essayer d’abord le générateur gratuit</a></div>
 <p class="price-line"><strong>${label}</strong>, paiement unique · fichier ZIP et facture par e-mail · réservé aux entreprises immatriculées en France</p>` : `<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
 <div class="cta-row"><a class="btn btn-lg" href="${url('tool', 'fr')}">Utiliser le générateur gratuit</a></div>`}
-<ul class="trust"><li>13 documents, FR + EN</li><li>DOCX, Markdown, CSV</li><li>Articles du règlement cités</li></ul>
+<ul class="trust"><li>13 documents en français, 13 en anglais</li><li>DOCX, Markdown et 2 registres CSV</li><li>Art. 9, 20, 36 et 37 cités</li><li>Licence pour toute l’entreprise</li></ul>
 </div>
 <div>${stack}</div>
 </section>`;
@@ -143,7 +145,7 @@ ${open ? `<div class="cta-row">${cta}<a class="text-link" href="${url('tool', 'f
 ${open ? `<p class="small muted">Paiement unique, sans abonnement</p>
 <p class="amount">${amount} <small>net</small></p>
 <p class="vat">${vat}</p>
-<a class="btn btn-lg" href="${order}">Obtenir le pack complet – ${amount}</a>
+<a class="btn btn-lg" href="${order}">Commander le pack, ${label}</a>
 <p class="fine">Paiement par carte bancaire avec Stripe. Réservé aux entreprises immatriculées en France (SIREN). <a href="${cgv}">CGV professionnels</a>.</p>` : `<p class="price">${label} <small>(prix prévu, ${vat ? `${vat}, ` : ''}paiement unique)</small></p>
 <p class="fine">Pas encore en vente : aucun paiement possible aujourd’hui. <a href="${cgv}">CGV professionnels</a>.</p>`}
 </div>
@@ -158,12 +160,12 @@ ${open ? `<p class="small muted">Paiement unique, sans abonnement</p>
         : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
       body: `${hero}
 <section class="section" aria-labelledby="change-h">
-<div class="section-head"><span class="kicker">Ce qui a changé</span><h2 id="change-h">Le GPSR ne s’arrête pas à l’annonce</h2>
-<p>Le générateur gratuit couvre ce que vos annonces et vos colis doivent afficher. Le règlement demande aussi de savoir réagir quand un client signale un problème.</p></div>
-${factsBlock('fr', ref)}
+<div class="section-head"><span class="kicker">Après la vente</span><h2 id="change-h">Ce que le règlement demande quand un client signale un problème</h2>
+<p>Le générateur gratuit couvre ce que vos annonces et vos colis doivent afficher. Les trois obligations ci-dessous s’appliquent ensuite, et le pack contient un document pour chacune.</p></div>
+${factsBlock('fr', ref, 'pack')}
 </section>
 <section class="section" aria-labelledby="contenu-h">
-<div class="section-head"><span class="kicker">Ce que vous recevez</span><h2 id="contenu-h">Des documents prêts à remplir, pas une liste de conseils</h2>
+<div class="section-head"><span class="kicker">Ce que vous recevez</span><h2 id="contenu-h">13 documents à compléter, en DOCX et en Markdown</h2>
 <p>Pages réelles du pack (version française), telles qu’elles s’ouvrent dans Word ou LibreOffice. Les exemples de produits sont fictifs.</p></div>
 ${gallery('fr')}
 ${docList}
@@ -199,15 +201,16 @@ ${open ? stickyCta(`Pack GPSR · ${amount}`, order, 'Commander') : ''}`,
   }
 
   // English: the pack is sold only to French businesses (SIREN). Say so before any buy link.
-  const hero = `<section class="hero">
+  const hero = `${crumb.html}
+<section class="hero">
 <div>
 <p class="eyebrow">${open ? 'Paid pack available to French businesses only (FR)' : 'Coming soon'}</p>
-<h1>The complaints and recalls register is mandatory. Yours is ready to fill in.</h1>
-<p class="sub">Since 13 December 2024, every manufacturer must keep this register (Art. 9(12))&nbsp;${ref('gpsr')}. The pack gives it to you with the recall procedure, 5 filled-in category templates and the supplier questionnaire, in French and English.</p>
+<h1>GPSR template pack: complaints register, recall procedure, category templates</h1>
+<p class="sub">Since 13 December 2024, every manufacturer keeps a register of complaints and recalls (Art. 9(12))&nbsp;${ref('gpsr')}. Yours is ready to fill in, with the recall procedure, 5 category templates with a filled-in example, and the supplier questionnaire. Every document comes in English and French.</p>
 ${open ? `<div class="callout"><p><strong>French businesses only.</strong> Buying requires a business registered in France (SIREN number); the order page and the binding terms are in French. Not registered in France? The <a href="${url('tool', 'en')}">free generator</a> is open to everyone.</p></div>
-<div class="cta-row"><a class="btn btn-lg" href="${order}" lang="fr" hreflang="fr">Order – ${amount} (French businesses)</a><a class="text-link" href="${url('tool', 'en')}">or use the free generator →</a></div>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
+<div class="cta-row"><a class="btn btn-lg" href="${order}" lang="fr" hreflang="fr">Order, ${label} (French businesses)</a><a class="text-link" href="${url('tool', 'en')}">or use the free generator</a></div>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
 <div class="cta-row"><a class="btn btn-lg" href="${url('tool', 'en')}">Use the free generator</a></div>`}
-<ul class="trust"><li>13 documents, FR + EN</li><li>DOCX, Markdown, CSV</li><li>Regulation articles cited</li></ul>
+<ul class="trust"><li>13 documents in English, 13 in French</li><li>DOCX, Markdown and 2 CSV registers</li><li>Art. 9, 20, 36 and 37 cited</li><li>Licence for your whole business</li></ul>
 </div>
 <div>${stack}</div>
 </section>`;
@@ -229,7 +232,7 @@ ${open ? `<div class="callout"><p><strong>French businesses only.</strong> Buyin
 ${open ? `<p class="small muted">One-off payment, French businesses only</p>
 <p class="amount">${amount} <small>net</small></p>
 <p class="vat">${vat}</p>
-<a class="btn btn-lg" href="${order}" lang="fr" hreflang="fr">Order – ${amount} (French businesses)</a>
+<a class="btn btn-lg" href="${order}" lang="fr" hreflang="fr">Order, ${label} (French businesses)</a>
 <p class="fine">Order page in French. Card payment with Stripe. SIREN number required. <a href="${url('terms', 'en')}">Terms summary</a> · <a href="${cgv}" lang="fr">binding French B2B terms</a>.</p>` : `<p class="price">${label} <small>(planned price, ${vat ? `${vat}; ` : ''}one-off payment)</small></p>
 <p class="fine">Not on sale yet: no payment can be made today.</p>`}
 </div>
@@ -243,18 +246,18 @@ ${open ? `<p class="small muted">One-off payment, French businesses only</p>
       : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
     body: `${hero}
 <section class="section" aria-labelledby="change-h">
-<div class="section-head"><span class="kicker">What changed</span><h2 id="change-h">The GPSR does not stop at the listing</h2>
-<p>The free generator covers what your listings and parcels must show. The regulation also expects you to know how to react when a customer reports a problem.</p></div>
-${factsBlock('en', ref)}
+<div class="section-head"><span class="kicker">After the sale</span><h2 id="change-h">What the regulation asks when a customer reports a problem</h2>
+<p>The free generator covers what your listings and parcels must show. The three obligations below apply after that, and the pack has a document for each one.</p></div>
+${factsBlock('en', ref, 'pack')}
 </section>
 <section class="section" aria-labelledby="content-h">
-<div class="section-head"><span class="kicker">What you get</span><h2 id="content-h">Documents ready to fill in, not a list of tips</h2>
+<div class="section-head"><span class="kicker">What you get</span><h2 id="content-h">13 documents to complete, as DOCX and Markdown</h2>
 <p>Real pages of the pack (English version), as they open in Word or LibreOffice. Product examples are fictitious.</p></div>
 ${gallery('en')}
 ${docList}
 </section>
 <section class="section" aria-labelledby="compare-h">
-<div class="section-head"><span class="kicker">Free or pack</span><h2 id="compare-h">What the pack adds to the free generator</h2></div>
+<div class="section-head"><span class="kicker">Generator or pack</span><h2 id="compare-h">What the pack adds to the free generator</h2></div>
 ${compareTable('en', label)}
 </section>
 ${offer}
@@ -263,6 +266,6 @@ ${offer}
 ${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('en')}
-${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Free blank templates: <a href="${SITE.releases}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,
+${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Blank templates at no cost: <a href="${SITE.releases}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,
   };
 }

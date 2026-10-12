@@ -83,7 +83,7 @@ test('SALES_OPEN=false: no Product JSON-LD on the pack pages', () => {
 });
 
 test('home pages: Organization added, free WebApplication kept, visible pack link with the net price', () => {
-  for (const [file, re] of [['index.html', /<a href="\/kit-gpsr-vendeurs\/pack\.html">Pack documentation GPSR – 29 € net<\/a>/], ['en/index.html', /<a href="\/kit-gpsr-vendeurs\/en\/pack\.html">GPSR documentation pack – €29 net<\/a>/]]) {
+  for (const [file, re] of [['index.html', /<a href="\/kit-gpsr-vendeurs\/pack\.html">Pack documentation GPSR, 29 € net<\/a>/], ['en/index.html', /<a href="\/kit-gpsr-vendeurs\/en\/pack\.html">GPSR documentation pack, €29 net<\/a>/]]) {
     const html = readFileSync(join(open, file), 'utf8');
     const nodes = jsonld(html);
     assertOrganization(nodes);
@@ -107,5 +107,25 @@ test('pack pages: SEO title/description lengths, net price with the art. 293 B m
     assert.match(title, /Etsy/);
     assert.match(desc, vat);
     assert.doesNotMatch(html, /\bHT\b|TTC|hors taxe|excl\. VAT|incl\. VAT/);
+  }
+});
+
+test('pack and obligations pages: BreadcrumbList (generator > page); obligations: Article with dates, author, citations', () => {
+  for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en'], ['obligations.html', 'fr'], ['en/obligations.html', 'en']]) {
+    const nodes = jsonld(readFileSync(join(open, file), 'utf8'));
+    const [bc] = byType(nodes, 'BreadcrumbList');
+    assert.ok(bc, `${file} BreadcrumbList`);
+    assert.equal(bc.itemListElement.length, 2);
+    assert.equal(bc.itemListElement[0].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}`);
+    assert.equal(bc.itemListElement[1].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}${file.replace(/^en\//, '')}`);
+    if (!file.includes('obligations')) continue;
+    assertOrganization(nodes);
+    const [art] = byType(nodes, 'Article');
+    assert.match(art.datePublished, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(art.dateModified >= art.datePublished);
+    assert.deepEqual(art.author, { '@id': ORG_ID });
+    assert.deepEqual(art.publisher, { '@id': ORG_ID });
+    assert.equal(art.mainEntityOfPage, bc.itemListElement[1].item);
+    assert.ok(art.citation.length >= 10 && art.citation.every((c) => c['@type'] === 'Legislation' && /^https:\/\//.test(c.url)));
   }
 });

@@ -298,3 +298,10 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .status.ok { color: var(--ok); }
 .status.err { color: #b3261e; }
 @media (prefers-color-scheme: dark) { .status.err { color: #f28b82; } }
+
+/* breadcrumb (pack, obligations) and role definitions (obligations) */
+.crumbs { font-size: .9rem; color: var(--muted); margin: 0 0 8px; }
+.crumbs a { color: var(--muted); }
+.roles { margin: 0 0 1em; }
+.roles dt { font-weight: 700; margin-top: .8em; }
+.roles dd { margin: .2em 0 0; }

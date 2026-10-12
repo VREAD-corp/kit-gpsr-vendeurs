@@ -20,6 +20,8 @@ export const SOURCES = {
   gpsr: S.gpsr,
   amazon: { label: { fr: 'Amazon Selling Partner API, journal des modifications : conformité GPSR des boutiques UE (en anglais)', en: 'Amazon Selling Partner API changelog: GPSR compliance in EU stores' }, url: S.amazonGpsr.url },
   etsy: { label: { fr: 'Aide Etsy : Qu’est-ce que le Règlement relatif à la sécurité générale des produits (RSGP) ?', en: 'Etsy Help: What is the General Product Safety Regulation (GPSR)?' }, url: S.etsyGpsr.url },
+  recall: S.recallTemplate,
+  rappelconso: S.l4233,
   cgv: null, // set per page (internal link)
 };
 
@@ -71,7 +73,7 @@ export function aboutBlock(lang) {
 ${founders}
 </ul>
 <div class="about-foot">
-<p class="muted"><strong>${COMPANY.name}</strong>, Paris — SIREN ${COMPANY.siren}. ${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
+<p class="muted"><strong>${COMPANY.name}</strong>, Paris, SIREN ${COMPANY.siren}. ${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
 <p><a class="btn secondary" href="mailto:${CONTACT_EMAIL}">${fr ? 'Nous écrire' : 'Email us'}</a></p>
 </div>
 </div>
@@ -100,21 +102,42 @@ export const PREVIEWS = {
 };
 export const img = (file) => `${IMG}/${file}`;
 
+// Each preview exists at 720 px (original) plus 360 and 540 px copies (WebP q72, same name + -360/-540).
+const srcset = (file) => [360, 540].map((w) => `${img(file.replace(/\.webp$/, `-${w}.webp`))} ${w}w`).concat(`${img(file)} 720w`).join(', ');
+// Rendered widths: stack image = 68 % of a 440 px box (360 px under 900 px); gallery = 4 columns of a
+// 1,100 px wrap, or 2 columns with 16 px gutters and a 20 px gap on phones.
+const SIZES = { stack: '(min-width: 900px) 300px, (min-width: 380px) 245px, 64vw', gallery: '(min-width: 900px) 248px, calc(50vw - 26px)' };
+
 /** Tilted stack of 3 real pages (first = front). */
 export function docStack(files, alts, tag) {
   // DOM order: back-left, back-right, front (CSS rotates each).
   const order = [1, 2, 0];
-  return `<div class="stack">${order.map((i) => `<img src="${img(files[i])}" alt="${alts[i]}" width="720" height="1018" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`).join('')}${tag ? `<span class="tag">${tag}</span>` : ''}</div>`;
+  return `<div class="stack">${order.map((i) => `<img src="${img(files[i])}" srcset="${srcset(files[i])}" sizes="${SIZES.stack}" alt="${alts[i]}" width="720" height="1018" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`).join('')}${tag ? `<span class="tag">${tag}</span>` : ''}</div>`;
 }
 
 export function gallery(lang) {
-  return `<div class="gallery">${PREVIEWS[lang].map(([f, t, d]) => `<figure><a href="${img(f)}"><img src="${img(f)}" alt="${lang === 'fr' ? 'Aperçu de la première page : ' : 'Preview of the first page: '}${t}" width="720" height="1018" loading="lazy" decoding="async"></a><figcaption><strong>${t}</strong>${d}</figcaption></figure>`).join('')}</div>`;
+  return `<div class="gallery">${PREVIEWS[lang].map(([f, t, d]) => `<figure><a href="${img(f)}"><img src="${img(f)}" srcset="${srcset(f)}" sizes="${SIZES.gallery}" alt="${t}${lang === 'fr' ? ', première page du document' : ', first page of the document'}" width="720" height="1018" loading="lazy" decoding="async"></a><figcaption><strong>${t}</strong>${d}</figcaption></figure>`).join('')}</div>`;
 }
 
-/** « Ce qui a changé » : three sourced facts. `ref` from sourceList(lang, ['gpsr', 'amazon', 'etsy']). */
-export function factsBlock(lang, ref) {
+/**
+ * « Ce qui a changé » : three sourced facts. Home: `ref` from sourceList(lang, ['gpsr', 'amazon', 'etsy']).
+ * Pack (variant 'pack'): what the regulation asks after the sale; `ref` from sourceList(lang, ['gpsr', 'recall', 'rappelconso']).
+ */
+export function factsBlock(lang, ref, variant) {
   const fr = lang === 'fr';
-  const items = fr
+  const items = variant === 'pack'
+    ? fr
+      ? [
+          ['Chaque réclamation est examinée et inscrite au registre', `Le fabricant ouvre un canal public de réclamation et examine chaque réclamation reçue. Il tient un registre interne des réclamations, des rappels et des autres mesures correctives, dont les données personnelles ne sont pas gardées plus de 5 ans.`, `Règlement (UE) 2023/988, art. 9 §11 à §13 ${ref('gpsr')}`],
+          ['Un accident grave se notifie sans retard injustifié', `Le fabricant le déclare aux autorités par le Safety Business Gateway de la Commission européenne. Les importateurs et les distributeurs qui l’apprennent l’informent.`, `Règlement (UE) 2023/988, art. 20 ${ref('gpsr')}`],
+          ['Le rappel suit un modèle', `L’avis de rappel a un contenu fixé par l’article 36 et un modèle publié en 2024. Le client choisit entre au moins deux remèdes : réparation, remplacement ou remboursement. En France, le rappel est aussi déclaré sur RappelConso.`, `Art. 36 et 37 ${ref('gpsr')} · règlement d’exécution (UE) 2024/1435 ${ref('recall')} · Code de la consommation, art. L423-3 ${ref('rappelconso')}`],
+        ]
+      : [
+          ['Every complaint is investigated and logged', `Manufacturers open a public complaint channel and investigate each complaint they receive. They keep an internal register of complaints, recalls and other corrective measures; personal data in it is kept for 5 years at most.`, `Regulation (EU) 2023/988, Art. 9(11) to 9(13) ${ref('gpsr')}`],
+          ['Serious accidents are notified without undue delay', `The manufacturer reports them to the authorities through the European Commission’s Safety Business Gateway. Importers and distributors who learn of one inform the manufacturer.`, `Regulation (EU) 2023/988, Art. 20 ${ref('gpsr')}`],
+          ['Recalls follow a template', `The recall notice has the content set by Article 36 and a template published in 2024. Customers choose between at least two remedies: repair, replacement or refund. In France, the recall is also declared on RappelConso.`, `Art. 36 and 37 ${ref('gpsr')} · Implementing Regulation (EU) 2024/1435 ${ref('recall')} · French Consumer Code, Art. L423-3 ${ref('rappelconso')}`],
+        ]
+    : fr
     ? [
         ['Vos annonces affichent 4 mentions', `Fabricant et ses coordonnées, personne responsable si le fabricant est hors UE, identification du produit avec une image, avertissements de sécurité. Obligatoire pour toute offre en ligne visant l’UE depuis le 13 décembre 2024.`, `Règlement (UE) 2023/988, art. 19 et 52 ${ref('gpsr')}`],
         ['Les plateformes les demandent', `Amazon exige la preuve de conformité GPSR pour vendre des produits non alimentaires sur ses boutiques UE, dont amazon.fr. Etsy demande le fabricant ou l’opérateur économique et les « informations concernant la sécurité du produit » dans vos fiches.`, `Amazon ${ref('amazon')} · Etsy ${ref('etsy')}`],

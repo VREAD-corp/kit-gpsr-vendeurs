@@ -37,7 +37,7 @@ await writeFile(
   join(out, '404.html'),
   layout({
     lang: 'fr', key: 'tool', noindex: true,
-    title: 'Page introuvable — Kit GPSR Vendeurs', description: 'Page introuvable.',
+    title: 'Page introuvable, Kit GPSR Vendeurs', description: 'Page introuvable.',
     body: `<h1>Page introuvable</h1><p><a href="${SITE.base}/">Retour au générateur</a> · <a href="${SITE.base}/en/" lang="en">Back to the generator</a></p>`,
   }),
 );
