@@ -3,10 +3,11 @@
 // Generates, at build time only:
 //   - the B2B terms page body (cgv-pro.html, « version du 12 octobre 2026 »),
 //   - when SALES_OPEN is true: the « Commander » page (Stripe Payment Element form), the order page
-//     (Stripe return_url) and checkout-config.js;
-//   - when SALES_OPEN and quotesEnabled are both true: the quote / bank-transfer form (#octave-devis) under the
-//     card form, driven by devis.js (also a verbatim copy of octave-checkout gas/web/).
-// The gate: loadSalesConfig() reads sales.config.json; with SALES_OPEN=false the build emits NO buy UI.
+//     (Stripe return_url) and checkout-config.js,
+//   - when SALES_OPEN and quotesEnabled are both true: the quote / bank-transfer block (#octave-devis-box)
+//     after the card form; the build then adds checkout/devis.js after pay.js.
+// The gate: loadSalesConfig() reads sales.config.json; with SALES_OPEN=false the build emits NO buy UI,
+// with quotesEnabled=false (or absent) NO quote block and NO devis.js script tag.
 // The checkout scripts (pay.js, order.js, devis.js) are verbatim copies of VREAD-corp/octave-checkout gas/web/
 // (scripts/go-live.sh there refuses to go live if they differ).
 import { readFileSync } from 'node:fs';
@@ -44,9 +45,7 @@ export function loadSalesConfig(root) {
   if (!['standard20', 'franchise293B'].includes(c.VAT)) fail("VAT must be 'standard20' or 'franchise293B'");
   if (!Number.isInteger(c.amount) || c.amount <= 0) fail('amount must be the price charged, in cents');
   if (typeof c.product !== 'string' || !/^[a-z0-9-]+$/.test(c.product)) fail('product id missing');
-  // Quote / bank-transfer form: off unless explicitly true (absent = false).
   if (c.quotesEnabled !== undefined && typeof c.quotesEnabled !== 'boolean') fail('quotesEnabled must be true or false');
-  c.quotesEnabled = c.quotesEnabled === true;
   if (c.SALES_OPEN) {
     const test = process.env.SALES_ALLOW_TEST === '1';
     if (!ENDPOINT_RE.test(c.endpoint ?? '') && !(test && /^https?:\/\/[^\s"'<>]+\/exec$/.test(c.endpoint ?? ''))) fail('SALES_OPEN=true needs endpoint = https://script.google.com/macros/s/<deployment id>/exec');
@@ -181,25 +180,21 @@ ${p.afterTermsHtml ?? ''}  <p id="payment-loading" class="small muted" role="sta
   <p class="small muted">Paiement sécurisé par carte bancaire avec Stripe : vos données de carte sont saisies dans un cadre Stripe et ne transitent pas par nos serveurs.</p>
   <noscript><p class="status err">Le paiement nécessite JavaScript.</p></noscript>
 </form>
-${p.config.quotesEnabled === true ? `${quoteFormHtml(p)}\n` : ''}</section>`;
+${p.config.quotesEnabled === true ? `${devisFormHtml({ cgvUrl: p.cgvUrl, extraFieldsHtml: p.devisExtraFieldsHtml })}\n` : ''}</section>`;
 }
 
-/** Suffixes id / for / aria-describedby values with « -devis » (fields duplicated from the card form). */
-const devisIds = (html) => html.replace(/\b(id|for|aria-describedby)="([^"]+)"/g, (_, a, v) => `${a}="${v.split(/\s+/).map((x) => `${x}-devis`).join(' ')}"`);
-
 /**
- * Quote / bank-transfer block (canonical markup: octave-checkout gas/web/devis-form.html), emitted by
- * orderFormHtml() right after form#octave-pay only when config.quotesEnabled is true. Same CGV link and
- * version date as the card form; `quoteFieldsHtml` (product radios / data-octave-extra fields) defaults to
- * the card form's `extraFieldsHtml` with ids suffixed « -devis ».
+ * Quote / bank-transfer block (octave-checkout gas/web/devis-form.html), rendered by orderFormHtml() right
+ * after form#octave-pay only when config.quotesEnabled is true; devis.js also keeps it hidden unless
+ * window.OCTAVE_PAY.quotesEnabled === true. `extraFieldsHtml`: the same product radios / [data-octave-extra]
+ * fields as the card form, with every id / for / aria-describedby suffixed « -devis ».
  */
-export function quoteFormHtml(p) {
-  const fields = p.quoteFieldsHtml ?? devisIds(p.extraFieldsHtml ?? '');
+export function devisFormHtml(p) {
   return `<details id="octave-devis-box" class="card devis-box" hidden>
   <summary><strong>Besoin d’un devis ou paiement par virement ?</strong></summary>
   <p class="small muted">Recevez immédiatement par e-mail un devis PDF (valable 30 jours) avec les coordonnées bancaires et la référence de virement propres à votre commande. La livraison et la facture partent automatiquement dès réception du virement. Pour un bon de commande ou une demande particulière, répondez à l’e-mail du devis.</p>
   <form id="octave-devis" class="checkout-form" novalidate>
-${fields}    <label class="field"><span>E-mail professionnel (réception du devis, puis du produit et de la facture)</span>
+${p.extraFieldsHtml ?? ''}    <label class="field"><span>E-mail professionnel (réception du devis, puis du produit et de la facture)</span>
       <input type="email" name="email" autocomplete="email" required maxlength="254"></label>
     <label class="field"><span>Raison sociale</span>
       <input type="text" name="company" autocomplete="organization" required minlength="2" maxlength="200"></label>
@@ -251,7 +246,7 @@ export const orderCsp = (c) =>
  * checkout-config.js (public by design: endpoint + publishable key). `laterText`: order page, tab closed.
  * `amount` + `termsVersion` let pay.js mount the Payment Element at once (display only: the Apps Script
  * catalog stays the price authority and refuses a different expectedAmount). `payLabel`: button text.
- * `quotesEnabled` (always written, boolean): devis.js shows the quote form only when it is true.
+ * `quotesEnabled` (sales.config.json, default false): devis.js shows the quote block only when it is true.
  */
 export function checkoutConfigJs(c, { termsUrl, orderPage, laterText, termsVersion = TERMS_VERSION, payLabel }) {
   return `// Generated by the site build from sales.config.json. Public by design.\nwindow.OCTAVE_PAY = ${JSON.stringify({ endpoint: c.endpoint, publishableKey: c.publishableKey, product: c.product, amount: c.amount, currency: 'eur', termsVersion, termsUrl, orderPage, ...(payLabel ? { payLabel } : {}), ...(laterText ? { laterText } : {}), quotesEnabled: c.quotesEnabled === true })};\n`;

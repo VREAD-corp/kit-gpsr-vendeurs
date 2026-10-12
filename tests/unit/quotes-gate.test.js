@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { checkoutConfigJs, loadSalesConfig, orderFormHtml, quoteFormHtml } from '../../scripts/checkout-pages.mjs';
+import { checkoutConfigJs, devisFormHtml, loadSalesConfig, orderFormHtml } from '../../scripts/checkout-pages.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const repoConfig = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
@@ -52,7 +52,7 @@ test('config validation: quotesEnabled must be a boolean (absent = false)', () =
   };
   assert.throws(() => load({ ...repoConfig, quotesEnabled: 'yes' }), /quotesEnabled/);
   const { quotesEnabled, ...noFlag } = repoConfig;
-  assert.equal(load(noFlag).quotesEnabled, false);
+  assert.notEqual(load(noFlag).quotesEnabled, true);
   assert.equal(load({ ...repoConfig, quotesEnabled: true }).quotesEnabled, true);
 });
 
@@ -87,10 +87,11 @@ test('quotesEnabled=true (test build): block once right after #octave-pay, devis
   for (const f of ['pay.js', 'order.js', 'devis.js']) assert.equal(readFileSync(join(out, 'assets/checkout', f), 'utf8'), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'), f);
 });
 
-test('extra fields duplicated in the quote form get « -devis » ids', () => {
+test('extra fields duplicated in the quote form (devisExtraFieldsHtml, « -devis » ids) keep ids unique', () => {
   const extra = '  <label class="field" for="x-region"><span>Région</span><input id="x-region" name="region" data-octave-extra aria-describedby="x-help"></label>\n';
-  const html = orderFormHtml({ config: { ...OPEN_CFG, quotesEnabled: true }, productName: 'P', cgvUrl: '/cgv-pro.html', extraFieldsHtml: extra });
-  assert.match(quoteFormHtml({ cgvUrl: '/c', extraFieldsHtml: extra }), /for="x-region-devis"[\s\S]*id="x-region-devis"[^>]*data-octave-extra aria-describedby="x-help-devis"/);
+  const devisExtra = extra.replace(/(for|id|aria-describedby)="([^"]+)"/g, '$1="$2-devis"');
+  const html = orderFormHtml({ config: { ...OPEN_CFG, quotesEnabled: true }, productName: 'P', cgvUrl: '/cgv-pro.html', extraFieldsHtml: extra, devisExtraFieldsHtml: devisExtra });
+  assert.match(devisFormHtml({ cgvUrl: '/c', extraFieldsHtml: devisExtra }), /<form id="octave-devis"[\s\S]*for="x-region-devis"[\s\S]*id="x-region-devis"/);
   assert.deepEqual(dupes(ids(html)), []);
   assert.equal(html.match(/data-octave-extra/g).length, 2);
 });
