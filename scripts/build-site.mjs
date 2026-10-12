@@ -13,6 +13,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = process.env.OUT_DIR ? resolve(process.env.OUT_DIR) : join(root, 'dist');
 // Sales gate: with SALES_OPEN=false (sales.config.json) the build emits no buy UI at all.
 const SALES = loadSalesConfig(root);
+// « Commander » button ({prix} = the price, e.g. « Payer 29 € et recevoir le pack GPSR »).
+const PAY_LABEL = 'Payer {prix} et recevoir le pack GPSR';
 const OPEN = SALES.SALES_OPEN === true;
 const builders = { tool: toolPage, obligations: obligationsPage, pack: packPage, legal: legalPage, privacy: privacyPage, terms: termsPage };
 
@@ -55,7 +57,7 @@ if (OPEN) {
       body: `<p><a href="${SITE.base}/pack.html">Pack documentation GPSR</a> › Commander</p>
 <h1>Commander le Pack documentation GPSR</h1>
 <p class="lead">Modèles étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur (FR/EN). ${pr.sentence}.</p>
-${orderFormHtml({ config: SALES, productName: 'Pack documentation GPSR', cgvUrl: `${SITE.base}/cgv-pro.html` })}`,
+${orderFormHtml({ config: SALES, productName: 'Pack documentation GPSR', cgvUrl: `${SITE.base}/cgv-pro.html`, payLabel: PAY_LABEL })}`,
       tail: `<script src="${assets}/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="${assets}/pay.js"></script>\n`,
     }),
   );
@@ -72,7 +74,7 @@ ${orderFormHtml({ config: SALES, productName: 'Pack documentation GPSR', cgvUrl:
   );
   await mkdir(join(out, 'assets', 'checkout'), { recursive: true });
   for (const f of ['pay.js', 'order.js']) await cp(join(root, 'src', 'checkout', f), join(out, 'assets', 'checkout', f));
-  await writeFile(join(out, 'assets', 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE.origin}${SITE.base}/cgv-pro.html`, orderPage: `${SITE.base}${ORDER_DONE_PATH}` }));
+  await writeFile(join(out, 'assets', 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE.origin}${SITE.base}/cgv-pro.html`, orderPage: `${SITE.base}${ORDER_DONE_PATH}`, payLabel: PAY_LABEL }));
 }
 
 await cp(join(root, 'src', 'app.js'), join(out, 'assets', 'app.js'));

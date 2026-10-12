@@ -156,13 +156,15 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(cmd, /<meta name="robots" content="noindex">/);
   assert.match(cmd, /Content-Security-Policy[^>]*js\.stripe\.com[^>]*script\.google\.com/);
   assert.match(cmd, /<script src="https:\/\/js\.stripe\.com\/v3\/"><\/script>/);
-  assert.match(cmd, /Commander avec obligation de paiement/);
+  assert.match(cmd, /<button type="submit" id="pay-button" class="pay-button" disabled>Payer 29\u00a0€ et recevoir le pack GPSR<\/button>/);
+  assert.match(cmd, /id="payment-loading"[^>]*>Chargement du paiement sécurisé…</);
   assert.match(read(openDir, 'commande.html'), /id="order-status"/);
   assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex">/);
   const conf = read(openDir, 'assets/checkout/checkout-config.js');
   assert.match(conf, /"product":"kit-gpsr-pack"/);
   assert.match(conf, /"orderPage":"\/kit-gpsr-vendeurs\/commande\.html"/);
   assert.match(conf, /cgv-pro\.html/);
+  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-12"`));
   for (const f of ['pay.js', 'order.js']) assert.equal(read(openDir, `assets/checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
   assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
@@ -197,7 +199,11 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.waitForSelector('#octave-pay[data-ready="1"]', { timeout: 10000 }).catch((e) => {
     throw new Error(`${e.message}\n${consoleLines.join('\n')}`);
   });
-  assert.equal(await page.textContent('#product-price'), 'catalogue: prix serveur');
+  // Static price: the page never waits for (nor rewrites from) the catalog.
+  assert.match(await page.textContent('#product-price'), /^29,00\s€ net \(TVA non applicable/);
+  assert.equal(await page.textContent('#pay-button'), 'Payer 29\u00a0€ et recevoir le pack GPSR');
+  assert.equal(await page.isEnabled('#pay-button'), true);
+  assert.equal(await page.isHidden('#payment-loading'), true);
   await page.fill('input[name="email"]', 'achat@entreprise.example');
   await page.fill('input[name="company"]', 'Organisme Exemple SAS');
   await page.fill('input[name="siren"]', '732 829 321'); // bad Luhn
@@ -215,7 +221,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.click('#pay-button');
   await page.waitForSelector('#pay-error:not([hidden])');
   assert.equal(posts.length, 1);
-  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', attempt: 'x' });
+  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
