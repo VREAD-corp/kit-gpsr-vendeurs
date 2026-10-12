@@ -26,7 +26,7 @@ for (const path of PAGES) {
     await expect(page.locator('h1')).toHaveCount(1);
     expect(await page.title()).toMatch(/GPSR|CGV|Terms|Mentions|Legal|Confidentialit|Privacy/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.{40,}/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/vread-corp\.github\.io\/kit-gpsr-vendeurs\//);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/outils\.vread\.fr\/kit-gpsr-vendeurs\//);
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
     await expect(page.locator('footer')).toContainText('READ FRANCE SAS');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize().width);

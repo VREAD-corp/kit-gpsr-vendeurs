@@ -2,8 +2,8 @@
 
 Free, in-browser helper for small marketplace sellers (Etsy, Vinted Pro, Amazon Handmade, Shopify) who sell consumer products into the EU. It covers the General Product Safety Regulation, **Regulation (EU) 2023/988 (GPSR)**, plus the French **REP/EPR** rules.
 
-- Live, FR: https://vread-corp.github.io/kit-gpsr-vendeurs/
-- Live, EN: https://vread-corp.github.io/kit-gpsr-vendeurs/en/
+- Live, FR: https://outils.vread.fr/kit-gpsr-vendeurs/
+- Live, EN: https://outils.vread.fr/kit-gpsr-vendeurs/en/
 - Free template pack (ZIP, FR + EN, DOCX + Markdown): see [Releases](https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest).
 
 A product of READ FRANCE SAS.
@@ -31,7 +31,7 @@ npm test               # unit tests (node:test): renderers, ZIP/DOCX, generator,
 npm run build          # static site -> dist/
 npm run templates      # free template pack -> dist-templates/*.zip (uploaded as a Release asset)
 npx playwright test    # e2e on a local server (desktop + 390 px)
-BASE_URL=https://vread-corp.github.io/kit-gpsr-vendeurs/ npx playwright test   # same checks on the live site
+BASE_URL=https://outils.vread.fr/kit-gpsr-vendeurs/ npx playwright test   # same checks on the live site
 ```
 
 There is no bundler and only one dev dependency (`@playwright/test`). The DOCX and ZIP writers are small in-house modules (`src/lib/render.js`, `src/lib/zip.js`).

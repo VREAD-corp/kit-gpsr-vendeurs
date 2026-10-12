@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const repoConfig = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
 const tmp = mkdtempSync(join(tmpdir(), 'jsonld-'));
-const ORG_ID = 'https://vread-corp.github.io/#org';
+const ORG_ID = 'https://outils.vread.fr/#org';
 
 function build(config, env = {}) {
   const cfg = join(tmp, `cfg-${Math.random().toString(36).slice(2)}.json`);
@@ -34,7 +34,7 @@ function assertOrganization(nodes) {
   assert.equal(org['@id'], ORG_ID);
   assert.equal(org.name, 'READ FRANCE SAS');
   assert.equal(org.legalName, 'READ FRANCE');
-  assert.equal(org.url, 'https://vread-corp.github.io/');
+  assert.equal(org.url, 'https://outils.vread.fr/');
   assert.deepEqual(org.address, { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' });
   assert.deepEqual(org.identifier, { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' });
 }
@@ -53,8 +53,8 @@ for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
     assert.equal(p.name, 'Pack documentation GPSR');
     assert.equal(p.sku, 'pack-gpsr');
     assert.deepEqual(p.brand, { '@type': 'Brand', name: 'Kit GPSR Vendeurs' });
-    assert.equal(p.url, `https://vread-corp.github.io/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}pack.html`);
-    assert.equal(p.image, 'https://vread-corp.github.io/kit-gpsr-vendeurs/assets/og.png');
+    assert.equal(p.url, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}pack.html`);
+    assert.equal(p.image, 'https://outils.vread.fr/kit-gpsr-vendeurs/assets/og.png');
     assert.ok(p.description.length > 50);
     const o = p.offers;
     assert.equal(o['@type'], 'Offer');
@@ -62,7 +62,7 @@ for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
     assert.equal(o.priceCurrency, 'EUR');
     assert.equal(o.availability, 'https://schema.org/InStock');
     assert.equal(o.itemCondition, 'https://schema.org/NewCondition');
-    assert.equal(o.url, 'https://vread-corp.github.io/kit-gpsr-vendeurs/commander.html');
+    assert.equal(o.url, 'https://outils.vread.fr/kit-gpsr-vendeurs/commander.html');
     assert.deepEqual(o.seller, { '@id': ORG_ID });
     assert.ok(!('valueAddedTaxIncluded' in o), 'no valueAddedTaxIncluded');
   });

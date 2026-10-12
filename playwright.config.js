@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// BASE_URL=https://vread-corp.github.io/kit-gpsr-vendeurs/ npx playwright test   -> checks the live site
+// BASE_URL=https://outils.vread.fr/kit-gpsr-vendeurs/ npx playwright test   -> checks the live site
 const live = process.env.BASE_URL;
 export default defineConfig({
   testDir: 'tests/e2e',

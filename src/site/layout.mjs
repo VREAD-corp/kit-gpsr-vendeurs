@@ -1,6 +1,6 @@
 // HTML layout shared by every page (build time only).
 export const SITE = {
-  origin: 'https://vread-corp.github.io',
+  origin: 'https://outils.vread.fr',
   base: '/kit-gpsr-vendeurs',
   repo: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs',
   issues: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues',
@@ -18,14 +18,14 @@ const LASTMOD = { tool: D1012, pack: D1012, legal: D1012, privacy: D1012, terms:
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /** schema.org Organization of the publisher (same @id on every page that references it). */
-export const ORG_ID = 'https://vread-corp.github.io/#org';
+export const ORG_ID = 'https://outils.vread.fr/#org';
 export const ORG_JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': ORG_ID,
   name: 'READ FRANCE SAS',
   legalName: 'READ FRANCE',
-  url: 'https://vread-corp.github.io/',
+  url: 'https://outils.vread.fr/',
   address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
   identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
 };
