@@ -142,6 +142,9 @@ export function packProductJsonld(lang, sales) {
   };
 }
 
+// « Commander » button ({prix} = the price, e.g. « Payer 29 € et recevoir le pack GPSR »), also cited in the CGV.
+export const PAY_LABEL = 'Payer {prix} et recevoir le pack GPSR';
+
 export function termsPage(lang, sales) {
   const pr = prices(sales);
   if (lang === 'fr')
@@ -152,6 +155,7 @@ export function termsPage(lang, sales) {
       body: cgvProBody({
         config: sales,
         productName: 'Pack documentation GPSR',
+        payLabel: PAY_LABEL,
         contact: `par e-mail à <a href="mailto:${SITE.contact}">${SITE.contact}</a>, ou en répondant à l’e-mail de livraison de la commande`,
         legalUrl: url('legal', 'fr'),
         privacyUrl: url('privacy', 'fr'),

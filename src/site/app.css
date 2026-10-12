@@ -164,10 +164,20 @@ table.compare tbody th { font-weight: 500; }
 .faq summary { padding: 14px 16px; }
 .faq details > *:not(summary) { margin: 0; padding: 0 16px 14px; color: var(--muted); }
 
-.about { display: grid; gap: 8px 24px; }
-@media (min-width: 760px) { .about { grid-template-columns: 1fr auto; align-items: center; } }
 .about p { margin: 4px 0; }
 .about .muted { font-size: .92rem; }
+.about-intro { max-width: 70ch; }
+.about-intro h2 { margin: 0 0 6px; }
+/* Founders (same block on every outils.vread.fr site) */
+.founders { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 16px; }
+.founder { display: grid; align-content: start; grid-template-columns: 96px 1fr; gap: 14px 18px; align-items: center; margin: 0; padding: 18px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; }
+.founder-photo { display: block; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: var(--line); box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--line); }
+.about .founder-name { margin: 0; font-size: 1.1rem; line-height: 1.3; color: var(--ink); }
+.about .founder-role { margin: 3px 0 0; font-size: .8rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--brand); }
+.about .founder-bio { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.55; }
+@media (min-width: 720px) { .founders { grid-template-columns: 1fr 1fr; gap: 20px; } .founder { grid-template-columns: 112px 1fr; padding: 22px; } .founder-photo { width: 112px; height: 112px; } }
+.about-foot { display: grid; gap: 8px 24px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+@media (min-width: 760px) { .about-foot { grid-template-columns: 1fr auto; align-items: center; } }
 
 .sources { font-size: .9rem; color: var(--muted); }
 .sources ol { padding-left: 20px; }

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { layout, PAGES, SITE, abs, lastmod } from '../src/site/layout.mjs';
 import { toolPage } from '../src/site/tool-page.mjs';
 import { obligationsPage } from '../src/site/obligations-page.mjs';
-import { legalPage, legacyTermsPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH } from '../src/site/legal-pages.mjs';
+import { legalPage, legacyTermsPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH, PAY_LABEL } from '../src/site/legal-pages.mjs';
 import { packPage } from '../src/site/pack-page.mjs';
 import { checkoutConfigJs, checkoutCsp, loadSalesConfig, orderCsp, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
@@ -14,8 +14,6 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = process.env.OUT_DIR ? resolve(process.env.OUT_DIR) : join(root, 'dist');
 // Sales gate: with SALES_OPEN=false (sales.config.json) the build emits no buy UI at all.
 const SALES = loadSalesConfig(root);
-// « Commander » button ({prix} = the price, e.g. « Payer 29 € et recevoir le pack GPSR »).
-const PAY_LABEL = 'Payer {prix} et recevoir le pack GPSR';
 const OPEN = SALES.SALES_OPEN === true;
 const builders = { tool: toolPage, obligations: obligationsPage, pack: packPage, legal: legalPage, privacy: privacyPage, terms: termsPage };
 

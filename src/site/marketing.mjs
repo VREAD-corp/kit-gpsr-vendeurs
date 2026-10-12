@@ -31,21 +31,49 @@ export function sourceList(lang, keys) {
   return { ref, html };
 }
 
+/** Founders (facts from vread.fr/presse and Vincent Cance's CV; same block on every outils.vread.fr site). */
+const FOUNDERS = [
+  {
+    name: 'Tanguy Warsmann', photo: 'tanguy-warsmann.webp',
+    role: { fr: 'Fondateur &amp; CEO', en: 'Founder &amp; CEO' },
+    bio: {
+      fr: 'Formé aux lettres à la Sorbonne puis à emlyon business school, il a travaillé chez Cartier, puis chez AR/Factory, où il a piloté la stratégie de contenus shopping de médias comme Ouest-France, 20 Minutes et Le Figaro.',
+      en: 'After studying literature at the Sorbonne and then at emlyon business school, he worked at Cartier and then at AR/Factory, where he led the shopping-content strategy of media such as Ouest-France, 20 Minutes and Le Figaro.',
+    },
+  },
+  {
+    name: 'Vincent Cance', photo: 'vincent-cance.webp',
+    role: { fr: 'Cofondateur &amp; CTO', en: 'Co-founder &amp; CTO' },
+    bio: {
+      fr: 'Développeur full stack web et mobile, il a été cofondateur et CTO de Genipatient, un logiciel de gestion de cabinet pour ostéopathes.',
+      en: 'A full-stack web and mobile developer, he was co-founder and CTO of Genipatient, practice-management software for osteopaths.',
+    },
+  },
+];
+
 export function aboutBlock(lang) {
   const fr = lang === 'fr';
+  const founders = FOUNDERS.map((f) => `<li class="founder">
+<img class="founder-photo" src="${img(f.photo)}" width="112" height="112" alt="${fr ? 'Portrait de' : 'Portrait of'} ${f.name}" loading="lazy" decoding="async">
+<div><h3 class="founder-name">${f.name}</h3><p class="founder-role">${f.role[lang]}</p></div>
+<p class="founder-bio">${f.bio[lang]}</p>
+</li>`).join('\n');
   return `<section class="section" aria-labelledby="about-h">
 <div class="card about">
-<div>
+<div class="about-intro">
 <span class="kicker">${fr ? 'Qui sommes-nous' : 'About us'}</span>
-<h2 id="about-h" class="sr-only">${fr ? 'Qui sommes-nous' : 'About us'}</h2>
-<!-- TODO founder photo/name -->
-<p><strong>${COMPANY.name}</strong>, Paris — SIREN ${COMPANY.siren}.</p>
+<h2 id="about-h">${COMPANY.name}, Paris</h2>
 <p>${fr
     ? 'Nous éditons outils.vread.fr : des outils gratuits et des modèles documentaires qui aident les petites entreprises à appliquer leurs obligations réglementaires.'
     : 'We publish outils.vread.fr: free tools and document templates that help small businesses meet their regulatory obligations.'}</p>
-<p class="muted">${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
 </div>
+<ul class="founders" aria-label="${fr ? 'Fondateurs' : 'Founders'}">
+${founders}
+</ul>
+<div class="about-foot">
+<p class="muted"><strong>${COMPANY.name}</strong>, Paris — SIREN ${COMPANY.siren}. ${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
 <p><a class="btn secondary" href="mailto:${CONTACT_EMAIL}">${fr ? 'Nous écrire' : 'Email us'}</a></p>
+</div>
 </div>
 </section>`;
 }
