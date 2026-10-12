@@ -55,8 +55,27 @@ const SALES_OPEN = JSON.parse(readFileSync(new URL('../../sales.config.json', im
 test('pack page, sales OPEN: Commander link to the B2B order page', async ({ page }) => {
   test.skip(!SALES_OPEN, 'sales closed');
   await page.goto('pack.html');
-  await expect(page.locator('a[href$="/commander.html"]')).toHaveCount(1);
+  expect(await page.locator('a[href$="/commander.html"]').count()).toBeGreaterThanOrEqual(1);
+  await expect(page.locator('main a[href$="/commander.html"]').first()).toBeVisible(); // hero CTA, above the fold
   await expect(page.locator('body')).not.toContainText('Pas encore en vente');
+  await expect(page.locator('details')).not.toHaveCount(0); // buyer FAQ
+  await expect(page.locator('.gallery img')).toHaveCount(4); // real pack previews
+  // EN page: buying needs a French SIREN, said before any buy link.
+  await page.goto('en/pack.html');
+  await expect(page.locator('.hero')).toContainText('French businesses only');
+});
+
+test('FR generator: upsell shown only with the results, EN generator has no paid CTA', async ({ page }) => {
+  test.skip(!SALES_OPEN, 'sales closed');
+  await page.goto('');
+  await expect(page.locator('.upsell')).toBeHidden();
+  await page.click('#btn-example');
+  await expect(page.locator('#results .upsell')).toBeVisible();
+  await expect(page.locator('#results .upsell')).toContainText('Vos documents sont prêts');
+  await expect(page.locator('#results .upsell a[href$="/pack.html"]')).toHaveCount(1);
+  await page.goto('en/');
+  await expect(page.locator('a[href$="/commander.html"], .upsell')).toHaveCount(0);
+  await expect(page.locator('body')).toContainText('French businesses only (FR)');
 });
 
 test('pack page is honest: coming soon, no payment link', async ({ page }) => {

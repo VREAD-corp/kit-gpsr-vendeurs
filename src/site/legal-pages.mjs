@@ -32,7 +32,8 @@ export function legalPage(lang) {
 <h2>Éditeur</h2>
 <p>${COMPANY.name}, ${COMPANY.form}.<br>Siège social : ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (SIRET du siège ${COMPANY.siret}) — <a href="${COMPANY.registry}">fiche publique de l’entreprise</a>.<br>Capital social : ${COMPANY.capital}.<br>TVA non applicable, art. 293 B du CGI (franchise en base).</p>
 <p>Directeur de la publication : ${COMPANY.president}, président.</p>
-<p>Contact : en attendant l’ouverture d’une adresse dédiée, via les <a href="${SITE.issues}">issues GitHub du projet</a> (publiques : n’y mettez aucune donnée personnelle).</p>
+<p>Contact : <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
+<!-- TODO phone -->
 <h2>Hébergeur</h2>
 <p>${HOST}</p>
 <h2>Nature du service</h2>
@@ -52,7 +53,8 @@ export function legalPage(lang) {
 <h2>Publisher</h2>
 <p>${COMPANY.name}, a French simplified joint-stock company (SAS).<br>Registered office: ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (head-office SIRET ${COMPANY.siret}) — <a href="${COMPANY.registry}">public company record</a>.<br>Share capital: ${COMPANY.capitalEn}.<br>VAT: not applicable, art. 293 B of the French General Tax Code (VAT franchise).</p>
 <p>Publication director: ${COMPANY.president}, president.</p>
-<p>Contact: until a dedicated mailbox exists, through the project’s <a href="${SITE.issues}">GitHub issues</a> (public: do not post personal data).</p>
+<p>Contact: <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
+<!-- TODO phone -->
 <h2>Host</h2>
 <p>${HOST_EN}</p>
 <h2>Nature of the service</h2>
@@ -84,7 +86,7 @@ export function privacyPage(lang, sales) {
 </ul>
 ${open ? `<h2>Exception : la commande du pack documentation</h2>
 <p>La page <a href="${SITE.base}${ORDER_PATH}">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l’entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées et droits : article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<p>Ventes : le pack documentation n’est pas encore en vente. Les traitements prévus pour les commandes sont décrits à l’article 13 des <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>`}
-<p>Responsable : READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. Questions : <a href="${SITE.issues}">issues GitHub</a>. Vous pouvez aussi saisir la <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.</p>`,
+<p>Responsable : READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. Questions : <a href="mailto:${SITE.contact}">${SITE.contact}</a>. Vous pouvez aussi saisir la <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.</p>`,
     };
   return {
     title: 'Privacy — GPSR Seller Kit',
@@ -98,42 +100,19 @@ ${open ? `<h2>Exception : la commande du pack documentation</h2>
 <li>Hosting: GitHub Pages (GitHub, Inc.). Like any web host, GitHub may process technical connection data (such as IP addresses) to secure the service, under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. READ FRANCE SAS has no access to those logs.</li>
 <li>Measurement: we only count downloads of the free template pack, as GitHub shows publicly for each release file (a total, with no data about people).</li>
 </ul>
-${open ? `<p>Exception: the <a href="${SITE.base}${ORDER_PATH}" lang="fr">order page</a> of the documentation pack (French businesses only) collects the e-mail address, company name, SIREN and billing address needed to fulfil the order and issue the invoice; card payment is handled by Stripe, which loads its payment module (and anti-fraud cookies) on that page only. See article 13 of the <a href="${url('terms', 'fr')}" lang="fr">B2B terms</a>.</p>\n` : ''}<p>Controller: READ FRANCE SAS, 11 rue Rouvet, 75019 Paris, France. Questions: <a href="${SITE.issues}">GitHub issues</a>. You may also contact your data-protection authority (in France, the <a href="https://www.cnil.fr/en">CNIL</a>).</p>`,
+${open ? `<p>Exception: the <a href="${SITE.base}${ORDER_PATH}" lang="fr">order page</a> of the documentation pack (French businesses only) collects the e-mail address, company name, SIREN and billing address needed to fulfil the order and issue the invoice; card payment is handled by Stripe, which loads its payment module (and anti-fraud cookies) on that page only. See article 13 of the <a href="${url('terms', 'fr')}" lang="fr">B2B terms</a>.</p>\n` : ''}<p>Controller: READ FRANCE SAS, 11 rue Rouvet, 75019 Paris, France. Questions: <a href="mailto:${SITE.contact}">${SITE.contact}</a>. You may also contact your data-protection authority (in France, the <a href="https://www.cnil.fr/en">CNIL</a>).</p>`,
   };
 }
 
-const PACK_CONTENTS = {
-  fr: [
-    'Analyse de risques étendue et grille de cotation, avec exemples remplis pour 5 catégories',
-    'Modèles par catégorie : textile, bijoux, bougies et fondants, articles enfants (non-jouets) et renvois jouets, décoration/céramique — et une fiche « exclusions » (cosmétiques, savons, denrées, électrique)',
-    'Questionnaire fournisseur (matières, substances, preuves, traçabilité) en FR et EN',
-    'Procédure de rappel et de mesures correctives, avec modèle d’avis de rappel et calendrier',
-    'Registre des incidents, réclamations et accidents (CSV + DOCX)',
-    'Sommaire du dossier technique (à conserver 10 ans) et registre des lots',
-    'Checklists plateformes et REP France détaillées',
-    'Formats DOCX (Word, LibreOffice, Google Docs), Markdown et CSV ; français et anglais',
-  ],
-  en: [
-    'Extended risk analysis and scoring grid, with filled-in examples for 5 categories',
-    'Category templates: textiles, jewellery, candles and wax melts, children’s items (non-toys) and toy pointers, decor/ceramics — plus an “exclusions” sheet (cosmetics, soaps, food, electrical)',
-    'Supplier questionnaire (materials, substances, evidence, traceability) in FR and EN',
-    'Recall and corrective-action procedure, with recall-notice template and timeline',
-    'Incident, complaint and accident log (CSV + DOCX)',
-    'Technical-file index (keep for 10 years) and batch register',
-    'Detailed marketplace and French EPR checklists',
-    'DOCX (Word, LibreOffice, Google Docs), Markdown and CSV; French and English',
-  ],
-};
-
 // Price as charged (sales.config.json `amount`, in cents): « 29 € net » / « €29 net » (VAT franchise, art. 293 B CGI).
-const DEFAULT_SALES = { VAT: 'franchise293B', amount: 2900 };
+export const DEFAULT_SALES = { VAT: 'franchise293B', amount: 2900 };
 const whole = (cents) => (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
 export function packPriceLabel(lang, sales = DEFAULT_SALES) {
   const std = sales.VAT === 'standard20';
   const n = whole(sales.amount);
   return lang === 'fr' ? `${n.replace('.', ',')} € ${std ? 'TTC' : 'net'}` : `€${n} ${std ? 'incl. VAT' : 'net'}`;
 }
-const VAT_NOTE = { fr: 'TVA non applicable, art. 293 B du CGI', en: 'VAT not applicable, art. 293 B of the French tax code' };
+export const VAT_NOTE = { fr: 'TVA non applicable, art. 293 B du CGI', en: 'VAT not applicable, art. 293 B of the French tax code' };
 
 /** schema.org Product + Offer of the pack (emitted only while SALES_OPEN is true). */
 export function packProductJsonld(lang, sales) {
@@ -161,66 +140,6 @@ export function packProductJsonld(lang, sales) {
   };
 }
 
-export function packPage(lang, sales) {
-  const items = PACK_CONTENTS[lang].map((i) => `<li>${i}</li>`).join('');
-  const open = sales?.SALES_OPEN === true;
-  const pr = prices(sales ?? DEFAULT_SALES);
-  const fr = packPriceLabel('fr', sales ?? DEFAULT_SALES);
-  const en = packPriceLabel('en', sales ?? DEFAULT_SALES);
-  const jsonld = open ? [ORG_JSONLD, packProductJsonld(lang, sales)] : [ORG_JSONLD];
-  if (lang === 'fr')
-    return {
-      jsonld,
-      title: open ? `Documentation GPSR vendeur Etsy, Vinted, Amazon : pack à ${fr}` : 'Documentation GPSR vendeur Etsy, Vinted, Amazon — bientôt disponible',
-      description: open
-        ? `Modèles GPSR pour vendeurs Etsy, Vinted, Amazon, Shopify : risques par catégorie, rappel, incidents. Pros : ${fr}${pr.std ? '' : `, ${VAT_NOTE.fr}`}.`
-        : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
-      body: `${open ? '<p><span class="pill">Réservé aux professionnels</span></p>' : '<p><span class="pill badge-soon">Bientôt disponible</span></p>'}
-<h1>Pack documentation GPSR</h1>
-<p class="lead">Pour aller plus loin que le générateur gratuit : des modèles étendus par catégorie de produit et les procédures à tenir prêtes.</p>
-${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${pr.vat} de TVA à 20 %, ` : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>
-<p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}">Commander</a></p>
-<p class="hint">Vente aux entreprises immatriculées en France (SIREN). Paiement par carte bancaire avec Stripe ; fichier ZIP et facture acquittée envoyés par e-mail. <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
-<p class="price">${fr} <small>(prix prévu, ${pr.std ? '' : `${VAT_NOTE.fr}, `}paiement unique)</small></p>`}
-<h2>Contenu du pack</h2>
-<ul>${items}</ul>
-<h2>Ce que le pack n’est pas</h2>
-<ul>
-<li>Ce n’est pas un conseil juridique ni une certification : vous restez responsable de vos produits et de vos documents.</li>
-<li>READ FRANCE SAS n’agit pas comme personne responsable dans l’UE, mandataire ou importateur, et ne propose pas ce service.</li>
-<li>Il ne remplace pas les obligations propres aux jouets, cosmétiques, appareils électriques ou matériaux au contact des aliments.</li>
-</ul>
-<h2>En attendant</h2>
-<p>Le <a href="${url('tool', 'fr')}">générateur gratuit</a> et le <a href="${SITE.releases}">pack de modèles gratuit</a> (fichier ZIP sur GitHub) couvrent déjà la fiche de sécurité, l’étiquette, l’analyse de risques et les checklists.</p>
-<p>Conditions de vente : <a href="${url('terms', 'fr')}">CGV professionnels</a> (vente réservée aux entreprises).</p>`,
-    };
-  return {
-    jsonld,
-    title: open ? `GPSR documentation for Etsy sellers – template pack, ${en}` : 'GPSR documentation for Etsy sellers – template pack, coming soon',
-    description: open
-      ? `GPSR templates for Etsy, Vinted, Amazon, Shopify sellers: recall, incident log. French firms: ${en}${pr.std ? '' : `, ${VAT_NOTE.en}`}.`
-      : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
-    body: `${open ? '<p><span class="pill">Businesses only</span></p>' : '<p><span class="pill badge-soon">Coming soon</span></p>'}
-<h1>GPSR documentation pack</h1>
-<p class="lead">To go further than the free generator: extended templates per product category and the procedures to keep ready.</p>
-${open ? `<p class="price">${en} <small>(${pr.std ? '' : `${VAT_NOTE.en}; `}one-off payment)</small></p>
-<p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}" lang="fr">Order (page in French)</a></p>
-<p class="hint">Sold only to businesses registered in France (SIREN number required), under the French <a href="${url('terms', 'fr')}" lang="fr">B2B terms of sale</a>. Card payment with Stripe; ZIP file and paid invoice sent by e-mail.</p>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
-<p class="price">${en} <small>(planned price, ${pr.std ? '' : `${VAT_NOTE.en}; `}one-off payment)</small></p>`}
-<h2>What’s in the pack</h2>
-<ul>${items}</ul>
-<h2>What the pack is not</h2>
-<ul>
-<li>It is not legal advice or certification: you remain responsible for your products and documents.</li>
-<li>READ FRANCE SAS does not act as EU responsible person, authorised representative or importer, and does not offer that service.</li>
-<li>It does not replace the specific rules for toys, cosmetics, electrical equipment or food-contact materials.</li>
-</ul>
-<h2>Meanwhile</h2>
-<p>The <a href="${url('tool', 'en')}">free generator</a> and the <a href="${SITE.releases}">free template pack</a> (ZIP file on GitHub) already cover the safety sheet, label, risk analysis and checklists.</p>
-<p>Terms of sale: <a href="${url('terms', 'en')}">B2B terms</a> (businesses only).</p>`,
-  };
-}
-
 export function termsPage(lang, sales) {
   const pr = prices(sales);
   if (lang === 'fr')
@@ -231,7 +150,7 @@ export function termsPage(lang, sales) {
       body: cgvProBody({
         config: sales,
         productName: 'Pack documentation GPSR',
-        contact: `en répondant à l’e-mail de livraison de la commande, ou par les <a href="${SITE.issues}">issues GitHub du projet</a> (publiques : n’y mettez aucune donnée personnelle)`,
+        contact: `par e-mail à <a href="mailto:${SITE.contact}">${SITE.contact}</a>, ou en répondant à l’e-mail de livraison de la commande`,
         legalUrl: url('legal', 'fr'),
         privacyUrl: url('privacy', 'fr'),
         productDescription: `« Pack documentation GPSR » : modèles et procédures relatifs au règlement (UE) 2023/988 sur la sécurité générale des produits et à la responsabilité élargie du producteur en France, en français et en anglais (fichiers DOCX, Markdown et CSV), tels que décrits sur la <a href="${url('pack', 'fr')}">page du pack</a> à la date de la commande.`,

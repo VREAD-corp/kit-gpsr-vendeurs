@@ -65,7 +65,7 @@ Every claim in the generated documents links to its source (`src/lib/content.js`
 - Standards (EN 15494, EN 14682, EN 12586) are paid, so only their AFNOR catalogue titles are cited.
 - The DGCCRF website blocks automated access with an anti-bot challenge, which we did not bypass. Légifrance and RappelConso are cited instead.
 
-Report errors in [issues](https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues).
+Report errors to octave@vread.fr.
 
 ## Licence
 

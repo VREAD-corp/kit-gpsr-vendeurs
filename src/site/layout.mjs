@@ -4,6 +4,7 @@ export const SITE = {
   base: '/kit-gpsr-vendeurs',
   repo: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs',
   issues: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues',
+  contact: 'octave@vread.fr',
   releases: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest',
   version: '1.0.0',
   updated: '2026-10-11',
@@ -14,7 +15,7 @@ export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 // Sitemap <lastmod> per page and language when it differs from SITE.updated
 // (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO).
 const D1012 = { fr: '2026-10-12', en: '2026-10-12' };
-const LASTMOD = { tool: D1012, pack: D1012, legal: D1012, privacy: D1012, terms: D1012 };
+const LASTMOD = { tool: D1012, obligations: D1012, pack: D1012, legal: D1012, privacy: D1012, terms: D1012 };
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /** schema.org Organization of the publisher (same @id on every page that references it). */
@@ -41,8 +42,8 @@ export const PAGES = {
 };
 
 const NAV = {
-  fr: [['tool', 'Générateur'], ['obligations', 'Obligations & sources'], ['pack', 'Pack documentation']],
-  en: [['tool', 'Generator'], ['obligations', 'Obligations & sources'], ['pack', 'Documentation pack']],
+  fr: [['tool', 'Générateur'], ['obligations', 'Obligations'], ['pack', 'Pack GPSR']],
+  en: [['tool', 'Generator'], ['obligations', 'Obligations'], ['pack', 'GPSR pack']],
 };
 const FOOT = {
   fr: [['legal', 'Mentions légales'], ['privacy', 'Confidentialité'], ['terms', 'CGV professionnels']],
@@ -56,7 +57,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="#0f5c6e"/><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /**
- * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean, csp?:string, path?:string, head?:string, tail?:string}} p
+ * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean, csp?:string, path?:string, head?:string, tail?:string, bodyClass?:string}} p
  * `path` (FR-only pages such as the buy pages): canonical path without language alternates.
  */
 export function layout(p) {
@@ -100,7 +101,7 @@ ${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <meta name="theme-color" content="#0f5c6e">
 ${jsonld}${p.head ?? ''}
 </head>
-<body>
+<body${p.bodyClass ? ` class="${p.bodyClass}"` : ''}>
 <a class="skip" href="#main">${t.skip}</a>
 <header class="site"><div class="wrap">
 <a class="brand" href="${url('tool', lang)}">${LOGO}<span>${brand}</span></a>
@@ -110,7 +111,7 @@ ${jsonld}${p.head ?? ''}
 ${p.body}
 </div></main>
 <footer class="site"><div class="wrap">
-<nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="${SITE.repo}">${t.src}</a><a href="${SITE.issues}">${lang === 'fr' ? 'Contact (issues GitHub)' : 'Contact (GitHub issues)'}</a></nav>
+<nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
 <p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
 </div></footer>

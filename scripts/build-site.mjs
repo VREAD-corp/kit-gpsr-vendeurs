@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { layout, PAGES, SITE, abs, lastmod } from '../src/site/layout.mjs';
 import { toolPage } from '../src/site/tool-page.mjs';
 import { obligationsPage } from '../src/site/obligations-page.mjs';
-import { legalPage, legacyTermsPage, packPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH } from '../src/site/legal-pages.mjs';
+import { legalPage, legacyTermsPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH } from '../src/site/legal-pages.mjs';
+import { packPage } from '../src/site/pack-page.mjs';
 import { checkoutConfigJs, checkoutCsp, loadSalesConfig, orderCsp, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -81,6 +82,7 @@ await cp(join(root, 'src', 'app.js'), join(out, 'assets', 'app.js'));
 await cp(join(root, 'src', 'lib'), join(out, 'assets', 'lib'), { recursive: true });
 await cp(join(root, 'src', 'site', 'app.css'), join(out, 'assets', 'app.css'));
 await cp(join(root, 'src', 'site', 'favicon.svg'), join(out, 'assets', 'favicon.svg'));
+await cp(join(root, 'src', 'site', 'img'), join(out, 'assets', 'img'), { recursive: true }); // sales-page previews (WebP, rendered from the pack)
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 
 const urls = Object.keys(PAGES).filter((k) => OPEN || k !== 'terms').flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));

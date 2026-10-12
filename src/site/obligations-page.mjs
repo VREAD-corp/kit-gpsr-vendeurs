@@ -84,7 +84,7 @@ ${table}
 <li>Boutique Shopify ou site propre : vous êtes le vendeur à distance, l’article 19 s’applique directement à vos fiches produits.</li>
 </ul>
 <h2>Limites de cette synthèse</h2>
-<p>Les pages de la DGCCRF n’ont pas pu être consultées automatiquement (protection anti-robot) : référez-vous à Légifrance et à RappelConso cités ci-dessus. Les aides Amazon Seller Central nécessitent une connexion. Les normes (EN 15494, EN 14682, EN 12586) sont payantes : nous citons leur titre, pas leur contenu. Signalez une erreur via les <a href="${SITE.issues}">issues GitHub</a>.</p>
+<p>Les pages de la DGCCRF n’ont pas pu être consultées automatiquement (protection anti-robot) : référez-vous à Légifrance et à RappelConso cités ci-dessus. Les aides Amazon Seller Central nécessitent une connexion. Les normes (EN 15494, EN 14682, EN 12586) sont payantes : nous citons leur titre, pas leur contenu. Signalez une erreur à <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <p><a class="btn" href="${url('tool', lang)}">Ouvrir le générateur</a></p>`
     : `<h1>GPSR and EPR obligations: what to know, with sources</h1>
 <p class="lead">Summary for small sellers, checked on ${SITE.updated} against the official texts. Every line links to the text: if in doubt, the text prevails.</p>
@@ -133,7 +133,7 @@ ${table}
 <li>Shopify store or own website: you are the distance seller; Article 19 applies directly to your product pages.</li>
 </ul>
 <h2>Limits of this summary</h2>
-<p>The French DGCCRF pages could not be read automatically (anti-bot protection): rely on Légifrance and RappelConso cited above. Amazon Seller Central help requires a login. Standards (EN 15494, EN 14682, EN 12586) are paid documents: we cite their titles, not their content. Report an error through <a href="${SITE.issues}">GitHub issues</a>.</p>
+<p>The French DGCCRF pages could not be read automatically (anti-bot protection): rely on Légifrance and RappelConso cited above. Amazon Seller Central help requires a login. Standards (EN 15494, EN 14682, EN 12586) are paid documents: we cite their titles, not their content. Report an error to <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <p><a class="btn" href="${url('tool', lang)}">Open the generator</a></p>`;
   return {
     title: fr ? 'Obligations GPSR et REP pour vendeurs en ligne, avec sources officielles — Kit GPSR Vendeurs' : 'GPSR and EPR obligations for online sellers, with official sources — GPSR Seller Kit',

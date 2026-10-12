@@ -9,7 +9,7 @@ const port = Number(process.argv[3] ?? 4791);
 const base = process.argv[4] ?? '/kit-gpsr-vendeurs';
 const types = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8',
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8',
   '.json': 'application/json', '.webmanifest': 'application/manifest+json',
 };
 
