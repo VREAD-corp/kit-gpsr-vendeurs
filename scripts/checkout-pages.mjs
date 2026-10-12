@@ -3,9 +3,11 @@
 // Generates, at build time only:
 //   - the B2B terms page body (cgv-pro.html, « version du 12 octobre 2026 »),
 //   - when SALES_OPEN is true: the « Commander » page (Stripe Payment Element form), the order page
-//     (Stripe return_url) and checkout-config.js.
+//     (Stripe return_url) and checkout-config.js;
+//   - when SALES_OPEN and quotesEnabled are both true: the quote / bank-transfer form (#octave-devis) under the
+//     card form, driven by devis.js (also a verbatim copy of octave-checkout gas/web/).
 // The gate: loadSalesConfig() reads sales.config.json; with SALES_OPEN=false the build emits NO buy UI.
-// The checkout scripts (pay.js, order.js) are verbatim copies of VREAD-corp/octave-checkout gas/web/
+// The checkout scripts (pay.js, order.js, devis.js) are verbatim copies of VREAD-corp/octave-checkout gas/web/
 // (scripts/go-live.sh there refuses to go live if they differ).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -42,6 +44,9 @@ export function loadSalesConfig(root) {
   if (!['standard20', 'franchise293B'].includes(c.VAT)) fail("VAT must be 'standard20' or 'franchise293B'");
   if (!Number.isInteger(c.amount) || c.amount <= 0) fail('amount must be the price charged, in cents');
   if (typeof c.product !== 'string' || !/^[a-z0-9-]+$/.test(c.product)) fail('product id missing');
+  // Quote / bank-transfer form: off unless explicitly true (absent = false).
+  if (c.quotesEnabled !== undefined && typeof c.quotesEnabled !== 'boolean') fail('quotesEnabled must be true or false');
+  c.quotesEnabled = c.quotesEnabled === true;
   if (c.SALES_OPEN) {
     const test = process.env.SALES_ALLOW_TEST === '1';
     if (!ENDPOINT_RE.test(c.endpoint ?? '') && !(test && /^https?:\/\/[^\s"'<>]+\/exec$/.test(c.endpoint ?? ''))) fail('SALES_OPEN=true needs endpoint = https://script.google.com/macros/s/<deployment id>/exec');
@@ -176,7 +181,53 @@ ${p.afterTermsHtml ?? ''}  <p id="payment-loading" class="small muted" role="sta
   <p class="small muted">Paiement sécurisé par carte bancaire avec Stripe : vos données de carte sont saisies dans un cadre Stripe et ne transitent pas par nos serveurs.</p>
   <noscript><p class="status err">Le paiement nécessite JavaScript.</p></noscript>
 </form>
-</section>`;
+${p.config.quotesEnabled === true ? `${quoteFormHtml(p)}\n` : ''}</section>`;
+}
+
+/** Suffixes id / for / aria-describedby values with « -devis » (fields duplicated from the card form). */
+const devisIds = (html) => html.replace(/\b(id|for|aria-describedby)="([^"]+)"/g, (_, a, v) => `${a}="${v.split(/\s+/).map((x) => `${x}-devis`).join(' ')}"`);
+
+/**
+ * Quote / bank-transfer block (canonical markup: octave-checkout gas/web/devis-form.html), emitted by
+ * orderFormHtml() right after form#octave-pay only when config.quotesEnabled is true. Same CGV link and
+ * version date as the card form; `quoteFieldsHtml` (product radios / data-octave-extra fields) defaults to
+ * the card form's `extraFieldsHtml` with ids suffixed « -devis ».
+ */
+export function quoteFormHtml(p) {
+  const fields = p.quoteFieldsHtml ?? devisIds(p.extraFieldsHtml ?? '');
+  return `<details id="octave-devis-box" class="card devis-box" hidden>
+  <summary><strong>Besoin d’un devis ou paiement par virement ?</strong></summary>
+  <p class="small muted">Recevez immédiatement par e-mail un devis PDF (valable 30 jours) avec les coordonnées bancaires et la référence de virement propres à votre commande. La livraison et la facture partent automatiquement dès réception du virement. Pour un bon de commande ou une demande particulière, répondez à l’e-mail du devis.</p>
+  <form id="octave-devis" class="checkout-form" novalidate>
+${fields}    <label class="field"><span>E-mail professionnel (réception du devis, puis du produit et de la facture)</span>
+      <input type="email" name="email" autocomplete="email" required maxlength="254"></label>
+    <label class="field"><span>Raison sociale</span>
+      <input type="text" name="company" autocomplete="organization" required minlength="2" maxlength="200"></label>
+    <label class="field"><span>SIREN (9 chiffres)</span>
+      <input type="text" name="siren" inputmode="numeric" required pattern="\\s*(\\d\\s*){9}" maxlength="11"></label>
+    <fieldset class="field-group"><legend>Adresse de facturation (figure sur le devis et la facture)</legend>
+      <label class="field"><span>Adresse</span>
+        <input type="text" name="addressLine1" autocomplete="address-line1" required minlength="3" maxlength="200"></label>
+      <label class="field"><span>Complément d’adresse (facultatif)</span>
+        <input type="text" name="addressLine2" autocomplete="address-line2" maxlength="200"></label>
+      <label class="field"><span>Code postal</span>
+        <input type="text" name="postalCode" autocomplete="postal-code" inputmode="numeric" required pattern="\\s*\\d{5}\\s*" maxlength="7"></label>
+      <label class="field"><span>Ville</span>
+        <input type="text" name="city" autocomplete="address-level2" required maxlength="100"></label>
+      <p class="small muted">Pays : France.</p>
+    </fieldset>
+    <label class="field"><span>Votre référence interne / n° de bon de commande (facultatif, reporté sur le devis et la facture)</span>
+      <input type="text" name="buyerRef" maxlength="60"></label>
+    <!-- Honeypot: hidden from humans, bots fill it; the server drops the request silently. -->
+    <div class="hp" aria-hidden="true"><label>Site web <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <label class="check"><input type="checkbox" name="terms" required>
+      <span>Je demande ce devis au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a class="terms-link" href="${p.cgvUrl}" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du ${TERMS_DATE}). La commande devient ferme au paiement du devis.</span></label>
+    <p id="devis-error" class="status err" role="alert" hidden></p>
+    <p id="devis-ok" class="status ok" role="status" hidden></p>
+    <button type="submit" id="devis-button" class="pay-button secondary">Recevoir mon devis par e-mail</button>
+    <p class="small muted">Paiement par virement SEPA vers un compte dédié à votre commande, ouvert au nom de READ FRANCE SAS chez notre prestataire de paiement Stripe. Aucun paiement n’est demandé à cette étape.</p>
+  </form>
+</details>`;
 }
 
 /** Order page body (Stripe return_url): order.js calls the Apps Script `fulfil` action. */
@@ -200,7 +251,8 @@ export const orderCsp = (c) =>
  * checkout-config.js (public by design: endpoint + publishable key). `laterText`: order page, tab closed.
  * `amount` + `termsVersion` let pay.js mount the Payment Element at once (display only: the Apps Script
  * catalog stays the price authority and refuses a different expectedAmount). `payLabel`: button text.
+ * `quotesEnabled` (always written, boolean): devis.js shows the quote form only when it is true.
  */
 export function checkoutConfigJs(c, { termsUrl, orderPage, laterText, termsVersion = TERMS_VERSION, payLabel }) {
-  return `// Generated by the site build from sales.config.json. Public by design.\nwindow.OCTAVE_PAY = ${JSON.stringify({ endpoint: c.endpoint, publishableKey: c.publishableKey, product: c.product, amount: c.amount, currency: 'eur', termsVersion, termsUrl, orderPage, ...(payLabel ? { payLabel } : {}), ...(laterText ? { laterText } : {}) })};\n`;
+  return `// Generated by the site build from sales.config.json. Public by design.\nwindow.OCTAVE_PAY = ${JSON.stringify({ endpoint: c.endpoint, publishableKey: c.publishableKey, product: c.product, amount: c.amount, currency: 'eur', termsVersion, termsUrl, orderPage, ...(payLabel ? { payLabel } : {}), ...(laterText ? { laterText } : {}), quotesEnabled: c.quotesEnabled === true })};\n`;
 }

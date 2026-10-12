@@ -82,4 +82,4 @@ The French B2B terms are in `cgv-pro.html` (version of 12 October 2026, to be re
 
 Sales are opened only by `octave-checkout/gas/scripts/go-live.sh`. It sets `SALES_OPEN: true` together with the Apps Script `/exec` URL and a `pk_live_` key.
 
-`src/checkout/pay.js` and `src/checkout/order.js` are exact copies of `octave-checkout/gas/web/`, and `scripts/checkout-pages.mjs` is shared with kit-qualiopi-v10. These two copied files are not covered by the privacy guard, which applies only to the free generator.
+`src/checkout/pay.js`, `src/checkout/order.js` and `src/checkout/devis.js` are exact copies of `octave-checkout/gas/web/`, and `scripts/checkout-pages.mjs` is shared with kit-qualiopi-v10. These copied files are not covered by the privacy guard, which applies only to the free generator.

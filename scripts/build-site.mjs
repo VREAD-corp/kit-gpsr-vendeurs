@@ -15,6 +15,7 @@ const out = process.env.OUT_DIR ? resolve(process.env.OUT_DIR) : join(root, 'dis
 // Sales gate: with SALES_OPEN=false (sales.config.json) the build emits no buy UI at all.
 const SALES = loadSalesConfig(root);
 const OPEN = SALES.SALES_OPEN === true;
+// Quote / bank-transfer form (sales.config.json quotesEnabled): block + devis.js tag only when true.
 const builders = { tool: toolPage, obligations: obligationsPage, pack: packPage, legal: legalPage, privacy: privacyPage, terms: termsPage };
 
 await rm(out, { recursive: true, force: true });
@@ -57,7 +58,7 @@ if (OPEN) {
 <h1>Commander le Pack documentation GPSR</h1>
 <p class="lead">Modèles étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur (FR/EN). ${pr.sentence}.</p>
 ${orderFormHtml({ config: SALES, productName: 'Pack documentation GPSR', cgvUrl: `${SITE.base}/cgv-pro.html`, payLabel: PAY_LABEL })}`,
-      tail: `<script src="${assets}/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="${assets}/pay.js"></script>\n`,
+      tail: `<script src="${assets}/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="${assets}/pay.js"></script>\n${SALES.quotesEnabled ? `<script src="${assets}/devis.js"></script>\n` : ''}`,
     }),
   );
   await writeFile(
@@ -72,7 +73,7 @@ ${orderFormHtml({ config: SALES, productName: 'Pack documentation GPSR', cgvUrl:
     }),
   );
   await mkdir(join(out, 'assets', 'checkout'), { recursive: true });
-  for (const f of ['pay.js', 'order.js']) await cp(join(root, 'src', 'checkout', f), join(out, 'assets', 'checkout', f));
+  for (const f of ['pay.js', 'order.js', 'devis.js']) await cp(join(root, 'src', 'checkout', f), join(out, 'assets', 'checkout', f));
   await writeFile(join(out, 'assets', 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE.origin}${SITE.base}/cgv-pro.html`, orderPage: `${SITE.base}${ORDER_DONE_PATH}`, payLabel: PAY_LABEL }));
 }
 

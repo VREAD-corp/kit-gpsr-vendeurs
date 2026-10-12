@@ -291,6 +291,7 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 #payment-element { margin: 1em 0; min-height: 120px; }
 .pay-button { font: inherit; font-weight: 700; background: var(--brand); color: var(--brand-ink); border: 0; border-radius: 8px; padding: .85em 1.2em; cursor: pointer; width: 100%; min-height: 48px; }
 .pay-button[disabled] { opacity: .6; cursor: progress; }
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .small { font-size: .9rem; }
 .muted { color: var(--muted); }
 .status { font-weight: 700; }
