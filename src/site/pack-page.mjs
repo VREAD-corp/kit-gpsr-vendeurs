@@ -3,7 +3,7 @@
 // DOCX + Markdown, 2 CSV registers per language). Refund, updates, delivery and invoice answers quote the
 // B2B terms (cgv-pro.html, art. 4, 6, 7, 8, 10, 12): nothing is promised beyond them.
 // `sales` = validated sales.config.json: SALES_OPEN gates every buy element.
-import { ORG_JSONLD, SITE, breadcrumb, url } from './layout.mjs';
+import { SITE, breadcrumb, url } from './layout.mjs';
 import { DEFAULT_SALES, ORDER_PATH, VAT_NOTE, packPriceLabel, packProductJsonld } from './legal-pages.mjs';
 import { prices } from '../../scripts/checkout-pages.mjs';
 import { PREVIEWS, aboutBlock, docStack, factsBlock, gallery, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
@@ -103,7 +103,7 @@ export function packPage(lang, sales) {
   const order = `${SITE.base}${ORDER_PATH}`;
   const cgv = url('terms', 'fr');
   const crumb = breadcrumb(lang, 'pack', fr ? 'Pack de modèles GPSR' : 'GPSR template pack');
-  const jsonld = open ? [ORG_JSONLD, packProductJsonld(lang, sales), crumb.jsonld] : [ORG_JSONLD, crumb.jsonld];
+  const jsonld = open ? [packProductJsonld(lang, sales), crumb.jsonld] : [crumb.jsonld];
   const { ref, html: srcHtml } = sourceList(lang, ['gpsr', 'recall', 'rappelconso']);
   const prev = PREVIEWS[lang];
   const stack = docStack(prev.map((p) => p[0]), prev.map((p) => p[1] + (fr ? ', page 1 (extrait du pack)' : ', page 1 (from the pack)')), fr ? 'Pages réelles du pack' : 'Real pack pages');

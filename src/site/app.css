@@ -305,3 +305,10 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .roles { margin: 0 0 1em; }
 .roles dt { font-weight: 700; margin-top: .8em; }
 .roles dd { margin: .2em 0 0; }
+
+/* Cross-site block « Autres outils READ FRANCE » (same markup on every outils.vread.fr site) */
+footer.site nav.rf-network { display: block; margin: 0 0 14px; }
+.rf-network-title { margin: 0 0 .3rem; font-weight: 600; color: var(--ink); }
+.rf-network ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; }
+.rf-network li { margin: 0; }
+.rf-network a { display: inline-block; padding: .2rem 0; }

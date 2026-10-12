@@ -1,5 +1,5 @@
 import { S } from '../lib/content.js';
-import { ORG_ID, ORG_JSONLD, SITE, abs, breadcrumb, lastmod, longDate, url } from './layout.mjs';
+import { ORG_REF, SITE, abs, breadcrumb, lastmod, longDate, url } from './layout.mjs';
 
 const a = (s, lang, art) => `<a href="${s.url[lang]}">${s.label[lang]}${art ? `, ${art}` : ''}</a>`;
 
@@ -105,6 +105,7 @@ ${sectorTable}
 <li>Vinted Pro : ${a(S.vintedPro, lang)}. Nous avons relevé dans l’interface les champs « Informations sur le fabricant », « Étiquetage et marquage » et les paramètres REP.</li>
 <li>Boutique Shopify ou site propre : vous êtes le vendeur à distance, l’article 19 s’applique directement à vos fiches produits.</li>
 </ul>
+<p>Autre obligation des boutiques en ligne : depuis le 28 juin 2025, les sites de commerce en ligne vendant aux consommateurs doivent être accessibles (Acte européen sur l’accessibilité, directive (UE) 2019/882 ; les microentreprises de services en sont exemptées). <a href="https://outils.vread.fr/declaration-accessibilite/">Générateur gratuit de déclaration d’accessibilité</a>.</p>
 <h2>Limites de cette synthèse</h2>
 <p>Les pages de la DGCCRF n’ont pas pu être consultées automatiquement (protection anti-robot) : référez-vous à Légifrance et à RappelConso cités ci-dessus. Les aides Amazon Seller Central nécessitent une connexion. Les normes (EN 15494, EN 14682, EN 12586) sont payantes : nous citons leur titre, pas leur contenu. Signalez une erreur à <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <p><a class="btn" href="${url('tool', lang)}">Générer mes documents gratuitement</a></p>`
@@ -152,6 +153,7 @@ ${sectorTable}
 <li>Vinted Pro: ${a(S.vintedPro, lang)}. We saw the “Manufacturer information” and “Labelling and marking” fields and the EPR settings in the interface.</li>
 <li>Shopify store or own website: you are the distance seller; Article 19 applies directly to your product pages.</li>
 </ul>
+<p>Another obligation for online shops: since 28 June 2025, e-commerce sites selling to consumers must be accessible (European Accessibility Act, Directive (EU) 2019/882; micro-enterprises providing services are exempt). <a href="https://outils.vread.fr/declaration-accessibilite/en/">Free accessibility statement generator</a>.</p>
 <h2>Limits of this summary</h2>
 <p>The French DGCCRF pages could not be read automatically (anti-bot protection): rely on Légifrance and RappelConso cited above. Amazon Seller Central help requires a login. Standards (EN 15494, EN 14682, EN 12586) are paid documents: we cite their titles, not their content. Report an error to <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <p><a class="btn" href="${url('tool', lang)}">Generate my documents for free</a></p>`;
@@ -164,7 +166,6 @@ ${sectorTable}
     description: description[lang],
     body,
     jsonld: [
-      ORG_JSONLD,
       {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -175,8 +176,8 @@ ${sectorTable}
         inLanguage: lang,
         mainEntityOfPage: abs('obligations', lang),
         image: `${SITE.origin}${SITE.base}/assets/og.png`,
-        author: { '@id': ORG_ID },
-        publisher: { '@id': ORG_ID },
+        author: ORG_REF,
+        publisher: ORG_REF,
         // Primary legal texts the page cites (secondary pages such as ADEME or marketplace help are linked in the body only).
         citation: [S.gpsr, S.guidelines, S.msr, S.recallTemplate, S.pld, S.toys, S.toys2025, S.cosmetics, S.textile, S.l4233, S.envL54110, S.envR541173, S.loi2026]
           .map((x) => ({ '@type': 'Legislation', name: x.label[lang], url: x.url[lang] })),

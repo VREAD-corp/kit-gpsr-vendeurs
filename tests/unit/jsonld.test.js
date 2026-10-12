@@ -1,5 +1,5 @@
-// schema.org JSON-LD: the pack page carries a Product + Offer (only while SALES_OPEN is true) and the
-// publisher Organization (SIREN); the home page keeps its WebApplication and adds the same Organization.
+// schema.org JSON-LD: the pack page carries a Product + Offer (only while SALES_OPEN is true) sold by the
+// hub Organization; pages reference that Organization by @id (https://outils.vread.fr/#org) and never repeat it.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -27,16 +27,12 @@ function jsonld(html) {
 }
 const byType = (nodes, type) => nodes.filter((n) => n['@type'] === type);
 
-function assertOrganization(nodes) {
-  const [org] = byType(nodes, 'Organization');
-  assert.ok(org, 'Organization node');
-  assert.equal(org['@context'], 'https://schema.org');
-  assert.equal(org['@id'], ORG_ID);
-  assert.equal(org.name, 'READ FRANCE SAS');
-  assert.equal(org.legalName, 'READ FRANCE');
-  assert.equal(org.url, 'https://outils.vread.fr/');
-  assert.deepEqual(org.address, { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' });
-  assert.deepEqual(org.identifier, { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' });
+const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+
+/** The full Organization node lives on the hub only: no page here may repeat it. */
+function assertNoOrganizationCopy(nodes) {
+  assert.equal(byType(nodes, 'Organization').length, 0, 'no standalone Organization node');
+  assert.doesNotMatch(JSON.stringify(nodes), /"legalName"|"PostalAddress"|"SIREN"/);
 }
 
 const OPEN_CFG = { ...repoConfig, SALES_OPEN: true, amount: 2900, VAT: 'franchise293B', endpoint: 'https://octave-test.invalid/exec', publishableKey: 'pk_test_fakeForJsonLdTest123' };
@@ -45,7 +41,7 @@ const open = build(OPEN_CFG, { SALES_ALLOW_TEST: '1' });
 for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
   test(`${file} (SALES_OPEN=true): parseable Product JSON-LD with a 29.00 EUR InStock offer sold by the SIREN organization`, () => {
     const nodes = jsonld(readFileSync(join(open, file), 'utf8'));
-    assertOrganization(nodes);
+    assertNoOrganizationCopy(nodes);
     const products = byType(nodes, 'Product');
     assert.equal(products.length, 1, 'exactly one Product');
     const p = products[0];
@@ -78,19 +74,20 @@ test('SALES_OPEN=false: no Product JSON-LD on the pack pages', () => {
   for (const f of ['pack.html', 'en/pack.html']) {
     const nodes = jsonld(readFileSync(join(closed, f), 'utf8'));
     assert.equal(byType(nodes, 'Product').length, 0, f);
-    assertOrganization(nodes);
+    assertNoOrganizationCopy(nodes);
   }
 });
 
-test('home pages: Organization added, free WebApplication kept, visible pack link with the net price', () => {
+test('home pages: free WebApplication published by the hub Organization (@id), visible pack link with the net price', () => {
   for (const [file, re] of [['index.html', /<a href="\/kit-gpsr-vendeurs\/pack\.html">Pack documentation GPSR, 29 € net<\/a>/], ['en/index.html', /<a href="\/kit-gpsr-vendeurs\/en\/pack\.html">GPSR documentation pack, €29 net<\/a>/]]) {
     const html = readFileSync(join(open, file), 'utf8');
     const nodes = jsonld(html);
-    assertOrganization(nodes);
+    assertNoOrganizationCopy(nodes);
     const [app] = byType(nodes, 'WebApplication');
     assert.ok(app, 'WebApplication kept');
     assert.equal(app.isAccessibleForFree, true);
     assert.deepEqual(app.offers, { '@type': 'Offer', price: '0', priceCurrency: 'EUR' });
+    assert.deepEqual(app.publisher, ORG_REF);
     assert.equal(byType(nodes, 'FAQPage').length, 1);
     assert.match(html, re);
   }
@@ -119,12 +116,12 @@ test('pack and obligations pages: BreadcrumbList (generator > page); obligations
     assert.equal(bc.itemListElement[0].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}`);
     assert.equal(bc.itemListElement[1].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}${file.replace(/^en\//, '')}`);
     if (!file.includes('obligations')) continue;
-    assertOrganization(nodes);
+    assertNoOrganizationCopy(nodes);
     const [art] = byType(nodes, 'Article');
     assert.match(art.datePublished, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(art.dateModified >= art.datePublished);
-    assert.deepEqual(art.author, { '@id': ORG_ID });
-    assert.deepEqual(art.publisher, { '@id': ORG_ID });
+    assert.deepEqual(art.author, ORG_REF);
+    assert.deepEqual(art.publisher, ORG_REF);
     assert.equal(art.mainEntityOfPage, bc.itemListElement[1].item);
     assert.ok(art.citation.length >= 10 && art.citation.every((c) => c['@type'] === 'Legislation' && /^https:\/\//.test(c.url)));
   }

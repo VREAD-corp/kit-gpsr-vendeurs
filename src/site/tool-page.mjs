@@ -1,4 +1,4 @@
-import { ORG_JSONLD, SITE, url } from './layout.mjs';
+import { ORG_REF, SITE, url } from './layout.mjs';
 import { ORDER_PATH, packPriceLabel } from './legal-pages.mjs';
 import { aboutBlock, docStack, factsBlock, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
 import { compareTable } from './pack-page.mjs';
@@ -35,7 +35,6 @@ export function toolPage(lang, sales) {
     : `<a href="${packUrl}">${fr ? 'Pack documentation (bientôt disponible)' : 'Documentation pack (coming soon)'}</a>`;
   const { ref, html: srcHtml } = sourceList(lang, ['gpsr', 'amazon', 'etsy']);
   const jsonld = [
-    ORG_JSONLD,
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
@@ -46,7 +45,7 @@ export function toolPage(lang, sales) {
       inLanguage: lang,
       isAccessibleForFree: true,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' },
+      publisher: ORG_REF,
     },
     {
       '@context': 'https://schema.org',

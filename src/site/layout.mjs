@@ -20,18 +20,12 @@ const D1013 = { fr: '2026-10-13', en: '2026-10-13' };
 const LASTMOD = { tool: D1013, obligations: D1013, pack: D1013, legal: D1012, privacy: D1012, terms: D1012 };
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
-/** schema.org Organization of the publisher (same @id on every page that references it). */
+/**
+ * schema.org reference to the publisher. The full Organization node (logo, founders, SIREN, sameAs) lives only on
+ * the hub https://outils.vread.fr/; every page here points at it by @id instead of repeating it.
+ */
 export const ORG_ID = 'https://outils.vread.fr/#org';
-export const ORG_JSONLD = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': ORG_ID,
-  name: 'READ FRANCE SAS',
-  legalName: 'READ FRANCE',
-  url: 'https://outils.vread.fr/',
-  address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
-  identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
-};
+export const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
 
 // Each logical page has a path per language; used for nav, hreflang and the sitemap.
 export const PAGES = {
@@ -77,6 +71,29 @@ export function breadcrumb(lang, key, label) {
       ],
     },
   };
+}
+
+// « Autres outils READ FRANCE »: the same footer block on every outils.vread.fr site (hub + the 4 paid offers).
+const NETWORK = {
+  fr: ['Autres outils READ FRANCE', [
+    ['Tous les outils', 'https://outils.vread.fr/'],
+    ['Kit Qualiopi V10', 'https://outils.vread.fr/kit-qualiopi-v10/'],
+    ['Pack documentation GPSR', 'https://outils.vread.fr/kit-gpsr-vendeurs/pack.html'],
+    ['Alertes appels d’offres formation', 'https://outils.vread.fr/veille-ao-formation/alertes/'],
+    ['Audit d’accessibilité', 'https://outils.vread.fr/declaration-accessibilite/audit/'],
+  ]],
+  en: ['Other READ FRANCE tools', [
+    ['All tools', 'https://outils.vread.fr/'],
+    ['Qualiopi V10 kit (in French)', 'https://outils.vread.fr/kit-qualiopi-v10/', 'fr'],
+    ['GPSR documentation pack', 'https://outils.vread.fr/kit-gpsr-vendeurs/en/pack.html'],
+    ['Public training tender alerts (in French)', 'https://outils.vread.fr/veille-ao-formation/alertes/', 'fr'],
+    ['Accessibility audit', 'https://outils.vread.fr/declaration-accessibilite/en/audit/'],
+  ]],
+};
+function networkHtml(lang) {
+  const [title, links] = NETWORK[lang] ?? NETWORK.fr;
+  const items = links.map(([label, href, hl]) => `<li><a href="${href}"${hl ? ` hreflang="${hl}"` : ''}>${label}</a></li>`).join('\n');
+  return `<nav class="rf-network" aria-label="${title}">\n<p class="rf-network-title">${title}</p>\n<ul>\n${items}\n</ul>\n</nav>`;
 }
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -139,6 +156,7 @@ ${jsonld}${p.head ?? ''}
 ${p.body}
 </div></main>
 <footer class="site"><div class="wrap">
+${networkHtml(lang)}
 <nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
 <p>${brand}, ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>

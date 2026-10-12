@@ -1,6 +1,6 @@
 // Mentions légales, privacy notice, B2B terms (CGV professionnels) and the paid-pack page.
 // `sales` = validated sales.config.json (scripts/checkout-pages.mjs): SALES_OPEN gates every buy element.
-import { ORG_ID, ORG_JSONLD, SITE, abs, url } from './layout.mjs';
+import { ORG_ID, SITE, abs, url } from './layout.mjs';
 import { cgvProBody, prices } from '../../scripts/checkout-pages.mjs';
 
 export const ORDER_PATH = '/commander.html';
