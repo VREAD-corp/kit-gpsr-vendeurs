@@ -11,6 +11,25 @@ export const SITE = {
 
 export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 
+// Sitemap <lastmod> per page and language when it differs from SITE.updated
+// (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO).
+const D1012 = { fr: '2026-10-12', en: '2026-10-12' };
+const LASTMOD = { tool: D1012, pack: D1012, legal: D1012, privacy: D1012, terms: D1012 };
+export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
+
+/** schema.org Organization of the publisher (same @id on every page that references it). */
+export const ORG_ID = 'https://vread-corp.github.io/#org';
+export const ORG_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': ORG_ID,
+  name: 'READ FRANCE SAS',
+  legalName: 'READ FRANCE',
+  url: 'https://vread-corp.github.io/',
+  address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
+  identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
+};
+
 // Each logical page has a path per language; used for nav, hreflang and the sitemap.
 export const PAGES = {
   tool: { fr: '/', en: '/en/' },

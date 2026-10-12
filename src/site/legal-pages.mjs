@@ -1,6 +1,6 @@
 // Mentions légales, privacy notice, B2B terms (CGV professionnels) and the paid-pack page.
 // `sales` = validated sales.config.json (scripts/checkout-pages.mjs): SALES_OPEN gates every buy element.
-import { SITE, url } from './layout.mjs';
+import { ORG_ID, ORG_JSONLD, SITE, abs, url } from './layout.mjs';
 import { cgvProBody, prices } from '../../scripts/checkout-pages.mjs';
 
 export const ORDER_PATH = '/commander.html';
@@ -125,17 +125,55 @@ const PACK_CONTENTS = {
   ],
 };
 
+// Price as charged (sales.config.json `amount`, in cents): « 29 € net » / « €29 net » (VAT franchise, art. 293 B CGI).
+const DEFAULT_SALES = { VAT: 'franchise293B', amount: 2900 };
+const whole = (cents) => (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
+export function packPriceLabel(lang, sales = DEFAULT_SALES) {
+  const std = sales.VAT === 'standard20';
+  const n = whole(sales.amount);
+  return lang === 'fr' ? `${n.replace('.', ',')} € ${std ? 'TTC' : 'net'}` : `€${n} ${std ? 'incl. VAT' : 'net'}`;
+}
+const VAT_NOTE = { fr: 'TVA non applicable, art. 293 B du CGI', en: 'VAT not applicable, art. 293 B of the French tax code' };
+
+/** schema.org Product + Offer of the pack (emitted only while SALES_OPEN is true). */
+export function packProductJsonld(lang, sales) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Pack documentation GPSR',
+    ...(lang === 'en' ? { alternateName: 'GPSR documentation pack' } : {}),
+    description: lang === 'fr'
+      ? 'Modèles et procédures GPSR (règlement (UE) 2023/988) pour vendeurs en ligne : analyse de risques par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur, checklists plateformes et REP France. Fichiers DOCX, Markdown et CSV, en français et en anglais.'
+      : 'GPSR (Regulation (EU) 2023/988) templates and procedures for online sellers: category risk analyses, recall procedure, incident log, supplier questionnaire, marketplace and French EPR checklists. DOCX, Markdown and CSV files, in French and English.',
+    image: `${SITE.origin}${SITE.base}/assets/og.png`,
+    url: abs('pack', lang),
+    brand: { '@type': 'Brand', name: 'Kit GPSR Vendeurs' },
+    sku: 'pack-gpsr',
+    offers: {
+      '@type': 'Offer',
+      price: (sales.amount / 100).toFixed(2),
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      url: `${SITE.origin}${SITE.base}${ORDER_PATH}`,
+      seller: { '@id': ORG_ID },
+      itemCondition: 'https://schema.org/NewCondition',
+    },
+  };
+}
+
 export function packPage(lang, sales) {
   const items = PACK_CONTENTS[lang].map((i) => `<li>${i}</li>`).join('');
   const open = sales?.SALES_OPEN === true;
-  const pr = prices(sales ?? { VAT: 'franchise293B', amount: 2900 });
-  const fr = pr.std ? '29 € TTC' : '29 € net';
-  const en = pr.std ? '€29 incl. VAT' : '€29, VAT not applicable';
+  const pr = prices(sales ?? DEFAULT_SALES);
+  const fr = packPriceLabel('fr', sales ?? DEFAULT_SALES);
+  const en = packPriceLabel('en', sales ?? DEFAULT_SALES);
+  const jsonld = open ? [ORG_JSONLD, packProductJsonld(lang, sales)] : [ORG_JSONLD];
   if (lang === 'fr')
     return {
-      title: open ? `Pack documentation GPSR (${fr}) — pour les entreprises` : `Pack documentation GPSR (${fr}) — bientôt disponible`,
+      jsonld,
+      title: open ? `Documentation GPSR vendeur Etsy, Vinted, Amazon : pack à ${fr}` : 'Documentation GPSR vendeur Etsy, Vinted, Amazon — bientôt disponible',
       description: open
-        ? 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Vente aux entreprises (SIREN), fichier et facture par e-mail.'
+        ? `Modèles GPSR pour vendeurs Etsy, Vinted, Amazon, Shopify : risques par catégorie, rappel, incidents. Pros : ${fr}${pr.std ? '' : `, ${VAT_NOTE.fr}`}.`
         : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
       body: `${open ? '<p><span class="pill">Réservé aux professionnels</span></p>' : '<p><span class="pill badge-soon">Bientôt disponible</span></p>'}
 <h1>Pack documentation GPSR</h1>
@@ -143,7 +181,7 @@ export function packPage(lang, sales) {
 ${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${pr.vat} de TVA à 20 %, ` : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>
 <p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}">Commander</a></p>
 <p class="hint">Vente aux entreprises immatriculées en France (SIREN). Paiement par carte bancaire avec Stripe ; fichier ZIP et facture acquittée envoyés par e-mail. <a href="${url('terms', 'fr')}">CGV professionnels</a>.</p>` : `<div class="callout"><p><strong>Pas encore en vente.</strong> Le pack existe et il est terminé, mais le paiement en ligne n’est pas encore ouvert : il le sera après l’ouverture du compte de paiement de READ FRANCE SAS. Aucun paiement ne peut être effectué aujourd’hui.</p></div>
-<p class="price">${fr} <small>(prix prévu, ${pr.std ? '' : 'TVA non applicable, art. 293 B du CGI, '}paiement unique)</small></p>`}
+<p class="price">${fr} <small>(prix prévu, ${pr.std ? '' : `${VAT_NOTE.fr}, `}paiement unique)</small></p>`}
 <h2>Contenu du pack</h2>
 <ul>${items}</ul>
 <h2>Ce que le pack n’est pas</h2>
@@ -157,17 +195,18 @@ ${open ? `<p class="price">${pr.short} <small>(${pr.std ? `soit ${pr.ht} HT + ${
 <p>Conditions de vente : <a href="${url('terms', 'fr')}">CGV professionnels</a> (vente réservée aux entreprises).</p>`,
     };
   return {
-    title: open ? `GPSR documentation pack (${en}) — for businesses` : `GPSR documentation pack (${en}) — coming soon`,
+    jsonld,
+    title: open ? `GPSR documentation for Etsy sellers – template pack, ${en}` : 'GPSR documentation for Etsy sellers – template pack, coming soon',
     description: open
-      ? 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Sold to French businesses (SIREN); file and invoice by e-mail.'
+      ? `GPSR templates for Etsy, Vinted, Amazon, Shopify sellers: recall, incident log. French firms: ${en}${pr.std ? '' : `, ${VAT_NOTE.en}`}.`
       : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
     body: `${open ? '<p><span class="pill">Businesses only</span></p>' : '<p><span class="pill badge-soon">Coming soon</span></p>'}
 <h1>GPSR documentation pack</h1>
 <p class="lead">To go further than the free generator: extended templates per product category and the procedures to keep ready.</p>
-${open ? `<p class="price">${en} <small>(${pr.std ? '' : 'art. 293 B CGI, '}one-off payment)</small></p>
+${open ? `<p class="price">${en} <small>(${pr.std ? '' : `${VAT_NOTE.en}; `}one-off payment)</small></p>
 <p class="btn-row"><a class="btn" href="${SITE.base}${ORDER_PATH}" lang="fr">Order (page in French)</a></p>
 <p class="hint">Sold only to businesses registered in France (SIREN number required), under the French <a href="${url('terms', 'fr')}" lang="fr">B2B terms of sale</a>. Card payment with Stripe; ZIP file and paid invoice sent by e-mail.</p>` : `<div class="callout"><p><strong>Not on sale yet.</strong> The pack exists and is finished, but online payment is not open yet: it will be once READ FRANCE SAS’s payment account is opened. No payment can be made today.</p></div>
-<p class="price">${en} <small>(planned price, ${pr.std ? '' : 'art. 293 B CGI, '}one-off payment)</small></p>`}
+<p class="price">${en} <small>(planned price, ${pr.std ? '' : `${VAT_NOTE.en}; `}one-off payment)</small></p>`}
 <h2>What’s in the pack</h2>
 <ul>${items}</ul>
 <h2>What the pack is not</h2>
@@ -216,7 +255,7 @@ ${sales.SALES_OPEN ? '' : '<div class="callout"><p><strong>Not on sale yet.</str
 <li><strong>Seller:</strong> ${COMPANY.name}, share capital ${COMPANY.capitalEn}, ${COMPANY.address}, SIREN ${COMPANY.siren}, RCS Paris.</li>
 <li><strong>Buyers:</strong> businesses registered in France (SIREN), ordering for their professional activity. No consumer sales.</li>
 <li><strong>Product:</strong> the “GPSR documentation pack”, a digital ZIP file sent by e-mail with the paid invoice.</li>
-<li><strong>Price:</strong> ${pr.std ? `€29.00 incl. 20% French VAT (€24.17 excl. VAT)` : '€29.00, VAT not applicable (art. 293 B CGI)'}; card payment through Stripe.</li>
+<li><strong>Price:</strong> ${pr.std ? `€${(sales.amount / 100).toFixed(2)} incl. 20% French VAT` : `€${(sales.amount / 100).toFixed(2)} net (${VAT_NOTE.en})`}; card payment through Stripe.</li>
 <li><strong>No withdrawal right</strong> (business-to-business sale); a defective file is replaced or refunded.</li>
 <li><strong>Licence:</strong> non-exclusive, non-transferable, internal use only; no resale or redistribution.</li>
 <li><strong>Not legal advice;</strong> READ FRANCE SAS never acts as EU responsible person, authorised representative, importer or EPR agent.</li>

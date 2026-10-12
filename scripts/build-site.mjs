@@ -2,7 +2,7 @@
 import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { layout, PAGES, SITE, abs } from '../src/site/layout.mjs';
+import { layout, PAGES, SITE, abs, lastmod } from '../src/site/layout.mjs';
 import { toolPage } from '../src/site/tool-page.mjs';
 import { obligationsPage } from '../src/site/obligations-page.mjs';
 import { legalPage, legacyTermsPage, packPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH } from '../src/site/legal-pages.mjs';
@@ -81,10 +81,10 @@ await cp(join(root, 'src', 'site', 'app.css'), join(out, 'assets', 'app.css'));
 await cp(join(root, 'src', 'site', 'favicon.svg'), join(out, 'assets', 'favicon.svg'));
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 
-const urls = Object.keys(PAGES).filter((k) => OPEN || k !== 'terms').flatMap((k) => ['fr', 'en'].map((l) => abs(k, l)));
+const urls = Object.keys(PAGES).filter((k) => OPEN || k !== 'terms').flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));
 await writeFile(
   join(out, 'sitemap.xml'),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${SITE.updated}</lastmod></url>`).join('\n')}\n</urlset>\n`,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, d]) => `  <url><loc>${u}</loc><lastmod>${d}</lastmod></url>`).join('\n')}\n</urlset>\n`,
 );
 await writeFile(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE.origin}${SITE.base}/sitemap.xml\n`);
 await writeFile(join(out, '.nojekyll'), '');

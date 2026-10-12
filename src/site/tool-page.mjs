@@ -1,4 +1,5 @@
-import { SITE, url } from './layout.mjs';
+import { ORG_JSONLD, SITE, url } from './layout.mjs';
+import { packPriceLabel } from './legal-pages.mjs';
 
 const FAQ = {
   fr: [
@@ -17,10 +18,15 @@ const FAQ = {
   ],
 };
 
-export function toolPage(lang) {
+export function toolPage(lang, sales) {
   const fr = lang === 'fr';
   const faq = FAQ[lang];
+  const open = sales?.SALES_OPEN === true;
+  const packLink = open
+    ? `<a href="${url('pack', lang)}">${fr ? 'Pack documentation GPSR' : 'GPSR documentation pack'} – ${packPriceLabel(lang, sales)}</a>`
+    : `<a href="${url('pack', lang)}">${fr ? 'Pack documentation (bientôt disponible)' : 'Documentation pack (coming soon)'}</a>`;
   const jsonld = [
+    ORG_JSONLD,
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
@@ -54,7 +60,7 @@ export function toolPage(lang) {
 <div class="card"><h2>${fr ? '3. Exportez' : '3. Export'}</h2><p>${fr ? 'Imprimez ou enregistrez en PDF, DOCX ou Markdown. Rien n’est envoyé.' : 'Print or save as PDF, DOCX or Markdown. Nothing is uploaded.'}</p></div>
 </div>
 <p>${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${SITE.releases}">${fr ? 'Téléchargez le pack de modèles gratuit (ZIP, FR + EN)' : 'Download the free template pack (ZIP, FR + EN)'}</a>.</p>
-</section>
+${open ? `<p>${fr ? 'Pour aller plus loin :' : 'To go further:'} <strong>${packLink}</strong> ${fr ? '(modèles par catégorie, procédure de rappel, registre des incidents ; vente aux professionnels).' : '(category templates, recall procedure, incident log; sold to French businesses).'}</p>\n` : ''}</section>
 <noscript><div class="callout"><p>${fr ? 'Le générateur a besoin de JavaScript (exécuté uniquement dans votre navigateur). Sans JavaScript, utilisez le pack de modèles gratuit.' : 'The generator needs JavaScript (run only in your browser). Without JavaScript, use the free template pack.'}</p></div></noscript>
 <h2 id="questionnaire">${fr ? 'Questionnaire' : 'Questionnaire'}</h2>
 <div class="btn-row no-print">
@@ -85,7 +91,7 @@ export function toolPage(lang) {
 <section class="intro">
 <h2>${fr ? 'Questions fréquentes' : 'Frequently asked questions'}</h2>
 ${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
-<p>${fr ? 'Les obligations et leurs sources officielles sont détaillées sur la page' : 'Obligations and their official sources are detailed on the'} <a href="${url('obligations', lang)}">${fr ? 'Obligations & sources' : 'Obligations & sources page'}</a>. ${fr ? 'Besoin de modèles par catégorie, d’une procédure de rappel et d’un registre des incidents ?' : 'Need category templates, a recall procedure and an incident log?'} <a href="${url('pack', lang)}">${fr ? 'Pack documentation (bientôt disponible)' : 'Documentation pack (coming soon)'}</a>.</p>
+<p>${fr ? 'Les obligations et leurs sources officielles sont détaillées sur la page' : 'Obligations and their official sources are detailed on the'} <a href="${url('obligations', lang)}">${fr ? 'Obligations & sources' : 'Obligations & sources page'}</a>. ${fr ? 'Besoin de modèles par catégorie, d’une procédure de rappel et d’un registre des incidents ?' : 'Need category templates, a recall procedure and an incident log?'} ${packLink}.</p>
 </section>`;
   return {
     title: fr ? 'Générateur GPSR gratuit pour vendeurs Etsy, Vinted, Amazon, Shopify — Kit GPSR Vendeurs' : 'Free GPSR generator for Etsy, Vinted, Amazon and Shopify sellers — GPSR Seller Kit',
