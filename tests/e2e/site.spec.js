@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { unzip } from '../../src/lib/zip.js';
 
+// Our checks are not visits: mesure.js sends them to the excluded counters (octave_notrack=1, reason notrack).
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { localStorage.setItem('octave_notrack', '1'); } catch {} }); });
+
 const PAGES = ['', 'en/', 'obligations.html', 'en/obligations.html', 'pack.html', 'en/pack.html', 'mentions-legales.html', 'en/legal-notice.html', 'confidentialite.html', 'en/privacy.html', 'cgv-pro.html', 'cgv.html', 'en/terms.html'];
 
 function watch(page) {
