@@ -66,7 +66,7 @@ export function toolPage(lang, sales) {
     : `<div class="cta-row"><a class="btn btn-lg" href="#questionnaire">Generate my documents free ↓</a></div>
 <p class="price-line">${open ? `Paid pack available to French businesses only (FR): <a href="${packUrl}">see what it adds</a>.` : `Paid pack: <a href="${packUrl}">coming soon</a>.`}</p>`;
 
-  const hero = `<section class="hero">
+  const hero = `<section class="hero" id="hero">
 <div>
 <p class="eyebrow">${fr ? 'Gratuit · sans compte · rien ne quitte votre navigateur' : 'Free · no account · nothing leaves your browser'}</p>
 <h1>${fr ? 'Générateur GPSR gratuit pour vendeurs Etsy, Amazon Handmade, Vinted Pro et Shopify' : 'Free GPSR generator for Etsy, Amazon Handmade, Vinted Pro and Shopify sellers'}</h1>
@@ -88,11 +88,11 @@ ${heroCta}
     : '';
 
   const body = `${hero}
-<section class="section" aria-labelledby="change-h">
+<section class="section" id="changements" aria-labelledby="change-h">
 <div class="section-head"><span class="kicker">${fr ? 'Ce qui a changé' : 'What changed'}</span><h2 id="change-h">${fr ? 'Ce que le règlement et les plateformes demandent' : 'What the regulation and marketplaces ask for'}</h2></div>
 ${factsBlock(lang, ref)}
 </section>
-<section class="section" aria-labelledby="questionnaire">
+<section class="section" data-section="questionnaire" aria-labelledby="questionnaire">
 <div class="tool-head"><h2 id="questionnaire">${fr ? 'Générez vos 4 documents gratuitement' : 'Generate your 4 documents for free'}</h2>
 <p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${SITE.releases}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
 <ol class="steps"><li>${fr ? 'Répondez : fabricant, produit, risques, plateformes (environ 10 minutes)' : 'Answer: manufacturer, product, hazards, platforms (about 10 minutes)'}</li><li>${fr ? 'Vérifiez les 4 documents' : 'Check the 4 documents'}</li><li>${fr ? 'Exportez en PDF, DOCX ou Markdown' : 'Export as PDF, DOCX or Markdown'}</li></ol>
@@ -124,18 +124,18 @@ ${upsell}
 <div class="tabs no-print" role="tablist" id="tabs" aria-label="${fr ? 'Documents générés' : 'Generated documents'}"></div>
 <div id="panels"></div>
 </section>
-${fr ? `<section class="section" aria-labelledby="compare-h">
+${fr ? `<section class="section" id="comparatif" aria-labelledby="compare-h">
 <div class="section-head"><span class="kicker">Gratuit ou pack</span><h2 id="compare-h">Le gratuit pour vendre, le pack pour être prêt en cas d’incident</h2>
 <p>${open ? 'Réservé aux entreprises immatriculées en France (SIREN).' : 'Le pack n’est pas encore en vente.'}</p></div>
 ${compareTable('fr', label)}
 <p class="inline-pack">${open ? `<a class="btn" href="${packUrl}">Voir le pack et ses aperçus</a> ` : ''}<span class="small muted">Détail du contenu : ${packLink}</span></p>
-</section>` : `<section class="section" aria-labelledby="pack-h">
+</section>` : `<section class="section" id="pack" aria-labelledby="pack-h">
 <div class="card"><h2 id="pack-h">${open ? 'Paid pack available to French businesses only (FR)' : 'Paid pack: coming soon'}</h2>
 <p>${open ? 'Recall procedure, complaints register, technical file, supplier questionnaire and category templates. Buying requires a business registered in France (SIREN).' : 'Recall procedure, complaints register, technical file, supplier questionnaire and category templates.'} ${packLink}.</p></div>
 </section>`}
-<section class="section faq" aria-labelledby="faq-h">
+<section class="section faq" id="faq" aria-labelledby="faq-h">
 <div class="section-head"><span class="kicker">${fr ? 'Questions fréquentes' : 'FAQ'}</span><h2 id="faq-h">${fr ? 'Questions fréquentes' : 'Frequently asked questions'}</h2></div>
-${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
+${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock(lang)}
 ${sourcesSection(lang, srcHtml, `<p>${fr ? 'Les 12 obligations du règlement et de la REP, chacune avec son article :' : 'The 12 obligations of the regulation and French EPR, each with its article:'} <a href="${url('obligations', lang)}">${fr ? 'page Obligations' : 'Obligations page'}</a>.</p>`)}

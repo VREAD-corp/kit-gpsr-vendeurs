@@ -114,7 +114,7 @@ export function packPage(lang, sales) {
   if (fr) {
     const cta = open ? `<a class="btn btn-lg" href="${order}">Commander le pack, ${label}</a>` : '';
     const hero = `${crumb.html}
-<section class="hero">
+<section class="hero" id="hero">
 <div>
 <p class="eyebrow">${open ? 'Règlement (UE) 2023/988 · applicable depuis le 13 décembre 2024' : 'Bientôt disponible'}</p>
 <h1>Pack de modèles GPSR : registre des réclamations, procédure de rappel, modèles par catégorie</h1>
@@ -159,22 +159,22 @@ ${open ? `<p class="small muted">Paiement unique, sans abonnement</p>
         ? `Modèles GPSR pour vendeurs Etsy, Vinted, Amazon, Shopify : risques par catégorie, rappel, incidents. Pros : ${label}${pr.std ? '' : `, ${VAT_NOTE.fr}`}.`
         : 'Pack de modèles GPSR étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur. Bientôt disponible : pas encore en vente.',
       body: `${hero}
-<section class="section" aria-labelledby="change-h">
+<section class="section" id="changements" aria-labelledby="change-h">
 <div class="section-head"><span class="kicker">Après la vente</span><h2 id="change-h">Ce que le règlement demande quand un client signale un problème</h2>
 <p>Le générateur gratuit couvre ce que vos annonces et vos colis doivent afficher. Les trois obligations ci-dessous s’appliquent ensuite, et le pack contient un document pour chacune.</p></div>
 ${factsBlock('fr', ref, 'pack')}
 </section>
-<section class="section" aria-labelledby="contenu-h">
+<section class="section" id="contenu" aria-labelledby="contenu-h">
 <div class="section-head"><span class="kicker">Ce que vous recevez</span><h2 id="contenu-h">13 documents à compléter, en DOCX et en Markdown</h2>
 <p>Pages réelles du pack (version française), telles qu’elles s’ouvrent dans Word ou LibreOffice. Les exemples de produits sont fictifs.</p></div>
 ${gallery('fr')}
 ${docList}
 </section>
-<section class="section" aria-labelledby="compare-h">
+<section class="section" id="comparatif" aria-labelledby="compare-h">
 <div class="section-head"><span class="kicker">Gratuit ou pack</span><h2 id="compare-h">Ce que le pack ajoute au générateur gratuit</h2></div>
 ${compareTable('fr', label)}
 </section>
-<section class="section" aria-labelledby="pour-qui-h">
+<section class="section" id="pour-qui" aria-labelledby="pour-qui-h">
 <div class="section-head"><span class="kicker">Pour qui</span><h2 id="pour-qui-h">Pour les créateurs et petites marques qui vendent en ligne</h2></div>
 <div class="who">
 <div class="card"><h3>Le pack est fait pour vous si…</h3><ul>
@@ -190,9 +190,9 @@ ${compareTable('fr', label)}
 </div>
 </section>
 ${offer}
-<section class="section faq" aria-labelledby="faq-h">
+<section class="section faq" id="faq" aria-labelledby="faq-h">
 <div class="section-head"><span class="kicker">Questions fréquentes</span><h2 id="faq-h">Avant d’acheter</h2></div>
-${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
+${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('fr')}
 ${sourcesSection('fr', srcHtml, `<p>Toutes les obligations et leurs textes : <a href="${url('obligations', 'fr')}">Obligations &amp; sources</a>. Conditions de vente : <a href="${cgv}">CGV professionnels</a>. Modèles vierges gratuits : <a href="${SITE.releases}" data-mesure="free_download">pack de modèles gratuit (ZIP)</a>.</p>`)}
@@ -202,7 +202,7 @@ ${open ? stickyCta(`Pack GPSR · ${amount}`, order, 'Commander') : ''}`,
 
   // English: the pack is sold only to French businesses (SIREN). Say so before any buy link.
   const hero = `${crumb.html}
-<section class="hero">
+<section class="hero" id="hero">
 <div>
 <p class="eyebrow">${open ? 'Paid pack available to French businesses only (FR)' : 'Coming soon'}</p>
 <h1>GPSR template pack: complaints register, recall procedure, category templates</h1>
@@ -214,7 +214,7 @@ ${open ? `<div class="callout"><p><strong>French businesses only.</strong> Buyin
 </div>
 <div>${stack}</div>
 </section>`;
-  const offer = `<section class="section" id="offer" aria-labelledby="offer-h">
+  const offer = `<section class="section" id="offer" data-section="offre" aria-labelledby="offer-h">
 <div class="offer">
 <div>
 <span class="kicker">The offer</span>
@@ -245,25 +245,25 @@ ${open ? `<p class="small muted">One-off payment, French businesses only</p>
       ? `GPSR templates for Etsy, Vinted, Amazon, Shopify sellers: recall, incident log. French firms: ${label}${pr.std ? '' : `, ${VAT_NOTE.en}`}.`
       : 'Extended GPSR templates by product category, recall procedure, incident log, supplier questionnaire. Coming soon: not on sale yet.',
     body: `${hero}
-<section class="section" aria-labelledby="change-h">
+<section class="section" id="changements" aria-labelledby="change-h">
 <div class="section-head"><span class="kicker">After the sale</span><h2 id="change-h">What the regulation asks when a customer reports a problem</h2>
 <p>The free generator covers what your listings and parcels must show. The three obligations below apply after that, and the pack has a document for each one.</p></div>
 ${factsBlock('en', ref, 'pack')}
 </section>
-<section class="section" aria-labelledby="content-h">
+<section class="section" id="contenu" aria-labelledby="content-h">
 <div class="section-head"><span class="kicker">What you get</span><h2 id="content-h">13 documents to complete, as DOCX and Markdown</h2>
 <p>Real pages of the pack (English version), as they open in Word or LibreOffice. Product examples are fictitious.</p></div>
 ${gallery('en')}
 ${docList}
 </section>
-<section class="section" aria-labelledby="compare-h">
+<section class="section" id="comparatif" aria-labelledby="compare-h">
 <div class="section-head"><span class="kicker">Generator or pack</span><h2 id="compare-h">What the pack adds to the free generator</h2></div>
 ${compareTable('en', label)}
 </section>
 ${offer}
-<section class="section faq" aria-labelledby="faq-h">
+<section class="section faq" id="faq" aria-labelledby="faq-h">
 <div class="section-head"><span class="kicker">FAQ</span><h2 id="faq-h">Before you buy</h2></div>
-${faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
+${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('en')}
 ${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Blank templates at no cost: <a href="${SITE.releases}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,

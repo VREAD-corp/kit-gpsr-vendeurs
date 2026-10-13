@@ -137,7 +137,7 @@ test('browser (quotesEnabled=true, stubbed endpoint): box shown, posts action "q
       posts.push(body);
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify(body.action === 'quote' ? { ok: true, quote: 'D-2026-0001', email_masked: 'a***@entreprise.example' } : { ok: false, message: 'stub' }) });
     });
-    await page.goto(`http://127.0.0.1:${server.address().port}/kit-gpsr-vendeurs/commander.html`);
+    await page.goto(`http://127.0.0.1:${server.address().port}/kit-gpsr-vendeurs/commander.html?octave_notrack=1`);
     await page.waitForSelector('#octave-devis-box:not([hidden])');
     await page.click('#octave-devis-box summary');
     const f = (n, v) => page.fill(`#octave-devis input[name="${n}"]`, v);

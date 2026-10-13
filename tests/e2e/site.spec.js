@@ -38,6 +38,33 @@ for (const path of PAGES) {
   });
 }
 
+// cro.js (aggregate behaviour counters, shared France backend): loaded on every page, nothing sent from our tests.
+const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
+test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveCro; no A/B experiment', async ({ page }) => {
+  const w = watch(page);
+  for (const path of [...PAGES, ...(SALES_OPEN ? ['commander.html'] : [])]) {
+    const res = await page.goto(path);
+    expect(res.status(), path).toBe(200);
+    const s = page.locator('script[src$="/kit-gpsr-vendeurs/cro.js"]');
+    await expect(s, path).toHaveCount(1);
+    await expect(s).toHaveAttribute('data-site', 'kit-gpsr-vendeurs');
+    await expect(s).toHaveAttribute('data-api', CRO_API);
+    await expect(s).toHaveAttribute('data-hosts', 'outils.vread.fr');
+    await expect(s).toHaveAttribute('data-cta', 'a[href*=commander],#pay-button,#btn-generate');
+    await page.waitForFunction(() => !!window.octaveCro);
+    expect(await page.evaluate(() => [typeof window.octaveCro.goal, window.octaveCro.v('price'), window.OCTAVE_XP])).toEqual(['function', undefined, undefined]);
+    expect(await page.evaluate(() => [...document.documentElement.attributes].filter((a) => a.name.startsWith('data-xp-')).length)).toBe(0);
+  }
+  // The FR tool page: measurable sections and FAQ ids.
+  await page.goto('');
+  for (const id of ['hero', 'changements', 'faq', 'qui', 'sources']) await expect(page.locator(`section#${id}`)).toHaveCount(1);
+  await expect(page.locator('section[data-section="questionnaire"]')).toHaveCount(1);
+  await expect(page.locator('#faq details#faq-1')).toHaveCount(1);
+  expect(await page.evaluate(() => localStorage.getItem('octave_notrack'))).toBe('1');
+  expect(w.errors).toEqual([]);
+  expect(w.foreign.filter((u) => /action=track/.test(u))).toEqual([]); // the order page legitimately talks to Stripe / the catalog
+});
+
 test('all internal links resolve (200)', async ({ page, request }) => {
   const seen = new Set();
   for (const path of PAGES) {

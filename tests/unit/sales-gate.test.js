@@ -25,6 +25,9 @@ const BUY_MARKERS = [/js\.stripe\.com/, /commander\.html/, /commande\.html/, /ch
 const GENERATOR_FORM = /id="gpsr-form"/; // the free generator's own (offline) form is allowed
 // The shared anonymous audience snippet (served on every page, sales open or not) names the checkout form and endpoint; it is not buy UI.
 const MESURE = 'mesure.js';
+// Same for the shared behaviour counters (cro.js tag with its data-api endpoint, cro.js, cro-goals.js): measurement, not buy UI.
+const MEASUREMENT = new Set([MESURE, 'cro.js', 'cro-goals.js']);
+const CRO_TAG = /<script src="[^"]*\/cro\.js" data-site="kit-gpsr-vendeurs"[^>]*><\/script>/g;
 
 const PUBLISHED = 'dist';
 const repoConfig = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
@@ -42,8 +45,8 @@ const read = (dir, f) => readFileSync(join(dir, SITE_PREFIX, f), 'utf8');
 
 function assertClosed(dir) {
   for (const f of ['commander.html', 'commande.html', 'assets/checkout/pay.js', 'assets/checkout/order.js', 'assets/checkout/checkout-config.js']) assert.ok(!existsSync(join(dir, SITE_PREFIX, f)), `${f} must not exist while SALES_OPEN=false`);
-  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && x !== MESURE)) {
-    const body = readFileSync(join(dir, f), 'utf8');
+  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && !MEASUREMENT.has(x))) {
+    const body = readFileSync(join(dir, f), 'utf8').replace(CRO_TAG, '');
     for (const re of BUY_MARKERS) assert.doesNotMatch(body, re, `${f} contains buy UI marker ${re}`);
     if (!GENERATOR_FORM.test(body)) assert.doesNotMatch(body, /<form/i, `${f} contains a form`);
     else assert.doesNotMatch(body, /id="octave-pay"/, `${f} contains the order form`);
@@ -197,7 +200,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
     posts.push(JSON.parse(req.postData()));
     return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: false, error: 'stub', message: 'stub: arrêt avant paiement' }) });
   });
-  await page.goto(base + 'commander.html');
+  await page.goto(base + 'commander.html?octave_notrack=1');
   await page.waitForSelector('#octave-pay[data-ready="1"]', { timeout: 10000 }).catch((e) => {
     throw new Error(`${e.message}\n${consoleLines.join('\n')}`);
   });
@@ -228,7 +231,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
   // Order page without Stripe parameters: explicit message, no call.
-  await page.goto(base + 'commande.html');
+  await page.goto(base + 'commande.html?octave_notrack=1');
   assert.match(await page.textContent('#order-status'), /Lien de commande incomplet/);
   await page.close();
 });

@@ -21,7 +21,7 @@ You answer a questionnaire about the manufacturer, the product, its hazards and 
 
 Exports: print / PDF, DOCX, Markdown, or all four documents as a ZIP. You can also save your answers to JSON and load them back.
 
-**Privacy:** there is no backend, no cookies, no storage and no trackers; your answers never leave the browser. The only outgoing request is the cookieless, anonymous audience measurement (`src/site/mesure.js`, served as `/mesure.js`, daily totals only, honours Do Not Track / GPC); the CSP limits `connect-src` to `https://script.google.com`, and a unit test checks that the generator code (`src/app.js`, `src/lib/`) uses no network or storage APIs.
+**Privacy:** there is no backend, no cookies, no storage and no trackers; your answers never leave the browser. The only outgoing requests are the cookieless, anonymous audience measurement (`src/site/mesure.js`, served as `/mesure.js`) and the aggregate behaviour counters / A/B framework (`src/site/cro.js`, byte-identical copy of `octave-checkout/gas/web/cro.js`, goals in `src/site/cro-goals.js`; scroll, sections, CTA timing, form field *names* never values, FAQ, errors, Core Web Vitals), daily totals only, both honour Do Not Track / GPC; the CSP limits `connect-src` to `https://script.google.com`, and a unit test checks that the generator code (`src/app.js`, `src/lib/`) uses no network or storage APIs.
 
 ## Develop
 

@@ -60,7 +60,7 @@ export function aboutBlock(lang) {
 <div><h3 class="founder-name">${f.name}</h3><p class="founder-role">${f.role[lang]}</p></div>
 <p class="founder-bio">${f.bio[lang]}</p>
 </li>`).join('\n');
-  return `<section class="section" aria-labelledby="about-h">
+  return `<section class="section" id="qui" aria-labelledby="about-h">
 <div class="card about">
 <div class="about-intro">
 <span class="kicker">${fr ? 'Qui sommes-nous' : 'About us'}</span>
@@ -153,7 +153,7 @@ export function factsBlock(lang, ref, variant) {
 
 export function sourcesSection(lang, list, extra = '') {
   const fr = lang === 'fr';
-  return `<section class="section sources" aria-labelledby="sources-h">
+  return `<section class="section sources" id="sources" aria-labelledby="sources-h">
 <h2 id="sources-h">${fr ? 'Sources' : 'Sources'}</h2>
 ${list}
 ${extra}
