@@ -138,6 +138,23 @@ export function packProductJsonld(lang, sales) {
       url: `${SITE.origin}${SITE.base}${ORDER_PATH}`,
       seller: { '@id': ORG_ID },
       itemCondition: 'https://schema.org/NewCondition',
+      // Digital file e-mailed right after payment, to French businesses only, B2B sale without withdrawal right (CGV).
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'EUR' },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'FR' },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 0, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 0, unitCode: 'DAY' },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'FR',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+        merchantReturnLink: abs('terms', 'fr'),
+      },
     },
   };
 }

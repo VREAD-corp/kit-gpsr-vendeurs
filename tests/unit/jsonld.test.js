@@ -61,6 +61,11 @@ for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
     assert.equal(o.url, 'https://outils.vread.fr/kit-gpsr-vendeurs/commander.html');
     assert.deepEqual(o.seller, { '@id': ORG_ID });
     assert.ok(!('valueAddedTaxIncluded' in o), 'no valueAddedTaxIncluded');
+    assert.equal(o.shippingDetails.shippingRate.value, '0');
+    assert.equal(o.shippingDetails.shippingDestination.addressCountry, 'FR');
+    assert.equal(o.hasMerchantReturnPolicy.returnPolicyCategory, 'https://schema.org/MerchantReturnNotPermitted');
+    assert.equal(o.hasMerchantReturnPolicy.applicableCountry, 'FR');
+    assert.match(o.hasMerchantReturnPolicy.merchantReturnLink, /^https:\/\/outils\.vread\.fr\/kit-gpsr-vendeurs\/.+/);
   });
 }
 
