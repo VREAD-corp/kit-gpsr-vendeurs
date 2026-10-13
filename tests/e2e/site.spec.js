@@ -42,6 +42,8 @@ for (const path of PAGES) {
 const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveCro; no A/B experiment', async ({ page }) => {
   const w = watch(page);
+  const cro = []; // cro.js batches ({kind:'cro'}); mesure.js still sends its own hit flagged excluded:'notrack' (by design)
+  page.on('request', (r) => { if (/"kind":"cro"/.test(r.postData() || '')) cro.push(r.url()); });
   for (const path of [...PAGES, ...(SALES_OPEN ? ['commander.html'] : [])]) {
     const res = await page.goto(path);
     expect(res.status(), path).toBe(200);
@@ -62,7 +64,8 @@ test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveC
   await expect(page.locator('#faq details#faq-1')).toHaveCount(1);
   expect(await page.evaluate(() => localStorage.getItem('octave_notrack'))).toBe('1');
   expect(w.errors).toEqual([]);
-  expect(w.foreign.filter((u) => /action=track/.test(u))).toEqual([]); // the order page legitimately talks to Stripe / the catalog
+  await page.goto('pack.html'); // pagehide of the previous page: cro.js would flush here if it were not disabled
+  expect(cro).toEqual([]);
 });
 
 test('all internal links resolve (200)', async ({ page, request }) => {
