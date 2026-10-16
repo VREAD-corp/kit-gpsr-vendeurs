@@ -94,4 +94,8 @@ await writeFile(
 );
 await writeFile(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE.origin}${SITE.base}/sitemap.xml\n`);
 await writeFile(join(out, '.nojekyll'), '');
+// Custom domain (ignored by Pages for workflow builds, set via the API; kept in the artifact anyway) and IndexNow key.
+await writeFile(join(out, 'CNAME'), `${new URL(SITE.origin).host}\n`);
+const INDEXNOW_KEY = '5be19f56d46ca3d2553bee28ebfa8edd';
+await writeFile(join(out, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 console.log(`built ${OPEN ? 14 : 12} pages + cgv.html + 404 into ${out} (sales ${OPEN ? 'OPEN' : 'closed'})`);

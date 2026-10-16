@@ -1,7 +1,7 @@
 // HTML layout shared by every page (build time only).
 export const SITE = {
-  origin: 'https://outils.vread.fr',
-  base: '/kit-gpsr-vendeurs',
+  origin: 'https://gpsr.jalonel.com',
+  base: '', // served at the root of its own subdomain (Jalonel, since 2026-10-16)
   repo: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs',
   issues: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues',
   contact: 'octave@vread.fr',
@@ -23,10 +23,10 @@ export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /**
  * schema.org reference to the publisher. The full Organization node (logo, founders, SIREN, sameAs) lives only on
- * the hub https://outils.vread.fr/; every page here points at it by @id instead of repeating it.
+ * the Jalonel hub https://jalonel.com/ (Jalonel, a brand of READ FRANCE SAS); every page here points at it by @id.
  */
-export const ORG_ID = 'https://outils.vread.fr/#org';
-export const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+export const ORG_ID = 'https://jalonel.com/#org';
+export const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'Jalonel', url: 'https://jalonel.com/', parentOrganization: { '@type': 'Organization', name: 'READ FRANCE SAS', identifier: 'SIREN 988741773' } };
 
 // Each logical page has a path per language; used for nav, hreflang and the sitemap.
 export const PAGES = {
@@ -74,21 +74,21 @@ export function breadcrumb(lang, key, label) {
   };
 }
 
-// « Autres outils READ FRANCE »: the same footer block on every outils.vread.fr site (hub + the 4 paid offers).
+// « Autres outils Jalonel »: the same footer block on every Jalonel site (hub + the 4 paid offers).
 const NETWORK = {
-  fr: ['Autres outils READ FRANCE', [
-    ['Tous les outils', 'https://outils.vread.fr/'],
-    ['Kit Qualiopi V10', 'https://outils.vread.fr/kit-qualiopi-v10/'],
-    ['Pack documentation GPSR', 'https://outils.vread.fr/kit-gpsr-vendeurs/pack.html'],
-    ['Alertes appels d’offres formation', 'https://outils.vread.fr/veille-ao-formation/alertes/'],
-    ['Audit d’accessibilité', 'https://outils.vread.fr/declaration-accessibilite/audit/'],
+  fr: ['Autres outils Jalonel', [
+    ['Tous les outils', 'https://jalonel.com/'],
+    ['Kit Qualiopi V10', 'https://qualiopi.jalonel.com/'],
+    ['Pack documentation GPSR', 'https://gpsr.jalonel.com/pack.html'],
+    ['Alertes appels d’offres formation', 'https://ao-formation.jalonel.com/alertes/'],
+    ['Audit d’accessibilité', 'https://accessibilite.jalonel.com/audit/'],
   ]],
-  en: ['Other READ FRANCE tools', [
-    ['All tools', 'https://outils.vread.fr/'],
-    ['Qualiopi V10 kit (in French)', 'https://outils.vread.fr/kit-qualiopi-v10/', 'fr'],
-    ['GPSR documentation pack', 'https://outils.vread.fr/kit-gpsr-vendeurs/en/pack.html'],
-    ['Public training tender alerts (in French)', 'https://outils.vread.fr/veille-ao-formation/alertes/', 'fr'],
-    ['Accessibility audit', 'https://outils.vread.fr/declaration-accessibilite/en/audit/'],
+  en: ['Other Jalonel tools', [
+    ['All tools', 'https://jalonel.com/en/'],
+    ['Qualiopi V10 kit (in French)', 'https://qualiopi.jalonel.com/', 'fr'],
+    ['GPSR documentation pack', 'https://gpsr.jalonel.com/en/pack.html'],
+    ['Public training tender alerts (in French)', 'https://ao-formation.jalonel.com/alertes/', 'fr'],
+    ['Accessibility audit', 'https://accessibilite.jalonel.com/en/audit/'],
   ]],
 };
 function networkHtml(lang) {
@@ -120,8 +120,8 @@ export function layout(p) {
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
   const t = lang === 'fr'
-    ? { skip: 'Aller au contenu', product: 'un produit de READ FRANCE SAS', info: 'Outil d’information : ce site ne fournit pas de conseil juridique et READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', src: 'Code source', ver: 'Version' }
-    : { skip: 'Skip to content', product: 'a product of READ FRANCE SAS', info: 'Information tool: this site does not give legal advice and READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', src: 'Source code', ver: 'Version' };
+    ? { skip: 'Aller au contenu', product: '<a href="https://jalonel.com/">Une marque Jalonel</a>', info: 'Outil d’information : ce site ne fournit pas de conseil juridique et READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', src: 'Code source', ver: 'Version' }
+    : { skip: 'Skip to content', product: '<a href="https://jalonel.com/en/">A Jalonel brand</a>', info: 'Information tool: this site does not give legal advice and READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', src: 'Source code', ver: 'Version' };
   const scripts = (p.scripts ?? []).map((s) => `<script type="module" src="${SITE.base}${s}"></script>`).join('\n');
   const jsonld = p.jsonld ? `<script type="application/ld+json">${JSON.stringify(p.jsonld).replace(/</g, '\\u003c')}</script>` : '';
   return `<!doctype html>
@@ -141,7 +141,7 @@ ${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <link rel="icon" href="${SITE.base}/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${SITE.base}/assets/app.css">
 <script src="${SITE.base}/mesure.js" defer></script>
-<script src="${SITE.base}/cro.js" data-site="kit-gpsr-vendeurs" data-api="${CRO_API}" data-hosts="outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
+<script src="${SITE.base}/cro.js" data-site="kit-gpsr-vendeurs" data-api="${CRO_API}" data-hosts="gpsr.jalonel.com outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
 <script src="${SITE.base}/cro-goals.js" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(brand)}">
@@ -167,7 +167,7 @@ ${p.body}
 ${networkHtml(lang)}
 <nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
-<p>${brand}, ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
+<p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
 </div></footer>
 ${scripts}${p.tail ?? ''}
 </body>

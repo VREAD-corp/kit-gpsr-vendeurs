@@ -1,5 +1,5 @@
 // schema.org JSON-LD: the pack page carries a Product + Offer (only while SALES_OPEN is true) sold by the
-// hub Organization; pages reference that Organization by @id (https://outils.vread.fr/#org) and never repeat it.
+// hub Organization; pages reference that Organization by @id (https://jalonel.com/#org) and never repeat it.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const repoConfig = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
 const tmp = mkdtempSync(join(tmpdir(), 'jsonld-'));
-const ORG_ID = 'https://outils.vread.fr/#org';
+const ORG_ID = 'https://jalonel.com/#org';
 
 function build(config, env = {}) {
   const cfg = join(tmp, `cfg-${Math.random().toString(36).slice(2)}.json`);
@@ -27,7 +27,7 @@ function jsonld(html) {
 }
 const byType = (nodes, type) => nodes.filter((n) => n['@type'] === type);
 
-const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'Jalonel', url: 'https://jalonel.com/', parentOrganization: { '@type': 'Organization', name: 'READ FRANCE SAS', identifier: 'SIREN 988741773' } };
 
 /** The full Organization node lives on the hub only: no page here may repeat it. */
 function assertNoOrganizationCopy(nodes) {
@@ -49,8 +49,8 @@ for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
     assert.equal(p.name, 'Pack documentation GPSR');
     assert.equal(p.sku, 'pack-gpsr');
     assert.deepEqual(p.brand, { '@type': 'Brand', name: 'Kit GPSR Vendeurs' });
-    assert.equal(p.url, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}pack.html`);
-    assert.equal(p.image, 'https://outils.vread.fr/kit-gpsr-vendeurs/assets/og.png');
+    assert.equal(p.url, `https://gpsr.jalonel.com/${lang === 'fr' ? '' : 'en/'}pack.html`);
+    assert.equal(p.image, 'https://gpsr.jalonel.com/assets/og.png');
     assert.ok(p.description.length > 50);
     const o = p.offers;
     assert.equal(o['@type'], 'Offer');
@@ -58,14 +58,14 @@ for (const [file, lang] of [['pack.html', 'fr'], ['en/pack.html', 'en']]) {
     assert.equal(o.priceCurrency, 'EUR');
     assert.equal(o.availability, 'https://schema.org/InStock');
     assert.equal(o.itemCondition, 'https://schema.org/NewCondition');
-    assert.equal(o.url, 'https://outils.vread.fr/kit-gpsr-vendeurs/commander.html');
+    assert.equal(o.url, 'https://gpsr.jalonel.com/commander.html');
     assert.deepEqual(o.seller, { '@id': ORG_ID });
     assert.ok(!('valueAddedTaxIncluded' in o), 'no valueAddedTaxIncluded');
     assert.equal(o.shippingDetails.shippingRate.value, '0');
     assert.equal(o.shippingDetails.shippingDestination.addressCountry, 'FR');
     assert.equal(o.hasMerchantReturnPolicy.returnPolicyCategory, 'https://schema.org/MerchantReturnNotPermitted');
     assert.equal(o.hasMerchantReturnPolicy.applicableCountry, 'FR');
-    assert.match(o.hasMerchantReturnPolicy.merchantReturnLink, /^https:\/\/outils\.vread\.fr\/kit-gpsr-vendeurs\/.+/);
+    assert.match(o.hasMerchantReturnPolicy.merchantReturnLink, /^https:\/\/gpsr\.jalonel\.com\/.+/);
   });
 }
 
@@ -84,7 +84,7 @@ test('SALES_OPEN=false: no Product JSON-LD on the pack pages', () => {
 });
 
 test('home pages: free WebApplication published by the hub Organization (@id), visible pack link with the net price', () => {
-  for (const [file, re] of [['index.html', /<a href="\/kit-gpsr-vendeurs\/pack\.html">Pack documentation GPSR, 29 € net<\/a>/], ['en/index.html', /<a href="\/kit-gpsr-vendeurs\/en\/pack\.html">GPSR documentation pack, €29 net<\/a>/]]) {
+  for (const [file, re] of [['index.html', /<a href="\/pack\.html">Pack documentation GPSR, 29 € net<\/a>/], ['en/index.html', /<a href="\/en\/pack\.html">GPSR documentation pack, €29 net<\/a>/]]) {
     const html = readFileSync(join(open, file), 'utf8');
     const nodes = jsonld(html);
     assertNoOrganizationCopy(nodes);
@@ -118,8 +118,8 @@ test('pack and obligations pages: BreadcrumbList (generator > page); obligations
     const [bc] = byType(nodes, 'BreadcrumbList');
     assert.ok(bc, `${file} BreadcrumbList`);
     assert.equal(bc.itemListElement.length, 2);
-    assert.equal(bc.itemListElement[0].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}`);
-    assert.equal(bc.itemListElement[1].item, `https://outils.vread.fr/kit-gpsr-vendeurs/${lang === 'fr' ? '' : 'en/'}${file.replace(/^en\//, '')}`);
+    assert.equal(bc.itemListElement[0].item, `https://gpsr.jalonel.com/${lang === 'fr' ? '' : 'en/'}`);
+    assert.equal(bc.itemListElement[1].item, `https://gpsr.jalonel.com/${lang === 'fr' ? '' : 'en/'}${file.replace(/^en\//, '')}`);
     if (!file.includes('obligations')) continue;
     assertNoOrganizationCopy(nodes);
     const [art] = byType(nodes, 'Article');

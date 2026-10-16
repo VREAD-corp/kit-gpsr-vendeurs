@@ -73,12 +73,12 @@ test('quotesEnabled=true (test build): block once right after #octave-pay, devis
   assert.equal(cmd.match(/id="octave-devis-box"/g)?.length, 1);
   assert.equal(cmd.match(/<form id="octave-devis"/g)?.length, 1);
   assert.match(cmd, /<form id="octave-pay"[\s\S]*?<\/form>\s*<details id="octave-devis-box" class="card devis-box" hidden>/);
-  assert.match(cmd, /<script src="\/kit-gpsr-vendeurs\/assets\/checkout\/pay\.js"><\/script>\s*<script src="\/kit-gpsr-vendeurs\/assets\/checkout\/devis\.js"><\/script>/);
+  assert.match(cmd, /<script src="\/assets\/checkout\/pay\.js"><\/script>\s*<script src="\/assets\/checkout\/devis\.js"><\/script>/);
   assert.equal(cmd.match(/devis\.js/g)?.length, 1);
   const box = cmd.slice(cmd.indexOf('<details id="octave-devis-box"'), cmd.indexOf('</details>') + 10);
   for (const name of ['email', 'company', 'siren', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'buyerRef', 'website', 'terms']) assert.match(box, new RegExp(`name="${name}"`), name);
   assert.match(box, /<div class="hp" aria-hidden="true">/);
-  assert.match(box, /class="terms-link" href="\/kit-gpsr-vendeurs\/cgv-pro\.html"/); // same CGV link as the card form
+  assert.match(box, /class="terms-link" href="\/cgv-pro\.html"/); // same CGV link as the card form
   assert.match(box, /\(version du 13 octobre 2026\)/);
   assert.doesNotMatch(box, /\{\{|\}\}/);
   assert.deepEqual(dupes(ids(cmd)), []);
@@ -137,7 +137,7 @@ test('browser (quotesEnabled=true, stubbed endpoint): box shown, posts action "q
       posts.push(body);
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify(body.action === 'quote' ? { ok: true, quote: 'D-2026-0001', email_masked: 'a***@entreprise.example' } : { ok: false, message: 'stub' }) });
     });
-    await page.goto(`http://127.0.0.1:${server.address().port}/kit-gpsr-vendeurs/commander.html?octave_notrack=1`);
+    await page.goto(`http://127.0.0.1:${server.address().port}/commander.html?octave_notrack=1`);
     await page.waitForSelector('#octave-devis-box:not([hidden])');
     await page.click('#octave-devis-box summary');
     const f = (n, v) => page.fill(`#octave-devis input[name="${n}"]`, v);

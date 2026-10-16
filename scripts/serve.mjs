@@ -6,7 +6,7 @@ import { extname, join, normalize, resolve } from 'node:path';
 
 const root = resolve(process.argv[2] ?? 'dist');
 const port = Number(process.argv[3] ?? 4791);
-const base = process.argv[4] ?? '/kit-gpsr-vendeurs';
+const base = process.argv[4] ?? ''; // the site is served at the root of gpsr.jalonel.com
 const types = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8',

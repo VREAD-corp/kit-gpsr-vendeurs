@@ -16,7 +16,7 @@ import { chromium } from '@playwright/test';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const BUILD = ['scripts/build-site.mjs'];
-const SITE_PREFIX = ''; // files are read from OUT; the browser test serves OUT under /kit-gpsr-vendeurs/
+const SITE_PREFIX = ''; // files are read from OUT; the browser test serves OUT at the root, like gpsr.jalonel.com
 const PRODUCT = 'kit-gpsr-pack';
 const PRICE_RE = /29,00\s€ net de taxe \(TVA non applicable, art\. 293 B du CGI\)/;
 const SOON_RE = /Pas encore en vente/;
@@ -128,7 +128,7 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
   if (repoConfig.VAT === 'franchise293B') assert.doesNotMatch(text, /TTC|toutes taxes comprises|FR57988741773|de TVA au taux/, 'franchise 293 B: no VAT wording in the B2B terms');
   assert.match(html, /READ FRANCE SAS/);
   assert.match(html, /<footer/);
-  assert.match(html, /href="\/kit-gpsr-vendeurs\/cgv-pro\.html"/);
+  assert.match(html, /href="\/cgv-pro\.html"/);
   assert.match(read(build({ ...repoConfig, SALES_OPEN: false }), 'en/terms.html'), /French version|French B2B terms/);
   for (const n of [5, 6, 12, 13, 15]) assert.match(html, new RegExp(`<h2>${n}\\. `), `article ${n}`);
   assert.match(html, /<h2>5\. Commande et paiement<\/h2>[\s\S]*<h2>6\. Livraison et délai<\/h2>[\s\S]*<h2>10\. Conformité[\s\S]*<h2>12\. Facturation[\s\S]*<h2>13\. Données personnelles<\/h2>[\s\S]*<h2>15\. Dispositions diverses<\/h2>/);
@@ -161,7 +161,7 @@ before(async () => {
     }
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  base = `http://127.0.0.1:${server.address().port}/kit-gpsr-vendeurs/`;
+  base = `http://127.0.0.1:${server.address().port}/`;
 });
 after(async () => {
   await browser?.close();
@@ -172,7 +172,7 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   const cmd = read(openDir, 'commander.html');
   for (const name of ['email', 'company', 'siren', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'terms']) assert.match(cmd, new RegExp(`name="${name}"`), name);
   assert.match(cmd, /<h2 id="commander-h">Commander<\/h2>/);
-  assert.match(cmd, /id="terms-link" href="\/kit-gpsr-vendeurs\/cgv-pro\.html"/);
+  assert.match(cmd, /id="terms-link" href="\/cgv-pro\.html"/);
   assert.match(cmd, /<meta name="robots" content="noindex">/);
   assert.match(cmd, /Content-Security-Policy[^>]*js\.stripe\.com[^>]*script\.google\.com/);
   assert.match(cmd, /<script src="https:\/\/js\.stripe\.com\/v3\/"><\/script>/);
@@ -182,14 +182,14 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex">/);
   const conf = read(openDir, 'assets/checkout/checkout-config.js');
   assert.match(conf, /"product":"kit-gpsr-pack"/);
-  assert.match(conf, /"orderPage":"\/kit-gpsr-vendeurs\/commande\.html"/);
+  assert.match(conf, /"orderPage":"\/commande\.html"/);
   assert.match(conf, /cgv-pro\.html/);
   assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-13"`));
   for (const f of ['pay.js', 'order.js']) assert.equal(read(openDir, `assets/checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
   assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
-  assert.match(read(openDir, 'pack.html'), /href="\/kit-gpsr-vendeurs\/commander\.html"/);
-  assert.match(read(openDir, 'en/pack.html'), /href="\/kit-gpsr-vendeurs\/commander\.html"/);
+  assert.match(read(openDir, 'pack.html'), /href="\/commander\.html"/);
+  assert.match(read(openDir, 'en/pack.html'), /href="\/commander\.html"/);
   assert.doesNotMatch(read(openDir, 'pack.html'), SOON_RE);
   assert.doesNotMatch(read(openDir, 'cgv-pro.html'), /Les ventes ne sont pas encore ouvertes/);
 });

@@ -33,7 +33,7 @@ export function sourceList(lang, keys) {
   return { ref, html };
 }
 
-/** Founders (facts from vread.fr/presse and Vincent Cance's CV; same block on every outils.vread.fr site). */
+/** Founders (facts from vread.fr/presse and Vincent Cance's CV; same block on every Jalonel site). */
 const FOUNDERS = [
   {
     name: 'Tanguy Warsmann', photo: 'tanguy-warsmann.webp',
@@ -64,16 +64,16 @@ export function aboutBlock(lang) {
 <div class="card about">
 <div class="about-intro">
 <span class="kicker">${fr ? 'Qui sommes-nous' : 'About us'}</span>
-<h2 id="about-h">${COMPANY.name}, Paris</h2>
+<h2 id="about-h">Jalonel, Paris</h2>
 <p>${fr
-    ? 'Nous éditons outils.vread.fr : des outils gratuits et des modèles documentaires qui aident les petites entreprises à appliquer leurs obligations réglementaires.'
-    : 'We publish outils.vread.fr: free tools and document templates that help small businesses meet their regulatory obligations.'}</p>
+    ? 'Nous éditons Jalonel (jalonel.com) : des outils gratuits et des modèles documentaires qui aident les petites entreprises à appliquer leurs obligations réglementaires.'
+    : 'We publish Jalonel (jalonel.com): free tools and document templates that help small businesses meet their regulatory obligations.'}</p>
 </div>
 <ul class="founders" aria-label="${fr ? 'Fondateurs' : 'Founders'}">
 ${founders}
 </ul>
 <div class="about-foot">
-<p class="muted"><strong>${COMPANY.name}</strong>, Paris, SIREN ${COMPANY.siren}. ${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
+<p class="muted">${fr ? 'Jalonel est une marque de' : 'Jalonel is a brand of'} <strong>${COMPANY.name}</strong>, Paris, SIREN ${COMPANY.siren}. ${fr ? 'Une question avant d’acheter, une erreur à signaler ?' : 'A question before buying, or an error to report?'} ${mailto(lang)}</p>
 <p><a class="btn secondary" href="mailto:${CONTACT_EMAIL}">${fr ? 'Nous écrire' : 'Email us'}</a></p>
 </div>
 </div>

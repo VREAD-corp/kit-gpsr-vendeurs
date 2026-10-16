@@ -47,7 +47,7 @@ Textes et modèles : Creative Commons Attribution 4.0 International (CC BY 4.0) 
 Attribution : « Kit GPSR Vendeurs, READ FRANCE SAS, ${SITE.repo} ».
 Extraits du droit de l’UE : © Union européenne (EUR-Lex), réutilisation autorisée.
 
-Kit GPSR Vendeurs — un produit de READ FRANCE SAS.
+Kit GPSR Vendeurs — une marque Jalonel (https://jalonel.com/), marque de READ FRANCE SAS.
 `,
 });
 const out = zip(files, { date });

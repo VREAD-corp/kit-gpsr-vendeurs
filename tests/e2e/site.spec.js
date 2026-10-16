@@ -29,9 +29,9 @@ for (const path of PAGES) {
     await expect(page.locator('h1')).toHaveCount(1);
     expect(await page.title()).toMatch(/GPSR|CGV|Terms|Mentions|Legal|Confidentialit|Privacy/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.{40,}/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/outils\.vread\.fr\/kit-gpsr-vendeurs\//);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/gpsr\.jalonel\.com\//);
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
-    await expect(page.locator('footer')).toContainText('READ FRANCE SAS');
+    await expect(page.locator('footer')).toContainText(/Une marque Jalonel|A Jalonel brand/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize().width);
     expect(w.errors).toEqual([]);
     expect(w.foreign).toEqual([]);
@@ -47,11 +47,11 @@ test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveC
   for (const path of [...PAGES, ...(SALES_OPEN ? ['commander.html'] : [])]) {
     const res = await page.goto(path);
     expect(res.status(), path).toBe(200);
-    const s = page.locator('script[src$="/kit-gpsr-vendeurs/cro.js"]');
+    const s = page.locator('script[src="/cro.js"]');
     await expect(s, path).toHaveCount(1);
     await expect(s).toHaveAttribute('data-site', 'kit-gpsr-vendeurs');
     await expect(s).toHaveAttribute('data-api', CRO_API);
-    await expect(s).toHaveAttribute('data-hosts', 'outils.vread.fr');
+    await expect(s).toHaveAttribute('data-hosts', 'gpsr.jalonel.com outils.vread.fr');
     await expect(s).toHaveAttribute('data-cta', 'a[href*=commander],#pay-button,#btn-generate');
     await page.waitForFunction(() => !!window.octaveCro);
     expect(await page.evaluate(() => [typeof window.octaveCro.goal, window.octaveCro.v('price'), window.OCTAVE_XP])).toEqual(['function', undefined, undefined]);
@@ -73,7 +73,8 @@ test('all internal links resolve (200)', async ({ page, request }) => {
   for (const path of PAGES) {
     await page.goto(path);
     const hrefs = await page.$$eval('a[href]', (as) => as.map((a) => a.href));
-    for (const h of hrefs) if (h.includes('/kit-gpsr-vendeurs/') && !h.includes('#')) seen.add(h.split('#')[0]);
+    const host = new URL(test.info().project.use.baseURL).host;
+    for (const h of hrefs) if (new URL(h).host === host && !h.startsWith('mailto:') && !h.includes('#')) seen.add(h.split('#')[0]);
   }
   const base = test.info().project.use.baseURL;
   for (const u of [...seen, ...['sitemap.xml', 'robots.txt', 'assets/og.png', 'assets/favicon.svg'].map((p) => new URL(p, base).href)]) {

@@ -27,10 +27,11 @@ export function legalPage(lang) {
   if (lang === 'fr')
     return {
       title: 'Mentions légales — Kit GPSR Vendeurs',
-      description: 'Mentions légales du Kit GPSR Vendeurs, un produit de READ FRANCE SAS : éditeur, directeur de la publication, hébergeur, licences.',
+      description: 'Mentions légales du Kit GPSR Vendeurs (Jalonel, marque de READ FRANCE SAS) : éditeur, directeur de la publication, hébergeur, licences.',
       body: `<h1>Mentions légales</h1>
 <h2>Éditeur</h2>
 <p>${COMPANY.name}, ${COMPANY.form}.<br>Siège social : ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (SIRET du siège ${COMPANY.siret}) — <a href="${COMPANY.registry}">fiche publique de l’entreprise</a>.<br>Capital social : ${COMPANY.capital}.<br>TVA non applicable, art. 293 B du CGI (franchise en base).</p>
+<p>Jalonel est une marque de READ FRANCE SAS.</p>
 <p>Directeur de la publication : ${COMPANY.president}, président.</p>
 <p>Contact : <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <!-- TODO phone -->
@@ -48,10 +49,11 @@ export function legalPage(lang) {
     };
   return {
     title: 'Legal notice — GPSR Seller Kit',
-    description: 'Legal notice of the GPSR Seller Kit, a product of READ FRANCE SAS: publisher, publication director, host, licences.',
+    description: 'Legal notice of the GPSR Seller Kit (Jalonel, a brand of READ FRANCE SAS): publisher, publication director, host, licences.',
     body: `<h1>Legal notice</h1>
 <h2>Publisher</h2>
 <p>${COMPANY.name}, a French simplified joint-stock company (SAS).<br>Registered office: ${COMPANY.address}.<br>SIREN ${COMPANY.siren} (head-office SIRET ${COMPANY.siret}) — <a href="${COMPANY.registry}">public company record</a>.<br>Share capital: ${COMPANY.capitalEn}.<br>VAT: not applicable, art. 293 B of the French General Tax Code (VAT franchise).</p>
+<p>Jalonel is a brand of READ FRANCE SAS.</p>
 <p>Publication director: ${COMPANY.president}, president.</p>
 <p>Contact: <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>
 <!-- TODO phone -->
