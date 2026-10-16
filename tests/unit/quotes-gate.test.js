@@ -1,7 +1,7 @@
 // Quote / bank-transfer form gate (sales.config.json quotesEnabled).
-//  - quotesEnabled=false (the committed value): the Commander page has NO quote block and NO devis.js tag;
+//  - quotesEnabled=false: the Commander page has NO quote block and NO devis.js tag;
 //    checkout-config.js still says quotesEnabled:false (devis.js keeps the box hidden anyway).
-//  - quotesEnabled=true (test builds only, never committed): the block is emitted once, right after
+//  - quotesEnabled=true (the committed value since 2026-10-16, quotes on): the block is emitted once, right after
 //    form#octave-pay, devis.js is loaded right after pay.js, and every id on the page stays unique.
 //  - The vendored checkout scripts are byte-identical to octave-checkout gas/web/ when that checkout exists.
 import { test } from 'node:test';
@@ -30,8 +30,8 @@ function build(config) {
 const ids = (html) => [...html.replace(/<!--[\s\S]*?-->/g, '').matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
 const dupes = (list) => list.filter((x, i) => list.indexOf(x) !== i);
 
-test('committed config: quotesEnabled is present and false', () => {
-  assert.equal(repoConfig.quotesEnabled, false);
+test('committed config: quotesEnabled is present and true (quotes on since 2026-10-16, backend QUOTES_ENABLED=true)', () => {
+  assert.equal(repoConfig.quotesEnabled, true);
 });
 
 test('config validation: quotesEnabled must be a boolean (absent = false)', () => {
