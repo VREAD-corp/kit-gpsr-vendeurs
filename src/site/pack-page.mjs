@@ -98,6 +98,8 @@ export function packPage(lang, sales) {
   const open = sales?.SALES_OPEN === true;
   const cfg = sales ?? DEFAULT_SALES;
   const pr = prices(cfg);
+  // Bank transfer on quote (CGV art. 5) is only mentioned once the quote form is live (quotesEnabled).
+  const quotes = open && cfg.quotesEnabled === true;
   const label = packPriceLabel(lang, cfg); // « 29 € net » / « €29 net »
   const amount = label.replace(/\s*(net|TTC|incl\. VAT)$/, ''); // « 29 € » / « €29 »
   const order = `${SITE.base}${ORDER_PATH}`;
@@ -146,7 +148,7 @@ ${open ? `<p class="small muted">Paiement unique, sans abonnement</p>
 <p class="amount">${amount} <small>net</small></p>
 <p class="vat">${vat}</p>
 <a class="btn btn-lg" href="${order}">Commander le pack, ${label}</a>
-<p class="fine">Paiement par carte bancaire avec Stripe. Réservé aux entreprises immatriculées en France (SIREN). <a href="${cgv}">CGV professionnels</a>.</p>` : `<p class="price">${label} <small>(prix prévu, ${vat ? `${vat}, ` : ''}paiement unique)</small></p>
+<p class="fine">${quotes ? 'Paiement par carte bancaire avec Stripe, ou par virement sur devis.' : 'Paiement par carte bancaire avec Stripe.'} Réservé aux entreprises immatriculées en France (SIREN). <a href="${cgv}">CGV professionnels</a>.</p>` : `<p class="price">${label} <small>(prix prévu, ${vat ? `${vat}, ` : ''}paiement unique)</small></p>
 <p class="fine">Pas encore en vente : aucun paiement possible aujourd’hui. <a href="${cgv}">CGV professionnels</a>.</p>`}
 </div>
 </div>
@@ -233,7 +235,7 @@ ${open ? `<p class="small muted">One-off payment, French businesses only</p>
 <p class="amount">${amount} <small>net</small></p>
 <p class="vat">${vat}</p>
 <a class="btn btn-lg" href="${order}" lang="fr" hreflang="fr">Order, ${label} (French businesses)</a>
-<p class="fine">Order page in French. Card payment with Stripe. SIREN number required. <a href="${url('terms', 'en')}">Terms summary</a> · <a href="${cgv}" lang="fr">binding French B2B terms</a>.</p>` : `<p class="price">${label} <small>(planned price, ${vat ? `${vat}; ` : ''}one-off payment)</small></p>
+<p class="fine">Order page in French. ${quotes ? 'Card payment with Stripe, or bank transfer on quote.' : 'Card payment with Stripe.'} SIREN number required. <a href="${url('terms', 'en')}">Terms summary</a> · <a href="${cgv}" lang="fr">binding French B2B terms</a>.</p>` : `<p class="price">${label} <small>(planned price, ${vat ? `${vat}; ` : ''}one-off payment)</small></p>
 <p class="fine">Not on sale yet: no payment can be made today.</p>`}
 </div>
 </div>

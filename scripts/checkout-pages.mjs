@@ -78,7 +78,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 /**
  * Body of cgv-pro.html (French, B2B). `p`: { config, productName, productDescription, disclaimer[],
  * licenceScope, updates, legalUrl, privacyUrl, contact, payLabel? } (`payLabel`: the pay button text, cited in article 5).
- * Articles 2, 5, 6, 12, 13 and 15 (card payment or bank transfer on quote): wording of
+ * Articles 2, 4, 5, 6, 12, 13 and 15 (card payment or bank transfer on quote): wording of
  * vread-revenue-lab legal/REVUE-CGV-VIREMENT.md §3 (kit numbering, « [kits : …] » variants).
  */
 export function cgvProBody(p) {
@@ -89,9 +89,9 @@ export function cgvProBody(p) {
   CE N'EST PAS UN CONSEIL JURIDIQUE : texte à faire relire par un avocat ou un juriste avant
   l'ouverture des ventes (notamment : clauses de responsabilité et de licence). Statut TVA (franchise en base,
   art. 293 B du CGI) et capital social (1 000 €) renseignés le 12 octobre 2026 sur décision du dirigeant.
-  Version du 13 octobre 2026 : paiement par virement sur devis (articles 2, 5, 6, 12, 13 et 15), rédigée d'après la
-  revue IA « REVUE-CGV-VIREMENT » (vread-revenue-lab), elle aussi À FAIRE RELIRE par un avocat ou un juriste avant
-  publication.
+  Version du 13 octobre 2026 : paiement par virement sur devis (articles 2, 4, 5, 6, 12, 13 et 15), rédigée d'après la
+  revue IA « REVUE-CGV-VIREMENT » (vread-revenue-lab) ; publiée le 16 octobre 2026 avec l'accord du dirigeant. Une
+  relecture par un avocat ou un juriste reste recommandée.
 -->
 <h1>Conditions générales de vente aux professionnels</h1>
 <p class="small muted">${esc(p.productName)} — version du ${TERMS_DATE} (référence ${TERMS_VERSION}).</p>
@@ -106,7 +106,7 @@ ${closed ? `<div class="callout callout-warn" role="note"><p><strong>Les ventes 
 <p>${p.productDescription}</p>
 <p>Le produit est un <strong>fichier numérique</strong> (archive ZIP) livré par courrier électronique. Il ne comporte aucun support matériel ni dispositif technique de protection (DRM). L’Acheteur dispose du matériel et des logiciels courants nécessaires pour l’ouvrir (logiciel de décompression, traitement de texte).</p>
 <h2>4. Prix</h2>
-<p>Le prix est de <strong>${pr.sentence}</strong>, pour une licence (article 8). Il est payable en une fois, sans abonnement. Le prix applicable est celui affiché sur la page de commande au moment de la validation ; ${pr.std ? 'il est rappelé hors taxes et toutes taxes comprises avant le paiement et figure sur la facture' : 'il est rappelé avant le paiement et figure sur la facture, qui porte la mention « TVA non applicable, art. 293 B du CGI » ; aucune TVA n’est facturée'}.</p>
+<p>Le prix est de <strong>${pr.sentence}</strong>, pour une licence (article 8). Il est payable en une fois, sans abonnement. Le prix applicable est celui affiché sur la page de commande au moment de la validation du paiement par carte ou, en cas de paiement par virement, celui indiqué sur le devis, ferme pendant sa durée de validité de trente (30) jours (article 5) ; ${pr.std ? 'il est rappelé hors taxes et toutes taxes comprises avant le paiement ou sur le devis et figure sur la facture' : 'il est rappelé avant le paiement ou sur le devis et figure sur la facture, qui porte la mention « TVA non applicable, art. 293 B du CGI » ; aucune TVA n’est facturée'}.</p>
 <h2>5. Commande et paiement</h2>
 <p>L’Acheteur renseigne sur la page « Commander » : son adresse électronique, la raison sociale et le SIREN de l’entreprise, son adresse de facturation, puis choisit son mode de paiement.</p>
 <p>Le prix est payable comptant et d’avance, en une fois, au choix de l’Acheteur :</p>
@@ -152,7 +152,7 @@ ${p.disclaimer.map((d) => `<p>${d}</p>`).join('\n')}
 <p class="small muted">Version du ${TERMS_DATE}.</p>`;
 }
 
-/** Pay button text: `payLabel` with {prix} = the price (« 79 € », « 79,50 € »), same format as pay.js. */
+/** Pay button text: `payLabel` with {prix} = the price (« 29 € », « 129,50 € »), same format as pay.js. */
 export function payButtonText(payLabel, cents) {
   const s = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2).replace('.', ',');
   return (payLabel || 'Payer {prix}').replace('{prix}', `${s.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')}\u00a0€`);
@@ -162,7 +162,8 @@ export function payButtonText(payLabel, cents) {
  * The « Commander » form, same field names and ids as octave-checkout gas/web/index.html.
  * `payLabel`: button text, {prix} replaced by the price (e.g. « Payer {prix} et recevoir le kit … »).
  * Optional (services): `intro` (sentence under the title), `emailLabel`, `extraFieldsHtml` (fields with a
- * data-octave-extra attribute, sent to the server by pay.js), `afterTermsHtml` (e.g. an attestation box).
+ * data-octave-extra attribute, sent to the server by pay.js), `afterTermsHtml` (e.g. an attestation box),
+ * `termsDate` (CGV version date shown in both checkboxes, for a site with its own CGV; default TERMS_DATE).
  */
 export function orderFormHtml(p) {
   const pr = prices(p.config);
@@ -191,7 +192,7 @@ ${p.extraFieldsHtml ?? ''}  <label class="field"><span>${p.emailLabel ?? 'E-mail
     <p class="small muted">Pays : France.</p>
   </fieldset>
   <label class="check"><input type="checkbox" name="terms" required>
-    <span>Je commande au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a id="terms-link" href="${p.cgvUrl}" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du ${TERMS_DATE}).</span></label>
+    <span>Je commande au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a id="terms-link" href="${p.cgvUrl}" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du ${p.termsDate ?? TERMS_DATE}).</span></label>
 ${p.afterTermsHtml ?? ''}  <p id="payment-loading" class="small muted" role="status">Chargement du paiement sécurisé…</p>
   <div id="payment-element"></div>
   <p id="pay-error" class="status err" role="alert" hidden></p>
@@ -199,19 +200,20 @@ ${p.afterTermsHtml ?? ''}  <p id="payment-loading" class="small muted" role="sta
   <p class="small muted">Paiement sécurisé par carte bancaire avec Stripe : vos données de carte sont saisies dans un cadre Stripe et ne transitent pas par nos serveurs.</p>
   <noscript><p class="status err">Le paiement nécessite JavaScript.</p></noscript>
 </form>
-${p.config.quotesEnabled === true ? `${devisFormHtml({ cgvUrl: p.cgvUrl, extraFieldsHtml: p.devisExtraFieldsHtml })}\n` : ''}</section>`;
+${p.config.quotesEnabled === true ? `${devisFormHtml({ cgvUrl: p.cgvUrl, termsDate: p.termsDate, extraFieldsHtml: p.devisExtraFieldsHtml })}\n` : ''}</section>`;
 }
 
 /**
  * Quote / bank-transfer block (octave-checkout gas/web/devis-form.html), rendered by orderFormHtml() right
  * after form#octave-pay only when config.quotesEnabled is true; devis.js also keeps it hidden unless
  * window.OCTAVE_PAY.quotesEnabled === true. `extraFieldsHtml`: the same product radios / [data-octave-extra]
- * fields as the card form, with every id / for / aria-describedby suffixed « -devis ».
+ * fields as the card form, with every id / for / aria-describedby suffixed « -devis ». `termsDate`: as in
+ * orderFormHtml() (default TERMS_DATE).
  */
 export function devisFormHtml(p) {
   return `<details id="octave-devis-box" class="card devis-box" hidden>
   <summary><strong>Besoin d’un devis ou paiement par virement ?</strong></summary>
-  <p class="small muted">Recevez immédiatement par e-mail un devis PDF (valable 30 jours) avec les coordonnées bancaires et la référence de virement propres à votre commande. La livraison et la facture partent automatiquement dès réception du virement. Pour un bon de commande ou une demande particulière, répondez à l’e-mail du devis.</p>
+  <p class="small muted">Recevez immédiatement par e-mail un devis PDF (valable 30 jours) avec les coordonnées bancaires à utiliser et la référence de virement propre à ce devis. La livraison et la facture partent automatiquement dès réception du virement. Pour un bon de commande ou une demande particulière, répondez à l’e-mail du devis.</p>
   <form id="octave-devis" class="checkout-form" novalidate>
 ${p.extraFieldsHtml ?? ''}    <label class="field"><span>E-mail professionnel (réception du devis, puis du produit et de la facture)</span>
       <input type="email" name="email" autocomplete="email" required maxlength="254"></label>
@@ -235,11 +237,11 @@ ${p.extraFieldsHtml ?? ''}    <label class="field"><span>E-mail professionnel (r
     <!-- Honeypot: hidden from humans, bots fill it; the server drops the request silently. -->
     <div class="hp" aria-hidden="true"><label>Site web <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <label class="check"><input type="checkbox" name="terms" required>
-      <span>Je demande ce devis au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a class="terms-link" href="${p.cgvUrl}" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du ${TERMS_DATE}). La commande devient ferme au paiement du devis.</span></label>
+      <span>Je demande ce devis au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a class="terms-link" href="${p.cgvUrl}" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du ${p.termsDate ?? TERMS_DATE}). La commande devient ferme au paiement du devis.</span></label>
     <p id="devis-error" class="status err" role="alert" hidden></p>
     <p id="devis-ok" class="status ok" role="status" hidden></p>
     <button type="submit" id="devis-button" class="pay-button secondary">Recevoir mon devis par e-mail</button>
-    <p class="small muted">Paiement par virement SEPA vers un compte dédié à votre commande, ouvert au nom de READ FRANCE SAS chez notre prestataire de paiement Stripe. Aucun paiement n’est demandé à cette étape.</p>
+    <p class="small muted">Paiement par virement SEPA sur un numéro de compte bancaire virtuel attribué par notre prestataire de paiement Stripe (bénéficiaire READ FRANCE SAS), propre à votre entreprise et identique pour tous vos devis ; la référence propre à chaque devis permet d’affecter votre virement. Aucun paiement n’est demandé à cette étape.</p>
   </form>
 </details>`;
 }

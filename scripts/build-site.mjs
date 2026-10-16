@@ -53,7 +53,7 @@ if (OPEN) {
     layout({
       lang: 'fr', key: 'pack', path: ORDER_PATH, noindex: true, csp: checkoutCsp(SALES),
       title: 'Commander le Pack documentation GPSR — professionnels',
-      description: `Commande du Pack documentation GPSR par les entreprises (SIREN) : ${pr.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`,
+      description: `Commande du Pack documentation GPSR par les entreprises (SIREN) : ${pr.sentence}, paiement par carte avec Stripe${SALES.quotesEnabled === true ? ' ou par virement sur devis' : ''}, fichier et facture par e-mail.`,
       body: `<p><a href="${SITE.base}/pack.html">Pack documentation GPSR</a> › Commander</p>
 <h1>Commander le Pack documentation GPSR</h1>
 <p class="lead">Modèles étendus par catégorie, procédure de rappel, registre des incidents, questionnaire fournisseur (FR/EN). ${pr.sentence}.</p>
