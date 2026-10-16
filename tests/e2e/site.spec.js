@@ -16,6 +16,8 @@ function watch(page) {
     const u = new URL(r.url());
     if (!['http:', 'https:'].includes(u.protocol)) return; // blob:/data: downloads stay local
     const base = new URL(test.info().project.use.baseURL);
+    // On the live host mesure.js still sends its own hit flagged excluded:'notrack' (by design): not a leak.
+    if (u.host === 'script.google.com' && u.search === '?action=track') return;
     if (u.host !== base.host) foreign.push(r.url());
   });
   return { errors, foreign };
