@@ -1,4 +1,4 @@
-// cro.js (aggregate behaviour counters + A/B): vendored byte-identical from octave-checkout/gas/web/cro.js.
+// cro.js (aggregate behaviour counters + A/B): vendored byte-identical from octave-checkout/gas/web/jalonel/cro.js.
 // Runs the portable check shipped with it, and checks that every built page loads it with this site's settings.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CRO = join(ROOT, 'src', 'site', 'cro.js');
-const TAG = '<script src="/cro.js" data-site="kit-gpsr-vendeurs" data-api="https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec" data-hosts="gpsr.jalonel.com outils.vread.fr" data-cta="a[href*=commander],#pay-button,#btn-generate" defer></script>\n<script src="/cro-goals.js" defer></script>';
+const TAG = '<script src="/cro.js" data-site="kit-gpsr-vendeurs" data-api="https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec" data-hosts="gpsr.jalonel.com" data-cta="a[href*=commander],#pay-button,#btn-generate" defer></script>\n<script src="/cro-goals.js" defer></script>';
 
 test('cro.js passes the portable cro.check.mjs', () => {
   execFileSync(process.execPath, [join(ROOT, 'tests', 'unit', 'cro.check.mjs'), CRO], { stdio: 'pipe' });

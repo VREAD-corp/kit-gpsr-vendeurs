@@ -4,7 +4,7 @@ export const SITE = {
   base: '', // served at the root of its own subdomain (Jalonel, since 2026-10-16)
   repo: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs',
   issues: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues',
-  contact: 'octave@vread.fr',
+  contact: 'contact@jalonel.com',
   releases: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest',
   version: '1.0.0',
   updated: '2026-10-11',
@@ -79,7 +79,7 @@ export function breadcrumb(lang, key, label) {
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
-// cro.js (octave-checkout/gas/web/cro.js, byte-identical): aggregate behaviour counters, same France backend as mesure.js.
+// cro.js (octave-checkout/gas/web/jalonel/cro.js, byte-identical): aggregate behaviour counters, same France backend as mesure.js.
 // Primary CTA: the order links / pay button, and the free generator's « Générer » button.
 export const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 const CRO_CTA = 'a[href*=commander],#pay-button,#btn-generate';
@@ -124,7 +124,7 @@ ${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <link rel="icon" href="${SITE.base}/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${SITE.base}/assets/app.css">
 <script src="${SITE.base}/mesure.js" defer></script>
-<script src="${SITE.base}/cro.js" data-site="kit-gpsr-vendeurs" data-api="${CRO_API}" data-hosts="gpsr.jalonel.com outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
+<script src="${SITE.base}/cro.js" data-site="kit-gpsr-vendeurs" data-api="${CRO_API}" data-hosts="gpsr.jalonel.com" data-cta="${CRO_CTA}" defer></script>
 <script src="${SITE.base}/cro-goals.js" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(brand)}">

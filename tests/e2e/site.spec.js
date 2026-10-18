@@ -57,7 +57,7 @@ test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveC
     await expect(s, path).toHaveCount(1);
     await expect(s).toHaveAttribute('data-site', 'kit-gpsr-vendeurs');
     await expect(s).toHaveAttribute('data-api', CRO_API);
-    await expect(s).toHaveAttribute('data-hosts', 'gpsr.jalonel.com outils.vread.fr');
+    await expect(s).toHaveAttribute('data-hosts', 'gpsr.jalonel.com');
     await expect(s).toHaveAttribute('data-cta', 'a[href*=commander],#pay-button,#btn-generate');
     await page.waitForFunction(() => !!window.octaveCro);
     expect(await page.evaluate(() => [typeof window.octaveCro.goal, window.octaveCro.v('price'), window.OCTAVE_XP])).toEqual(['function', undefined, undefined]);

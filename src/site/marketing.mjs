@@ -33,7 +33,7 @@ export function sourceList(lang, keys) {
   return { ref, html };
 }
 
-/** Founders (facts from vread.fr/presse and Vincent Cance's CV; same block on every Jalonel site). */
+/** Founders (facts from the founders’ press page and Vincent Cance's CV; same block on every Jalonel site). */
 const FOUNDERS = [
   {
     name: 'Tanguy Warsmann', photo: 'tanguy-warsmann.webp',
