@@ -77,29 +77,6 @@ export function breadcrumb(lang, key, label) {
   };
 }
 
-// « Autres outils Jalonel »: the same footer block on every Jalonel site (hub + the 4 paid offers).
-const NETWORK = {
-  fr: ['Autres outils Jalonel', [
-    ['Tous les outils', 'https://jalonel.com/'],
-    ['Kit Qualiopi V10', 'https://qualiopi.jalonel.com/'],
-    ['Pack documentation GPSR', 'https://gpsr.jalonel.com/pack.html'],
-    ['Alertes appels d’offres formation', 'https://ao-formation.jalonel.com/alertes/'],
-    ['Audit d’accessibilité', 'https://accessibilite.jalonel.com/audit/'],
-  ]],
-  en: ['Other Jalonel tools', [
-    ['All tools', 'https://jalonel.com/en/'],
-    ['Qualiopi V10 kit (in French)', 'https://qualiopi.jalonel.com/', 'fr'],
-    ['GPSR documentation pack', 'https://gpsr.jalonel.com/en/pack.html'],
-    ['Public training tender alerts (in French)', 'https://ao-formation.jalonel.com/alertes/', 'fr'],
-    ['Accessibility audit', 'https://accessibilite.jalonel.com/en/audit/'],
-  ]],
-};
-function networkHtml(lang) {
-  const [title, links] = NETWORK[lang] ?? NETWORK.fr;
-  const items = links.map(([label, href, hl]) => `<li><a href="${href}"${hl ? ` hreflang="${hl}"` : ''}>${label}</a></li>`).join('\n');
-  return `<nav class="rf-network" aria-label="${title}">\n<p class="rf-network-title">${title}</p>\n<ul>\n${items}\n</ul>\n</nav>`;
-}
-
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 // cro.js (octave-checkout/gas/web/cro.js, byte-identical): aggregate behaviour counters, same France backend as mesure.js.
@@ -170,7 +147,6 @@ ${jsonld}${p.head ?? ''}
 ${p.body}
 </div></main>
 <footer class="site"><div class="wrap">
-${networkHtml(lang)}
 <nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
 <p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${p.checked ?? SITE.updated}.</p>
