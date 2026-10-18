@@ -81,28 +81,30 @@ export function toolPage(lang, sales) {
     ? docStack(['gratuit-fiche-securite.webp', 'pack-procedure-rappel.webp', 'pack-registre-incidents.webp'], ['Fiche d’information sécurité générée par l’outil gratuit (exemple : bougie)', 'Procédure de rappel du pack', 'Registre des réclamations du pack'], 'Aperçus réels des documents')
     : docStack(['free-safety-sheet.webp', 'pack-en-recall-procedure.webp', 'pack-en-incident-register.webp'], ['Safety information sheet produced by the free tool (example: candle)', 'Recall procedure from the pack', 'Complaints register from the pack'], 'Real document previews');
 
-  // Hero: FR = one primary CTA to the paid pack + text link to the free tool; EN (pack sold to French
-  // businesses only) = the free tool is the primary action and the pack is labelled FR-only.
-  const heroCta = fr
-    ? open
-      ? `<div class="cta-row"><a class="btn btn-lg" href="${packUrl}">Voir le pack de modèles GPSR, ${label}</a><a class="text-link" href="#questionnaire">ou générer mes 4 documents gratuitement ↓</a></div>
-<p class="price-line">Pack : ${label}, TVA non applicable (art. 293 B du CGI), paiement unique, réservé aux entreprises immatriculées en France. Le générateur reste gratuit.</p>`
-      : `<div class="cta-row"><a class="btn btn-lg" href="#questionnaire">Générer mes documents gratuitement</a><a class="text-link" href="${packUrl}">Pack documentation : bientôt disponible</a></div>`
-    : `<div class="cta-row"><a class="btn btn-lg" href="#questionnaire">Generate my documents free ↓</a></div>
-<p class="price-line">${open ? `Paid pack available to French businesses only (FR): <a href="${packUrl}">see what it adds</a>.` : `Paid pack: <a href="${packUrl}">coming soon</a>.`}</p>`;
+  // 2026-10-19 (JALONEL-HUB-02): the generator starts in the first screen (mobile 390×844 included). The hero is
+  // the H1, one line and a discreet pack link; the long intro, the trust list and the document previews moved to
+  // #changements, below the tool. FR: pack link to the paid pack; EN (pack sold to French businesses only): FR-only note.
+  const heroPack = fr
+    ? `<p class="hero-pack small">${open ? `<a href="${packUrl}">Pack de modèles GPSR, ${label}</a> · ` : `<a href="${packUrl}">Pack documentation : bientôt disponible</a> · `}<a href="${FREE_PACK}" data-mesure="free_download">modèles vierges gratuits (ZIP)</a></p>`
+    : `<p class="hero-pack small">${open ? `Paid pack for French businesses only (FR): <a href="${packUrl}">see what it adds</a>` : `Paid pack: <a href="${packUrl}">coming soon</a>`} · <a href="${FREE_PACK}" data-mesure="free_download">free blank templates (ZIP)</a></p>`;
 
-  const hero = `<section class="hero" id="hero">
-<div>
-<p class="eyebrow">${fr ? 'Gratuit · sans compte · rien ne quitte votre navigateur' : 'Free · no account · nothing leaves your browser'}</p>
+  const hero = `<section class="hero hero-tool" id="hero">
 <h1>${fr ? 'Générateur GPSR gratuit pour vendeurs Etsy, Amazon Handmade, Vinted Pro et Shopify' : 'Free GPSR generator for Etsy, Amazon Handmade, Vinted Pro and Shopify sellers'}</h1>
-<p class="sub">${fr
+<p class="sub">${fr ? 'Fiche de sécurité, texte d’étiquette, analyse de risques et checklists, calculés dans votre navigateur, sans compte.' : 'Safety sheet, label text, risk analysis and checklists, built in your browser, no account.'}</p>
+${heroPack}
+</section>`;
+
+  // Moved from the hero (2026-10-19): why the documents are needed, what the tool exports, real previews.
+  const why = `<div class="why-grid">
+<div>
+<p class="lead">${fr
     ? `Depuis le 13 décembre 2024, chaque annonce qui vise l’UE indique le fabricant, l’identification du produit et ses avertissements de sécurité (art. 19)&nbsp;${ref('gpsr')}. Amazon et Etsy ont déjà ajouté ces champs ${ref('amazon')} ${ref('etsy')}. Répondez à 23 questions au plus sur votre produit : vous obtenez la fiche de sécurité produit, le texte d’étiquette et d’annonce, l’analyse de risques et les checklists en 10 minutes environ.`
     : `Since 13 December 2024, every listing that targets the EU shows the manufacturer, the product identification and its safety warnings (Art. 19)&nbsp;${ref('gpsr')}. Amazon and Etsy have already added these fields ${ref('amazon')} ${ref('etsy')}. Answer up to 23 questions on your product to get the safety information sheet, the label and listing text, the risk analysis and the checklists in about 10 minutes.`}</p>
-${heroCta}
-<ul class="trust"><li>${fr ? 'Export PDF, DOCX, Markdown ou ZIP' : 'Export as PDF, DOCX, Markdown or ZIP'}</li><li>${fr ? 'Art. 6, 9, 16, 19 et 20 cités dans les documents' : 'Art. 6, 9, 16, 19 and 20 cited in the documents'}</li></ul>
+${fr && open ? `<p class="price-line">Pack : ${label}, TVA non applicable (art. 293 B du CGI), paiement unique, réservé aux entreprises immatriculées en France. Le générateur reste gratuit. <a href="${packUrl}">Voir le pack de modèles GPSR</a></p>` : ''}
+<ul class="trust"><li>${fr ? 'Gratuit, sans compte, rien ne quitte votre navigateur' : 'Free, no account, nothing leaves your browser'}</li><li>${fr ? 'Export PDF, DOCX, Markdown ou ZIP' : 'Export as PDF, DOCX, Markdown or ZIP'}</li><li>${fr ? 'Art. 6, 9, 16, 19 et 20 cités dans les documents' : 'Art. 6, 9, 16, 19 and 20 cited in the documents'}</li></ul>
 </div>
 <div>${stack}</div>
-</section>`;
+</div>`;
 
   // Shown with the results (inside #results, so only after « Générer mes documents »): display only.
   const upsell = fr && open
@@ -113,28 +115,29 @@ ${heroCta}
     : '';
 
   const body = `${hero}
-<section class="section" id="changements" aria-labelledby="change-h">
-<div class="section-head"><span class="kicker">${fr ? 'Ce qui a changé' : 'What changed'}</span><h2 id="change-h">${fr ? 'Ce que le règlement et les plateformes demandent' : 'What the regulation and marketplaces ask for'}</h2></div>
-${factsBlock(lang, ref)}
-</section>
-<section class="section" data-section="questionnaire" aria-labelledby="questionnaire">
-<div class="tool-head"><h2 id="questionnaire">${fr ? 'Générez vos 4 documents gratuitement' : 'Generate your 4 documents for free'}</h2>
-<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${FREE_PACK}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
-<ol class="steps"><li>${fr ? 'Répondez : fabricant, produit, risques, plateformes (environ 10 minutes)' : 'Answer: manufacturer, product, hazards, platforms (about 10 minutes)'}</li><li>${fr ? 'Vérifiez les 4 documents' : 'Check the 4 documents'}</li><li>${fr ? 'Exportez en PDF, DOCX ou Markdown' : 'Export as PDF, DOCX or Markdown'}</li></ol>
+<section class="section tool-first" data-section="questionnaire" aria-labelledby="questionnaire">
+<div class="tool-head"><h2 id="questionnaire">${fr ? 'Répondez à 23 questions au plus (10 minutes environ)' : 'Answer up to 23 questions (about 10 minutes)'}</h2></div>
 <noscript><div class="callout"><p>${fr ? 'Le générateur a besoin de JavaScript (exécuté uniquement dans votre navigateur). Sans JavaScript, utilisez le pack de modèles gratuit.' : 'The generator needs JavaScript (run only in your browser). Without JavaScript, use the free template pack.'}</p></div></noscript>
 <div class="btn-row no-print">
-<button type="button" class="btn secondary" id="btn-example">${fr ? 'Voir un exemple rempli (bougie)' : 'See a filled-in example (candle)'}</button>
-<button type="button" class="btn secondary" id="btn-load">${fr ? 'Charger mes réponses (.json)' : 'Load my answers (.json)'}</button>
-<input type="file" id="file-load" accept="application/json,.json" hidden>
-<button type="button" class="btn secondary" id="btn-reset">${fr ? 'Tout effacer' : 'Clear all'}</button>
+<button type="button" class="btn secondary" id="btn-example" data-mesure="tool_use">${fr ? 'Voir un exemple rempli (bougie)' : 'See a filled-in example (candle)'}</button>
 </div>
 <form id="gpsr-form" novalidate>
 </form>
 <div class="btn-row no-print">
-<button type="submit" form="gpsr-form" class="btn" id="btn-generate">${fr ? 'Générer mes documents' : 'Generate my documents'}</button>
+<button type="submit" form="gpsr-form" class="btn" id="btn-generate" data-mesure="tool_use">${fr ? 'Générer mes documents' : 'Generate my documents'}</button>
 <button type="button" class="btn secondary" id="btn-save">${fr ? 'Enregistrer mes réponses (.json)' : 'Save my answers (.json)'}</button>
+<button type="button" class="btn secondary" id="btn-load">${fr ? 'Charger mes réponses (.json)' : 'Load my answers (.json)'}</button>
+<input type="file" id="file-load" accept="application/json,.json" hidden>
+<button type="button" class="btn secondary" id="btn-reset">${fr ? 'Tout effacer' : 'Clear all'}</button>
 </div>
 <p class="status no-print" id="status" role="status" aria-live="polite"></p>
+<ol class="steps"><li>${fr ? 'Répondez : fabricant, produit, risques, plateformes (environ 10 minutes)' : 'Answer: manufacturer, product, hazards, platforms (about 10 minutes)'}</li><li>${fr ? 'Vérifiez les 4 documents' : 'Check the 4 documents'}</li><li>${fr ? 'Exportez en PDF, DOCX ou Markdown' : 'Export as PDF, DOCX or Markdown'}</li></ol>
+<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${FREE_PACK}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p>
+</section>
+<section class="section" id="changements" aria-labelledby="change-h">
+<div class="section-head"><span class="kicker">${fr ? 'Ce qui a changé' : 'What changed'}</span><h2 id="change-h">${fr ? 'Ce que le règlement et les plateformes demandent' : 'What the regulation and marketplaces ask for'}</h2></div>
+${why}
+${factsBlock(lang, ref)}
 </section>
 <section id="results" hidden aria-labelledby="results-title">
 <h2 id="results-title" tabindex="-1">${fr ? 'Vos documents' : 'Your documents'}</h2>
