@@ -22,10 +22,13 @@ const builders = { tool: toolPage, obligations: obligationsPage, pack: packPage,
 await rm(out, { recursive: true, force: true });
 await mkdir(join(out, 'assets', 'lib'), { recursive: true });
 
+// Legal notice, privacy and terms: near-identical boilerplate across the Jalonel subdomains (2026-10-18), so
+// noindex, follow and out of the sitemap; still linked from every footer and from the order form.
+const BOILERPLATE = new Set(['legal', 'privacy', 'terms']);
 for (const [key, paths] of Object.entries(PAGES)) {
   for (const lang of ['fr', 'en']) {
     const p = builders[key](lang, SALES);
-    const html = layout({ lang, key, ...p });
+    const html = layout({ lang, key, ...p, ...(BOILERPLATE.has(key) ? { noindex: true } : {}) });
     const rel = paths[lang].endsWith('/') ? paths[lang] + 'index.html' : paths[lang];
     const file = join(out, rel);
     await mkdir(dirname(file), { recursive: true });
@@ -92,7 +95,7 @@ await cp(join(root, 'src', 'site', 'cro-goals.js'), join(out, 'cro-goals.js')); 
 await cp(join(root, 'src', 'site', 'img'), join(out, 'assets', 'img'), { recursive: true }); // sales-page previews (WebP, rendered from the pack)
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 
-const urls = Object.keys(PAGES).filter((k) => OPEN || k !== 'terms').flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));
+const urls = Object.keys(PAGES).filter((k) => !BOILERPLATE.has(k)).flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));
 for (const g of guides) urls.push([`${SITE.origin}${SITE.base}${g.path}`, g.lastmod]);
 await writeFile(
   join(out, 'sitemap.xml'),

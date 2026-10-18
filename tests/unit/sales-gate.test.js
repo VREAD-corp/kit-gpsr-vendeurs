@@ -55,9 +55,9 @@ function assertClosed(dir) {
   assert.match(read(dir, 'en/pack.html'), /Not on sale yet/);
   const sitemap = read(dir, 'sitemap.xml');
   assert.doesNotMatch(sitemap, /cgv-pro|commande|commander/);
-  assert.match(read(dir, 'cgv-pro.html'), /<meta name="robots" content="noindex">/);
+  assert.match(read(dir, 'cgv-pro.html'), /<meta name="robots" content="noindex, follow">/);
   assert.match(read(dir, 'cgv-pro.html'), /Les ventes ne sont pas encore ouvertes/);
-  assert.match(read(dir, 'cgv.html'), /<meta name="robots" content="noindex">/);
+  assert.match(read(dir, 'cgv.html'), /<meta name="robots" content="noindex, follow">/);
 }
 
 const OPEN_CFG = { ...repoConfig, SALES_OPEN: true, endpoint: 'https://octave-test.invalid/exec', publishableKey: 'pk_test_fakeForGateTest123' };
@@ -173,13 +173,13 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   for (const name of ['email', 'company', 'siren', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'terms']) assert.match(cmd, new RegExp(`name="${name}"`), name);
   assert.match(cmd, /<h2 id="commander-h">Commander<\/h2>/);
   assert.match(cmd, /id="terms-link" href="\/cgv-pro\.html"/);
-  assert.match(cmd, /<meta name="robots" content="noindex">/);
+  assert.match(cmd, /<meta name="robots" content="noindex, follow">/);
   assert.match(cmd, /Content-Security-Policy[^>]*js\.stripe\.com[^>]*script\.google\.com/);
   assert.match(cmd, /<script src="https:\/\/js\.stripe\.com\/v3\/"><\/script>/);
   assert.match(cmd, /<button type="submit" id="pay-button" class="pay-button" disabled>Payer 29\u00a0€ et recevoir le pack GPSR<\/button>/);
   assert.match(cmd, /id="payment-loading"[^>]*>Chargement du paiement sécurisé…</);
   assert.match(read(openDir, 'commande.html'), /id="order-status"/);
-  assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex">/);
+  assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex, follow">/);
   const conf = read(openDir, 'assets/checkout/checkout-config.js');
   assert.match(conf, /"product":"kit-gpsr-pack"/);
   assert.match(conf, /"orderPage":"\/commande\.html"/);
@@ -187,7 +187,7 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-13"`));
   for (const f of ['pay.js', 'order.js']) assert.equal(read(openDir, `assets/checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
-  assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
+  assert.doesNotMatch(read(openDir, 'sitemap.xml'), /cgv-pro\.html|mentions-legales|confidentialite|legal-notice|privacy|terms\.html/);
   assert.match(read(openDir, 'pack.html'), /href="\/commander\.html"/);
   assert.match(read(openDir, 'en/pack.html'), /href="\/commander\.html"/);
   assert.doesNotMatch(read(openDir, 'pack.html'), SOON_RE);

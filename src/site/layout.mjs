@@ -116,7 +116,7 @@ export function layout(p) {
 <meta name="referrer" content="no-referrer">
 <title>${esc(p.title)}</title>
 <meta name="description" content="${esc(p.description)}">
-${p.noindex ? '<meta name="robots" content="noindex">' : ''}
+${p.noindex ? '<meta name="robots" content="noindex, follow">' : ''}
 <link rel="canonical" href="${canonical}">
 ${p.path ? '' : `<link rel="alternate" hreflang="${lang}" href="${canonical}">
 <link rel="alternate" hreflang="${other}" href="${abs(key, other)}">
