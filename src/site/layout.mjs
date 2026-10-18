@@ -15,10 +15,12 @@ export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 // Sitemap <lastmod> per page and language when it differs from SITE.updated
 // (2026-10-12: B2B terms, VAT franchise, sales opening, pack JSON-LD and SEO;
 // 2026-10-13: copy rewrite, titles, breadcrumbs and Article schema of the generator, pack and obligations pages;
-// B2B terms and privacy: payment by bank transfer on quote).
+// B2B terms and privacy: payment by bank transfer on quote;
+// 2026-10-17: FR generator and obligations pages link to the new guides).
 const D1012 = { fr: '2026-10-12', en: '2026-10-12' };
 const D1013 = { fr: '2026-10-13', en: '2026-10-13' };
-const LASTMOD = { tool: D1013, obligations: D1013, pack: D1013, legal: D1012, privacy: D1013, terms: D1013 };
+const D1017FR = { fr: '2026-10-17', en: '2026-10-13' };
+const LASTMOD = { tool: D1017FR, obligations: D1017FR, pack: D1013, legal: D1012, privacy: D1013, terms: D1013 };
 export const lastmod = (key, lang) => LASTMOD[key]?.[lang] ?? SITE.updated;
 
 /**
@@ -38,8 +40,9 @@ export const PAGES = {
   terms: { fr: '/cgv-pro.html', en: '/en/terms.html' },
 };
 
+// [key, label] for a PAGES entry, or [id, label, href] for a FR-only page (guides, since 2026-10-17).
 const NAV = {
-  fr: [['tool', 'Générateur'], ['obligations', 'Obligations'], ['pack', 'Pack GPSR']],
+  fr: [['tool', 'Générateur'], ['obligations', 'Obligations'], ['guides', 'Guides', '/guides.html'], ['pack', 'Pack GPSR']],
   en: [['tool', 'Generator'], ['obligations', 'Obligations'], ['pack', 'GPSR pack']],
 };
 const FOOT = {
@@ -107,8 +110,10 @@ const CRO_CTA = 'a[href*=commander],#pay-button,#btn-generate';
 const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="#0f5c6e"/><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /**
- * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean, csp?:string, path?:string, head?:string, tail?:string, bodyClass?:string}} p
- * `path` (FR-only pages such as the buy pages): canonical path without language alternates.
+ * @param {{lang:'fr'|'en', key:string, title:string, description:string, body:string, scripts?:string[], jsonld?:object, noindex?:boolean, csp?:string, path?:string, navKey?:string, switchHref?:string, checked?:string, head?:string, tail?:string, bodyClass?:string}} p
+ * `path` (FR-only pages such as the buy pages and the guides): canonical path without language alternates.
+ * `navKey`: nav item to mark as current when it differs from `key` ('guides'); `switchHref`: target of the language link;
+ * `checked`: content check date shown in the footer (default SITE.updated).
  */
 export function layout(p) {
   const { lang, key } = p;
@@ -116,7 +121,8 @@ export function layout(p) {
   const brand = BRAND[lang];
   const canonical = p.path ? SITE.origin + SITE.base + p.path : abs(key, lang);
   const csp = p.csp ?? "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src https://script.google.com; form-action 'none'; base-uri 'self'; object-src 'none'";
-  const nav = NAV[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  const current = p.navKey ?? key;
+  const nav = NAV[lang].map(([k, label, href]) => `<a href="${href ? SITE.base + href : url(k, lang)}"${k === current ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
   const t = lang === 'fr'
@@ -158,7 +164,7 @@ ${jsonld}${p.head ?? ''}
 <a class="skip" href="#main">${t.skip}</a>
 <header class="site"><div class="wrap">
 <a class="brand" href="${url('tool', lang)}">${LOGO}<span>${brand}</span></a>
-<nav class="top" aria-label="${lang === 'fr' ? 'Navigation principale' : 'Main navigation'}">${nav}<a href="${url(key, other)}" hreflang="${other}" lang="${other}">${switchLabel}</a></nav>
+<nav class="top" aria-label="${lang === 'fr' ? 'Navigation principale' : 'Main navigation'}">${nav}<a href="${p.switchHref ?? url(key, other)}" hreflang="${other}" lang="${other}">${switchLabel}</a></nav>
 </div></header>
 <main id="main"><div class="wrap">
 ${p.body}
@@ -167,7 +173,7 @@ ${p.body}
 ${networkHtml(lang)}
 <nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
 <p>${t.info}</p>
-<p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${SITE.updated}.</p>
+<p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${p.checked ?? SITE.updated}.</p>
 </div></footer>
 ${scripts}${p.tail ?? ''}
 </body>

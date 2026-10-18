@@ -3,6 +3,29 @@ import { ORDER_PATH, packPriceLabel } from './legal-pages.mjs';
 import { aboutBlock, docStack, factsBlock, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
 import { compareTable } from './pack-page.mjs';
 
+// FR guides (since 2026-10-17), linked from the generator page.
+const GUIDE_LINKS = `<section class="section" id="guides" aria-labelledby="guides-h">
+<div class="section-head"><span class="kicker">Guides</span><h2 id="guides-h">Guides par situation, plateforme et produit</h2>
+<p>Chaque guide cite l’article du règlement qui fonde chaque ligne, et la date de vérification.</p></div>
+<ul class="guide-links">
+${[
+    ['/personne-responsable-gpsr.html', 'Personne responsable : en avez-vous besoin ?'],
+    ['/etiquetage-bougie.html', 'Étiquetage des bougies : CLP, EN 15494, GPSR'],
+    ['/fiche-securite-bougie.html', 'Fiche de sécurité bougie : FDS ou fiche GPSR ?'],
+    ['/gpsr-etsy.html', 'GPSR sur Etsy'],
+    ['/gpsr-amazon.html', 'GPSR sur Amazon'],
+    ['/gpsr-vinted-pro.html', 'GPSR sur Vinted Pro'],
+    ['/gpsr-shopify.html', 'GPSR sur Shopify'],
+    ['/reglementation-bijoux-gpsr.html', 'Bijoux : nickel, plomb, cadmium'],
+    ['/vetements-textile-gpsr.html', 'Vêtements et textiles'],
+    ['/ceramique-decoration-gpsr.html', 'Céramique et décoration'],
+    ['/articles-enfants-non-jouets-gpsr.html', 'Articles enfants (non-jouets)'],
+    ['/modeles-gpsr.html', 'Modèles : analyse de risques, registre, rappel'],
+  ].map(([h, t]) => `<li><a href="${SITE.base}${h}">${t}</a></li>`).join('\n')}
+</ul>
+<p><a class="text-link" href="${SITE.base}/guides.html">Tous les guides</a></p>
+</section>`;
+
 const FAQ = {
   fr: [
     ['Quelle différence entre le générateur gratuit et le pack payant ?', 'Le générateur produit gratuitement, pour un produit, les documents à afficher et à conserver dès la mise en vente : fiche d’information sécurité, texte d’étiquette et d’annonce, analyse de risques et checklists. Le pack, vendu aux entreprises immatriculées en France, ajoute ce qu’il faut avoir prêt avant un incident : procédure de rappel, registre des réclamations, dossier technique et registre des lots, questionnaire fournisseur et modèles par catégorie avec exemples remplis.'],
@@ -137,6 +160,7 @@ ${compareTable('fr', label)}
 <div class="section-head"><span class="kicker">${fr ? 'Questions fréquentes' : 'FAQ'}</span><h2 id="faq-h">${fr ? 'Questions fréquentes' : 'Frequently asked questions'}</h2></div>
 ${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
+${fr ? GUIDE_LINKS : ''}
 ${aboutBlock(lang)}
 ${sourcesSection(lang, srcHtml, `<p>${fr ? 'Les 12 obligations du règlement et de la REP, chacune avec son article :' : 'The 12 obligations of the regulation and French EPR, each with its article:'} <a href="${url('obligations', lang)}">${fr ? 'page Obligations' : 'Obligations page'}</a>.</p>`)}
 ${fr && open ? stickyCta(`Pack GPSR · ${amount}`, order, 'Commander') : ''}`;

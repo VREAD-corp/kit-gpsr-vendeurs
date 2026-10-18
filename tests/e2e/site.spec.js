@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { unzip } from '../../src/lib/zip.js';
+import { GUIDES } from '../../src/site/guides/index.mjs';
 
 // Our checks are not visits: mesure.js sends them to the excluded counters (octave_notrack=1, reason notrack).
 test.beforeEach(async ({ page }) => { await page.addInitScript(() => { try { localStorage.setItem('octave_notrack', '1'); } catch {} }); });
 
-const PAGES = ['', 'en/', 'obligations.html', 'en/obligations.html', 'pack.html', 'en/pack.html', 'mentions-legales.html', 'en/legal-notice.html', 'confidentialite.html', 'en/privacy.html', 'cgv-pro.html', 'cgv.html', 'en/terms.html'];
+// FR guides (since 2026-10-17): same render, SEO, no-scroll, tracking and link checks as the other pages.
+const GUIDE_PAGES = ['guides.html', ...GUIDES.map((g) => `${g.slug}.html`)];
+const PAGES = ['', 'en/', 'obligations.html', 'en/obligations.html', 'pack.html', 'en/pack.html', 'mentions-legales.html', 'en/legal-notice.html', 'confidentialite.html', 'en/privacy.html', 'cgv-pro.html', 'cgv.html', 'en/terms.html', ...GUIDE_PAGES];
 
 function watch(page) {
   const errors = [];
@@ -43,6 +46,7 @@ for (const path of PAGES) {
 // cro.js (aggregate behaviour counters, shared France backend): loaded on every page, nothing sent from our tests.
 const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveCro; no A/B experiment', async ({ page }) => {
+  test.setTimeout(180_000); // 28 pages since the guides (2026-10-17)
   const w = watch(page);
   const cro = []; // cro.js batches ({kind:'cro'}); mesure.js still sends its own hit flagged excluded:'notrack' (by design)
   page.on('request', (r) => { if (/"kind":"cro"/.test(r.postData() || '')) cro.push(r.url()); });
@@ -71,6 +75,7 @@ test('every page loads cro.js (site, api, hosts, CTA) and exposes window.octaveC
 });
 
 test('all internal links resolve (200)', async ({ page, request }) => {
+  test.setTimeout(180_000);
   const seen = new Set();
   for (const path of PAGES) {
     await page.goto(path);

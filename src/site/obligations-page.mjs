@@ -84,6 +84,7 @@ ${table}
 <h2>Produits soumis à des règles spécifiques</h2>
 <p>Quand une législation sectorielle existe, le GPSR ne couvre que les risques qu’elle ne traite pas (${a(S.gpsr, lang, 'art. 2, §1')}). L’article 19 (annonce en ligne) et l’article 20 (accidents) restent applicables.</p>
 ${sectorTable}
+<p>Guides détaillés : <a href="${SITE.base}/etiquetage-bougie.html">bougies</a>, <a href="${SITE.base}/reglementation-bijoux-gpsr.html">bijoux</a>, <a href="${SITE.base}/vetements-textile-gpsr.html">textiles</a>, <a href="${SITE.base}/ceramique-decoration-gpsr.html">céramique et décoration</a>, <a href="${SITE.base}/articles-enfants-non-jouets-gpsr.html">articles enfants non-jouets</a>, <a href="${SITE.base}/jouet-ou-pas-jouet.html">jouets</a> et <a href="${SITE.base}/savons-cosmetiques-gpsr.html">cosmétiques</a>.</p>
 <h2>France : REP (responsabilité élargie du producteur)</h2>
 <ul>
 <li>Le principe et les filières sont fixés par ${a(S.envL54110, lang)} : emballages ménagers et papiers, textiles-linge-chaussures, ameublement, jouets, sport et loisirs, bricolage et jardin, équipements électriques, piles, entre autres.</li>
@@ -105,6 +106,7 @@ ${sectorTable}
 <li>Vinted Pro : ${a(S.vintedPro, lang)}. Nous avons relevé dans l’interface les champs « Informations sur le fabricant », « Étiquetage et marquage » et les paramètres REP.</li>
 <li>Boutique Shopify ou site propre : vous êtes le vendeur à distance, l’article 19 s’applique directement à vos fiches produits.</li>
 </ul>
+<p>Pas à pas, champ par champ : <a href="${SITE.base}/gpsr-etsy.html">Etsy</a>, <a href="${SITE.base}/gpsr-amazon.html">Amazon</a>, <a href="${SITE.base}/gpsr-vinted-pro.html">Vinted Pro</a>, <a href="${SITE.base}/gpsr-shopify.html">Shopify</a>. Qui doit désigner une personne responsable : <a href="${SITE.base}/personne-responsable-gpsr.html">notre guide</a>.</p>
 <p>Autre obligation des boutiques en ligne : depuis le 28 juin 2025, les sites de commerce en ligne vendant aux consommateurs doivent être accessibles (Acte européen sur l’accessibilité, directive (UE) 2019/882 ; les microentreprises de services en sont exemptées). <a href="https://accessibilite.jalonel.com/">Générateur gratuit de déclaration d’accessibilité</a>.</p>
 <h2>Limites de cette synthèse</h2>
 <p>Les pages de la DGCCRF n’ont pas pu être consultées automatiquement (protection anti-robot) : référez-vous à Légifrance et à RappelConso cités ci-dessus. Les aides Amazon Seller Central nécessitent une connexion. Les normes (EN 15494, EN 14682, EN 12586) sont payantes : nous citons leur titre, pas leur contenu. Signalez une erreur à <a href="mailto:${SITE.contact}">${SITE.contact}</a>.</p>

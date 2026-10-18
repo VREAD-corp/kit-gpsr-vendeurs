@@ -25,6 +25,10 @@ Exports: print / PDF, DOCX, Markdown, or all four documents as a ZIP. You can al
 
 **Privacy:** there is no backend, no cookies, no storage and no trackers; your answers never leave the browser. The only outgoing requests are the cookieless, anonymous audience measurement (`src/site/mesure.js`, served as `/mesure.js`) and the aggregate behaviour counters / A/B framework (`src/site/cro.js`, byte-identical copy of `octave-checkout/gas/web/cro.js`, goals in `src/site/cro-goals.js`; scroll, sections, CTA timing, form field *names* never values, FAQ, errors, Core Web Vitals), daily totals only, both honour Do Not Track / GPC; the CSP limits `connect-src` to `https://script.google.com`, and a unit test checks that the generator code (`src/app.js`, `src/lib/`) uses no network or storage APIs.
 
+## Guides (FR, since 2026-10-17)
+
+15 French guide pages built from `src/site/guides/` (registry in `index.mjs`): hub `/guides.html`, personne responsable, candle labelling and « fiche de sécurité », Etsy, Amazon, Vinted Pro, Shopify, document templates, 4 category pages (jewellery, textiles, ceramics and decor, children's items that are not toys) and 2 orientation pages (toys, cosmetics; no pack call to action). Each cites its articles and sources with the date checked; worked examples are rendered at build time by the generator itself (`example()` in `common.mjs`). FR-only: canonical without hreflang, Article/FAQPage/BreadcrumbList JSON-LD, sitemap lastmod = content date. Tests: `tests/unit/guides.test.js`, and every guide is in the e2e page list.
+
 ## Develop
 
 ```bash

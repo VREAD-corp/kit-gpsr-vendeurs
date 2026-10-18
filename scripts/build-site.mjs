@@ -7,6 +7,7 @@ import { toolPage } from '../src/site/tool-page.mjs';
 import { obligationsPage } from '../src/site/obligations-page.mjs';
 import { legalPage, legacyTermsPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH, PAY_LABEL } from '../src/site/legal-pages.mjs';
 import { packPage } from '../src/site/pack-page.mjs';
+import { buildGuides } from '../src/site/guides/index.mjs';
 import { checkoutConfigJs, checkoutCsp, loadSalesConfig, orderCsp, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,6 +32,10 @@ for (const [key, paths] of Object.entries(PAGES)) {
     await writeFile(file, html);
   }
 }
+
+// French guides (since 2026-10-17): FR-only pages with their own canonical path, no hreflang.
+const guides = buildGuides();
+for (const g of guides) await writeFile(join(out, g.path.slice(1)), layout(g.props));
 
 // 404 page (FR/EN)
 await writeFile(
@@ -88,6 +93,7 @@ await cp(join(root, 'src', 'site', 'img'), join(out, 'assets', 'img'), { recursi
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 
 const urls = Object.keys(PAGES).filter((k) => OPEN || k !== 'terms').flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));
+for (const g of guides) urls.push([`${SITE.origin}${SITE.base}${g.path}`, g.lastmod]);
 await writeFile(
   join(out, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, d]) => `  <url><loc>${u}</loc><lastmod>${d}</lastmod></url>`).join('\n')}\n</urlset>\n`,
@@ -98,4 +104,4 @@ await writeFile(join(out, '.nojekyll'), '');
 await writeFile(join(out, 'CNAME'), `${new URL(SITE.origin).host}\n`);
 const INDEXNOW_KEY = '5be19f56d46ca3d2553bee28ebfa8edd';
 await writeFile(join(out, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
-console.log(`built ${OPEN ? 14 : 12} pages + cgv.html + 404 into ${out} (sales ${OPEN ? 'OPEN' : 'closed'})`);
+console.log(`built ${OPEN ? 14 : 12} pages + ${guides.length} guides + cgv.html + 404 into ${out} (sales ${OPEN ? 'OPEN' : 'closed'})`);
