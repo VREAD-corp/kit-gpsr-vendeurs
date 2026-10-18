@@ -1,7 +1,7 @@
 // P1 « Personne responsable GPSR » and P7 « Modèles GPSR » (plan seo/gpsr.md §4).
 // Quotes of Regulation (EU) 2023/988 and 2019/1020 re-read on the Publications Office text on 2026-10-17
 // (consolidated 02023R0988-20260529 and 02019R1020-20260812: the articles quoted here are unchanged).
-import { SITE } from '../layout.mjs';
+import { FREE_PACK, SITE } from '../layout.mjs';
 import { gallery } from '../marketing.mjs';
 import { compareTable } from '../pack-page.mjs';
 import { MAKER, PACK, TOOL, art, example, go, link } from './common.mjs';
@@ -146,7 +146,7 @@ export const modeles = {
 </ol>
 
 <h2>Ce qui est gratuit, ce que contient le pack</h2>
-<p>Le générateur et le ${link(SITE.releases, 'paquet de modèles gratuits (ZIP sur GitHub, licence CC BY 4.0)')} couvrent ce que vous affichez et ce que vous gardez dès la mise en vente. Le pack ajoute ce qu’il faut avoir prêt avant un incident ou un contrôle. Les quatre pages ci-dessous sont des extraits réels du pack.</p>
+<p>Le générateur et le ${link(FREE_PACK, 'paquet de modèles gratuits (ZIP, licence CC BY 4.0)')} couvrent ce que vous affichez et ce que vous gardez dès la mise en vente. Le pack ajoute ce qu’il faut avoir prêt avant un incident ou un contrôle. Les quatre pages ci-dessous sont des extraits réels du pack.</p>
 ${compareTable('fr', '29 € net')}
 ${gallery('fr')}`,
   faq: [

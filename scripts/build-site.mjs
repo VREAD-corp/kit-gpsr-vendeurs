@@ -2,12 +2,13 @@
 import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { layout, PAGES, SITE, abs, lastmod } from '../src/site/layout.mjs';
+import { FREE_PACK, layout, PAGES, SITE, abs, lastmod } from '../src/site/layout.mjs';
 import { toolPage } from '../src/site/tool-page.mjs';
 import { obligationsPage } from '../src/site/obligations-page.mjs';
 import { legalPage, legacyTermsPage, privacyPage, termsPage, ORDER_DONE_PATH, ORDER_PATH, PAY_LABEL } from '../src/site/legal-pages.mjs';
 import { packPage } from '../src/site/pack-page.mjs';
 import { buildGuides } from '../src/site/guides/index.mjs';
+import { templatesZip } from './build-templates.mjs';
 import { checkoutConfigJs, checkoutCsp, loadSalesConfig, orderCsp, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -93,6 +94,11 @@ await cp(join(root, 'src', 'site', 'mesure.js'), join(out, 'mesure.js')); // ano
 await cp(join(root, 'src', 'site', 'cro.js'), join(out, 'cro.js')); // aggregate behaviour counters + A/B (octave-checkout gas/web/jalonel/, byte-identical)
 await cp(join(root, 'src', 'site', 'cro-goals.js'), join(out, 'cro-goals.js')); // cro.js goals: download, checkout
 await cp(join(root, 'src', 'site', 'img'), join(out, 'assets', 'img'), { recursive: true }); // sales-page previews (WebP, rendered from the pack)
+// Free template pack (ZIP), served by the site itself at FREE_PACK (no GitHub link).
+const pack = templatesZip();
+if (`${SITE.base}/telechargements/${pack.name}` !== FREE_PACK) throw new Error(`free pack path ${pack.name} != ${FREE_PACK}`);
+await mkdir(join(out, 'telechargements'), { recursive: true });
+await writeFile(join(out, 'telechargements', pack.name), pack.data);
 await cp(join(root, 'src', 'site', 'og.png'), join(out, 'assets', 'og.png')).catch(() => console.warn('og.png missing (run scripts/make-og.mjs)'));
 
 const urls = Object.keys(PAGES).filter((k) => !BOILERPLATE.has(k)).flatMap((k) => ['fr', 'en'].map((l) => [abs(k, l), lastmod(k, l)]));

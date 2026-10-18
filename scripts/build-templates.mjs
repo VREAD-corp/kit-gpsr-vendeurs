@@ -1,5 +1,7 @@
-// Builds the free template pack (GitHub Release asset): blank + example documents, FR and EN, DOCX + Markdown.
+// Builds the free template pack: blank + example documents, FR and EN, DOCX + Markdown. Served by the site itself
+// (build-site.mjs writes it to dist/telechargements/, see FREE_PACK); `npm run templates` also writes dist-templates/.
 import { mkdir, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { DOC_KEYS, EXAMPLE, generateAll } from '../src/lib/generate.js';
 import { toDocx, toMarkdown } from '../src/lib/render.js';
@@ -15,6 +17,7 @@ const NAMES = {
 // Blank template: every hazard row, every platform and every EPR stream, so sellers delete what does not apply.
 const BLANK = { hazards: HAZARDS.map((h) => h.id), marketplaces: MARKETPLACES.map((m) => m.id), sellsFrance: 'yes', epr: EPR_STREAMS.map((e) => e.id) };
 
+export function templatesZip() {
 const files = [];
 for (const lang of ['fr', 'en']) {
   const n = NAMES[lang];
@@ -44,14 +47,18 @@ Sources: ${SITE.origin}${SITE.base}/obligations.html
 
 ## Licence
 Textes et modèles : Creative Commons Attribution 4.0 International (CC BY 4.0) — https://creativecommons.org/licenses/by/4.0/
-Attribution : « Kit GPSR Vendeurs, READ FRANCE SAS, ${SITE.repo} ».
+Attribution : « Kit GPSR Vendeurs, READ FRANCE SAS, ${SITE.origin}${SITE.base}/ ».
 Extraits du droit de l’UE : © Union européenne (EUR-Lex), réutilisation autorisée.
 
 Kit GPSR Vendeurs — une marque Jalonel (https://jalonel.com/), marque de READ FRANCE SAS.
 `,
 });
-const out = zip(files, { date });
-const name = `kit-gpsr-modeles-gratuits-v${SITE.version}.zip`;
-await mkdir('dist-templates', { recursive: true });
-await writeFile(`dist-templates/${name}`, out);
-console.log(name, out.length, 'bytes', files.length, 'files', createHash('sha256').update(out).digest('hex'));
+return { name: `kit-gpsr-modeles-gratuits-v${SITE.version}.zip`, data: zip(files, { date }), count: files.length };
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const { name, data, count } = templatesZip();
+  await mkdir('dist-templates', { recursive: true });
+  await writeFile(`dist-templates/${name}`, data);
+  console.log(name, data.length, 'bytes', count, 'files', createHash('sha256').update(data).digest('hex'));
+}

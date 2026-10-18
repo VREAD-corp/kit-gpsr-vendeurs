@@ -2,13 +2,13 @@
 export const SITE = {
   origin: 'https://gpsr.jalonel.com',
   base: '', // served at the root of its own subdomain (Jalonel, since 2026-10-16)
-  repo: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs',
-  issues: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/issues',
   contact: 'contact@jalonel.com',
-  releases: 'https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest',
   version: '1.0.0',
   updated: '2026-10-11',
 };
+
+/** Free template pack (ZIP), served by the site itself (built by scripts/build-templates.mjs into dist/telechargements/). */
+export const FREE_PACK = `${SITE.base}/telechargements/kit-gpsr-modeles-gratuits-v${SITE.version}.zip`;
 
 export const BRAND = { fr: 'Kit GPSR Vendeurs', en: 'GPSR Seller Kit' };
 
@@ -103,8 +103,8 @@ export function layout(p) {
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
   const t = lang === 'fr'
-    ? { skip: 'Aller au contenu', product: '<a href="https://jalonel.com/">Une marque Jalonel</a>', info: 'Outil d’information : ce site ne fournit pas de conseil juridique et READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', src: 'Code source', ver: 'Version' }
-    : { skip: 'Skip to content', product: '<a href="https://jalonel.com/en/">A Jalonel brand</a>', info: 'Information tool: this site does not give legal advice and READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', src: 'Source code', ver: 'Version' };
+    ? { skip: 'Aller au contenu', product: '<a href="https://jalonel.com/">Une marque Jalonel</a>', info: 'Outil d’information : ce site ne fournit pas de conseil juridique et READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', ver: 'Version' }
+    : { skip: 'Skip to content', product: '<a href="https://jalonel.com/en/">A Jalonel brand</a>', info: 'Information tool: this site does not give legal advice and READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', ver: 'Version' };
   const scripts = (p.scripts ?? []).map((s) => `<script type="module" src="${SITE.base}${s}"></script>`).join('\n');
   const jsonld = p.jsonld ? `<script type="application/ld+json">${JSON.stringify(p.jsonld).replace(/</g, '\\u003c')}</script>` : '';
   return `<!doctype html>
@@ -147,7 +147,7 @@ ${jsonld}${p.head ?? ''}
 ${p.body}
 </div></main>
 <footer class="site"><div class="wrap">
-<nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a><a href="${SITE.repo}">${t.src}</a></nav>
+<nav aria-label="${lang === 'fr' ? 'Informations légales' : 'Legal information'}">${foot}<a href="mailto:${SITE.contact}">${lang === 'fr' ? 'Contact\u00a0:' : 'Contact:'} ${SITE.contact}</a></nav>
 <p>${t.info}</p>
 <p>${brand} — ${t.product}. ${t.ver} ${SITE.version}, ${lang === 'fr' ? 'contenu vérifié le' : 'content checked on'} ${p.checked ?? SITE.updated}.</p>
 </div></footer>

@@ -1,4 +1,4 @@
-import { ORG_REF, SITE, url } from './layout.mjs';
+import { FREE_PACK, ORG_REF, SITE, url } from './layout.mjs';
 import { ORDER_PATH, packPriceLabel } from './legal-pages.mjs';
 import { aboutBlock, docStack, factsBlock, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
 import { compareTable } from './pack-page.mjs';
@@ -119,7 +119,7 @@ ${factsBlock(lang, ref)}
 </section>
 <section class="section" data-section="questionnaire" aria-labelledby="questionnaire">
 <div class="tool-head"><h2 id="questionnaire">${fr ? 'Générez vos 4 documents gratuitement' : 'Generate your 4 documents for free'}</h2>
-<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${SITE.releases}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
+<p class="small muted">${fr ? 'Vous préférez des modèles vierges ?' : 'Prefer blank templates?'} <a href="${FREE_PACK}" data-mesure="free_download">${fr ? 'Pack de modèles gratuit (ZIP, FR + EN)' : 'Free template pack (ZIP, FR + EN)'}</a></p></div>
 <ol class="steps"><li>${fr ? 'Répondez : fabricant, produit, risques, plateformes (environ 10 minutes)' : 'Answer: manufacturer, product, hazards, platforms (about 10 minutes)'}</li><li>${fr ? 'Vérifiez les 4 documents' : 'Check the 4 documents'}</li><li>${fr ? 'Exportez en PDF, DOCX ou Markdown' : 'Export as PDF, DOCX or Markdown'}</li></ol>
 <noscript><div class="callout"><p>${fr ? 'Le générateur a besoin de JavaScript (exécuté uniquement dans votre navigateur). Sans JavaScript, utilisez le pack de modèles gratuit.' : 'The generator needs JavaScript (run only in your browser). Without JavaScript, use the free template pack.'}</p></div></noscript>
 <div class="btn-row no-print">

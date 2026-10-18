@@ -42,7 +42,7 @@ export function legalPage(lang) {
 <p>READ FRANCE SAS <strong>n’agit pas</strong> et ne propose pas d’agir comme « personne responsable » au sens de l’article 16 du règlement (UE) 2023/988 et de l’article 4 du règlement (UE) 2019/1020, ni comme mandataire, représentant autorisé, importateur ou mandataire REP.</p>
 <h2>Propriété intellectuelle et licences</h2>
 <ul>
-<li>Code source : licence MIT (<a href="${SITE.repo}">${SITE.repo}</a>).</li>
+<li>Logiciel du générateur : licence MIT.</li>
 <li>Textes et modèles du site et du pack gratuit : licence Creative Commons Attribution 4.0 (CC BY 4.0).</li>
 <li>Extraits de textes de l’Union européenne : © Union européenne, <a href="https://eur-lex.europa.eu/">EUR-Lex</a>, réutilisation autorisée (décision 2011/833/UE). Textes français : Légifrance, données publiques réutilisables.</li>
 </ul>`,
@@ -64,7 +64,7 @@ export function legalPage(lang) {
 <p>READ FRANCE SAS <strong>does not act</strong>, and does not offer to act, as a “responsible person” under Article 16 of Regulation (EU) 2023/988 and Article 4 of Regulation (EU) 2019/1020, nor as an authorised representative, importer or EPR agent.</p>
 <h2>Intellectual property and licences</h2>
 <ul>
-<li>Source code: MIT licence (<a href="${SITE.repo}">${SITE.repo}</a>).</li>
+<li>Generator software: MIT licence.</li>
 <li>Site texts and free templates: Creative Commons Attribution 4.0 (CC BY 4.0).</li>
 <li>Extracts of EU law: © European Union, <a href="https://eur-lex.europa.eu/">EUR-Lex</a>, reuse authorised (Decision 2011/833/EU). French texts: Légifrance open public data.</li>
 </ul>`,

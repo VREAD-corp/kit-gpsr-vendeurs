@@ -5,6 +5,7 @@
 // November 2019), DGCCRF pages of 19/07/2019, 10/12/2024 and 15/04/2026 (figures quoted as published).
 import { MAKER, PACK, TOOL, art, example, go, link } from './common.mjs';
 import { SRC, cite } from './sources.mjs';
+import { FREE_PACK } from '../layout.mjs';
 
 const K = {
   echa: ['ECHA, traduction INERIS : Respecter le règlement CLP lors de la fabrication ou de l’importation de bougies (août 2024)', 'https://clp-info.ineris.fr/guides-brochures/les-bougies-et-le-reglement-clp'],
@@ -149,7 +150,7 @@ export const ficheSecurite = {
 <h2>La fiche d’information sécurité GPSR, remplie</h2>
 <p>Le GPSR n’emploie pas le mot « fiche ». Il demande des informations, sur le produit et dans l’annonce : référence, coordonnées du fabricant, instructions et avertissements en français (${art(9, 'art. 9 §5 à §7')}), et les quatre mentions de la vente en ligne (${art(19)}). La fiche sécurité du générateur les rassemble en un document à garder, à joindre au colis ou à mettre en PDF sur votre boutique. Voici sa partie « étiquette et annonce » pour une bougie fictive :</p>
 ${example(CANDLE, { caption: 'Exemple fictif généré par le générateur gratuit le 17 octobre 2026 (document « Étiquette, emballage et annonce »). La fiche complète contient aussi l’usage prévu, les instructions et le contact pour les réclamations.' })}
-<p>Les modèles vierges et cet exemple en DOCX et Markdown sont aussi dans le ${link('https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest', 'paquet de modèles gratuits')} (dossier « exemple-bougie »).</p>
+<p>Les modèles vierges et cet exemple en DOCX et Markdown sont aussi dans le ${link(FREE_PACK, 'paquet de modèles gratuits')} (dossier « exemple-bougie »).</p>
 
 <h2>Ce que cette fiche ne remplace pas</h2>
 <ul>

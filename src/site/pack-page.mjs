@@ -3,7 +3,7 @@
 // DOCX + Markdown, 2 CSV registers per language). Refund, updates, delivery and invoice answers quote the
 // B2B terms (cgv-pro.html, art. 4, 6, 7, 8, 10, 12): nothing is promised beyond them.
 // `sales` = validated sales.config.json: SALES_OPEN gates every buy element.
-import { SITE, breadcrumb, url } from './layout.mjs';
+import { FREE_PACK, SITE, breadcrumb, url } from './layout.mjs';
 import { DEFAULT_SALES, ORDER_PATH, VAT_NOTE, packPriceLabel, packProductJsonld } from './legal-pages.mjs';
 import { prices } from '../../scripts/checkout-pages.mjs';
 import { PREVIEWS, aboutBlock, docStack, factsBlock, gallery, sourceList, sourcesSection, stickyCta } from './marketing.mjs';
@@ -197,7 +197,7 @@ ${offer}
 ${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('fr')}
-${sourcesSection('fr', srcHtml, `<p>Toutes les obligations et leurs textes : <a href="${url('obligations', 'fr')}">Obligations &amp; sources</a>. Conditions de vente : <a href="${cgv}">CGV professionnels</a>. Modèles vierges gratuits : <a href="${SITE.releases}" data-mesure="free_download">pack de modèles gratuit (ZIP)</a>.</p>`)}
+${sourcesSection('fr', srcHtml, `<p>Toutes les obligations et leurs textes : <a href="${url('obligations', 'fr')}">Obligations &amp; sources</a>. Conditions de vente : <a href="${cgv}">CGV professionnels</a>. Modèles vierges gratuits : <a href="${FREE_PACK}" data-mesure="free_download">pack de modèles gratuit (ZIP)</a>.</p>`)}
 ${open ? stickyCta(`Pack GPSR · ${amount}`, order, 'Commander') : ''}`,
     };
   }
@@ -268,6 +268,6 @@ ${offer}
 ${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
 </section>
 ${aboutBlock('en')}
-${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Blank templates at no cost: <a href="${SITE.releases}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,
+${sourcesSection('en', srcHtml, `<p>All obligations and their texts: <a href="${url('obligations', 'en')}">Obligations &amp; sources</a>. Blank templates at no cost: <a href="${FREE_PACK}" data-mesure="free_download">free template pack (ZIP)</a>.</p>`)}`,
   };
 }

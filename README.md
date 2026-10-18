@@ -4,7 +4,7 @@ Free, in-browser helper for small marketplace sellers (Etsy, Vinted Pro, Amazon 
 
 - Live, FR: https://gpsr.jalonel.com/
 - Live, EN: https://gpsr.jalonel.com/en/
-- Free template pack (ZIP, FR + EN, DOCX + Markdown): see [Releases](https://github.com/VREAD-corp/kit-gpsr-vendeurs/releases/latest).
+- Free template pack (ZIP, FR + EN, DOCX + Markdown): served by the site at https://gpsr.jalonel.com/telechargements/kit-gpsr-modeles-gratuits-v1.0.0.zip (built by `scripts/build-templates.mjs`, written into `dist/telechargements/` by the site build; `npm run templates` also writes `dist-templates/`).
 
 A Jalonel brand (https://jalonel.com/). Jalonel is a brand of READ FRANCE SAS.
 
