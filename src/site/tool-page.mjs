@@ -85,7 +85,8 @@ export function toolPage(lang, sales) {
   // businesses only) = the free tool is the primary action and the pack is labelled FR-only.
   const heroCta = fr
     ? open
-      ? `<div class="cta-row"><a class="btn btn-lg" href="${packUrl}">Voir le pack de modèles GPSR, ${label}</a><a class="text-link" href="#questionnaire">ou générer mes 4 documents gratuitement ↓</a></div>`
+      ? `<div class="cta-row"><a class="btn btn-lg" href="${packUrl}">Voir le pack de modèles GPSR, ${label}</a><a class="text-link" href="#questionnaire">ou générer mes 4 documents gratuitement ↓</a></div>
+<p class="price-line">Pack : ${label}, TVA non applicable (art. 293 B du CGI), paiement unique, réservé aux entreprises immatriculées en France. Le générateur reste gratuit.</p>`
       : `<div class="cta-row"><a class="btn btn-lg" href="#questionnaire">Générer mes documents gratuitement</a><a class="text-link" href="${packUrl}">Pack documentation : bientôt disponible</a></div>`
     : `<div class="cta-row"><a class="btn btn-lg" href="#questionnaire">Generate my documents free ↓</a></div>
 <p class="price-line">${open ? `Paid pack available to French businesses only (FR): <a href="${packUrl}">see what it adds</a>.` : `Paid pack: <a href="${packUrl}">coming soon</a>.`}</p>`;
