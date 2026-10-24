@@ -103,8 +103,8 @@ export function layout(p) {
   const foot = FOOT[lang].map(([k, label]) => `<a href="${url(k, lang)}"${k === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const switchLabel = lang === 'fr' ? 'English' : 'Français';
   const t = lang === 'fr'
-    ? { skip: 'Aller au contenu', product: '<a href="https://jalonel.com/">Une marque Jalonel</a>', info: 'Outil d’information : ce site ne fournit pas de conseil juridique et READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', ver: 'Version' }
-    : { skip: 'Skip to content', product: '<a href="https://jalonel.com/en/">A Jalonel brand</a>', info: 'Information tool: this site does not give legal advice and READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', ver: 'Version' };
+    ? { skip: 'Aller au contenu', product: '<a href="https://jalonel.com/">Une marque Jalonel</a>', info: 'Outil d’information indépendant, ni édité ni validé par la Commission européenne ou une autorité de surveillance du marché. Il ne remplace pas un avis juridique et ne garantit pas la conformité de vos produits. READ FRANCE SAS n’agit jamais comme « personne responsable », mandataire ou représentant autorisé.', ver: 'Version' }
+    : { skip: 'Skip to content', product: '<a href="https://jalonel.com/en/">A Jalonel brand</a>', info: 'Independent information tool, not published or approved by the European Commission or any market surveillance authority. It does not replace legal advice and does not guarantee that your products comply. READ FRANCE SAS never acts as a “responsible person”, authorised representative or agent.', ver: 'Version' };
   const scripts = (p.scripts ?? []).map((s) => `<script type="module" src="${SITE.base}${s}"></script>`).join('\n');
   const jsonld = p.jsonld ? `<script type="application/ld+json">${JSON.stringify(p.jsonld).replace(/</g, '\\u003c')}</script>` : '';
   return `<!doctype html>
